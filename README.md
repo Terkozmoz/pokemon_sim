@@ -49,3 +49,21 @@ We welcome contributions to the Pokémon Battle Game. To contribute:
 5. Test your changes to verify that they work as expected.
 6. Commit your changes and push them to your fork on GitHub.
 7. Create a pull request to the original repository with a clear description of your changes.
+
+## license
+
+Non-Commercial Use Only License
+
+Copyright (c) [2023] [@Terkozmoz]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to use the Software for non-commercial purposes only, subject to the following conditions:
+
+1. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+2. Commercial use, distribution, or any form of profit-making derived from the Software is strictly prohibited without the express written permission of the copyright holder.
+
+3. The Software is provided "as is," without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the Software or the use or other dealings in the Software.
+
+4. This software is not affiliated with, endorsed, or sponsored by The Pokémon Company. All Pokémon-related names and content are trademarks and copyrights of The Pokémon Company and are used here for informational and non-commercial purposes only. The use of such names and content does not imply any endorsement or affiliation with The Pokémon Company.
+
+For any inquiries, please contact Terkozmoz@gmail.com or @Terkozmoz on GitHub.
