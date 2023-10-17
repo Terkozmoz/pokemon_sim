@@ -7,195 +7,187 @@
 import random
 import pygame
 import pokemons as pkms
+
+# Initialize Pygame and load the music
 pygame.init()
 pygame.mixer.music.load("assets\\theme\\battle_theme.mp3")
 
-class Joueur:
+class Player:
     def __init__(self, pokemon):
         self.pokemon = pokemon
         self.potion = 1
         self.superpotion = 1
-        self.potionmax = random.randint(0,1)
+        self.potionmax = random.randint(0, 1)
 
-    def choisir_attaque(self):
-        print("Choisissez une attaque :")
-        for i, attaque in enumerate(self.pokemon.attaques):
-            print(f"{i + 1}. {attaque.nom} ;\n Puissance: {attaque.puissance} Precision: {attaque.precision}")
-            if attaque.effet:
-                print(f"Effet: {attaque.effet} ; Probabilité: {attaque.effet_proba}%")
+    def choose_attack(self):
+        print("Choose an attack:")
+        for i, attack in enumerate(self.pokemon.attacks):
+            print(f"{i + 1}. {attack.name} ;\n Power: {attack.power} Accuracy: {attack.accuracy}")
+            if attack.effect:
+                print(f"Effect: {attack.effect} ; Probability: {attack.effect_probability}%")
 
-        choix = int(input("Entrez le numéro de l'attaque : ")) - 1
-        if 0 <= choix < len(self.pokemon.attaques):
-            return self.pokemon.attaques[choix]
+        choice = int(input("Enter the attack number: ") - 1
+        if 0 <= choice < len(self.pokemon.attacks):
+            return self.pokemon.attacks[choice]
         else:
-            print("Choix invalide. Réessayez.")
-            return self.choisir_attaque()
-        
-    def utiliser_potion(self, cible, potion_choix):
-        if potion_choix == 0 and self.potion >= 1:
+            print("Invalid choice. Try again.")
+            return self.choose_attack()
+
+    def use_potion(self, target, potion_choice):
+        if potion_choice == 0 and self.potion >= 1:
             self.potion -= 1
-            cible.BoitPotion(20)
-            print(f"il vous reste {self.potion} Potions")
-        elif potion_choix == 1 and self.superpotion >= 1:
+            target.drink_potion(20)
+            print(f"You have {self.potion} Potions remaining")
+        elif potion_choice == 1 and self.superpotion >= 1:
             self.superpotion -= 1
-            cible.BoitPotion(50)
-            print(f"il vous reste {self.superpotion} Super Potions")
-        elif potion_choix == 2 and self.potionmax >= 1:
+            target.drink_potion(50)
+            print(f"You have {self.superpotion} Super Potions remaining")
+        elif potion_choice == 2 and self.potionmax >= 1:
             self.potionmax -= 1
-            cible.BoitPotionMax()
-            print(f"il vous reste {self.potionmax} Potions Max")
+            target.drink_max_potion()
+            print(f"You have {self.potionmax} Max Potions remaining")
         else:
-            print("Type de potion invalide.")
-            self.utiliser_potion(cible, potion_choix)
+            print("Invalid potion type.")
+            self.use_potion(target, potion_choice)
 
-def battle_loop(all_pokemon, joueur = None):
+def battle_loop(all_pokemon, player=None):
     current_turn = 1
     healed_pokemon = []
-    all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
-    player_turn = all_pokemon.index(joueur.pokemon) + 1
+    all_pokemon.sort(key=lambda x: x.speed, reverse=True)
+    player_turn = all_pokemon.index(player.pokemon) + 1
 
     def all_pokemon_fainted():
-        alive_pokemon = [pokemon for pokemon in all_pokemon if pokemon.est_vivant()]
+        alive_pokemon = [pokemon for pokemon in all_pokemon if pokemon.is_alive()]
         return len(alive_pokemon) == 1
 
     while True:
         print("\n")
         if current_turn == player_turn:
-            if joueur.pokemon.pv > 0:
-                # Tour du joueur
-                print(f"Il vous reste {joueur.pokemon.pv}/{joueur.pokemon.pvmax} PV")
-                choix_joueur = input("Choisissez une action pour votre Pokémon:\n1. Attaquer\n2. Utiliser une Potion\n3. Passer Son Tour\n4. Fuire : ")
-                
-                if choix_joueur == "1":
-                    # Le joueur choisit d'attaquer
-                    attaque_joueur = joueur.choisir_attaque()
-                    print(f"Choisissez une cible pour l'attaque {attaque_joueur.nom}:")
-                    
-                    # Afficher les options de cibles
-                    for i, pokemon in enumerate(all_pokemon):
-                        if pokemon != joueur.pokemon and pokemon.est_vivant():
-                            print(f"{i+1}. {pokemon.nom}")
+            if player.pokemon.hp > 0:
+                # Player's turn
+                print(f"You have {player.pokemon.hp}/{player.pokemon.max_hp} HP")
+                player_choice = input("Choose an action for your Pokémon:\n1. Attack\n2. Use a Potion\n3. Skip Turn\n4. Flee: ")
 
-                    # Demander au joueur de choisir la cible
-                    choix_cible = int(input("Entrez le numéro de la cible: ")) - 1
+                if player_choice == "1":
+                    # Player chooses to attack
+                    attack_player = player.choose_attack()
+                    print(f"Choose a target for the attack {attack_player.name}:")
+
+                    # Display target options
+                    for i, pokemon in enumerate(all_pokemon):
+                        if pokemon != player.pokemon and pokemon.is_alive():
+                            print(f"{i + 1}. {pokemon.name}")
+
+                    # Ask the player to choose a target
+                    target_choice = int(input("Enter the target number: ") - 1
                     print("\n")
-                    if 0 <= choix_cible < len(all_pokemon) and all_pokemon[choix_cible].est_vivant() and all_pokemon[choix_cible] != joueur.pokemon:
-                        adversaire = all_pokemon[choix_cible]
-                        joueur.pokemon.Attaque(adversaire, attaque_joueur)
+                    if 0 <= target_choice < len(all_pokemon) and all_pokemon[target_choice].is_alive() and all_pokemon[target_choice] != player.pokemon:
+                        opponent = all_pokemon[target_choice]
+                        player.pokemon.attack(opponent, attack_player)
                         current_turn += 1
                     else:
-                        print("Choix de cible invalide. L'attaque a échoué.")
+                        print("Invalid target choice. The attack failed.")
                         current_turn += 1
-            
-                elif choix_joueur == "2":
-                    # Le joueur choisit d'utiliser une potion
-                    print(f"Choisissez une potion:\n0. Potion ({joueur.potion})\n1. Super Potion ({joueur.superpotion})\n2. Potion Max ({joueur.potionmax})\n")
-                    choix_potion = int(input("Entrez le numéro de la potion: "))
-                    joueur.utiliser_potion(joueur.pokemon,choix_potion)
-                    current_turn += 1
-                
-                elif choix_joueur == "3":
-                    # Le joueur choisit de skipper le tour
-                    print("Vous avez passé votre tour.")
+
+                elif player_choice == "2":
+                    # Player chooses to use a potion
+                    print(f"Choose a potion:\n0. Potion ({player.potion})\n1. Super Potion ({player.superpotion})\n2. Max Potion ({player.potionmax})\n")
+                    potion_choice = int(input("Enter the potion number: ")
+                    player.use_potion(player.pokemon, potion_choice)
                     current_turn += 1
 
-                elif choix_joueur == "4":
-                    # Le joueur choisit de quitter le combat
-                    print("Vous avez fuit le combat.")
+                elif player_choice == "3":
+                    # Player chooses to skip their turn
+                    print("You have skipped your turn.")
+                    current_turn += 1
+
+                elif player_choice == "4":
+                    # Player chooses to flee the battle
+                    print("You have fled the battle.")
                     break
             else:
                 current_turn += 1
 
-        else:   
-            current_pokemon = all_pokemon[current_turn-1]
+        else:
+            current_pokemon = all_pokemon[current_turn - 1]
 
-            if current_pokemon.est_vivant() and current_pokemon != joueur.pokemon:
-                # Variable pour suivre si un changement significatif s'est produit
+            if current_pokemon.is_alive() and current_pokemon != player.pokemon:
+                # Variable to track if a significant change has occurred
 
-                # Trouver une cible Pokémon vivante aléatoire
-                if current_pokemon not in healed_pokemon and current_pokemon.pv < current_pokemon.pvmax - 10 and random.randint(1, 5) == 1:
-                    # Le Pokémon a une chance de 1 sur 5 de se soigner de 10 PV
+                # Find a random living Pokémon target
+                if current_pokemon not in healed_pokemon and current_pokemon.hp < current_pokemon.max_hp - 10 and random.randint(1, 5) == 1:
+                    # The Pokémon has a 1 in 5 chance of healing by 10 HP
                     if random.randint(1, 10) == 1:
-                        # Le Pokémon a une chance de 1 sur 10 d'utiliser une potion max
-                        current_pokemon.BoitPotionMax()
+                        # The Pokémon has a 1 in 10 chance of using a max potion
+                        current_pokemon.drink_max_potion()
                         healed_pokemon.append(current_pokemon)
-                    current_pokemon.BoitPotion(10)
+                    current_pokemon.drink_potion(10)
                     healed_pokemon.append(current_pokemon)
                 else:
-                    available_targets = [pokemon for pokemon in all_pokemon if pokemon.est_vivant() and pokemon != current_pokemon]
+                    available_targets = [pokemon for pokemon in all_pokemon if pokemon.is_alive() and pokemon != current_pokemon]
                     if available_targets:
                         target = random.choice(available_targets)
-                        current_pokemon.Attaque(target,current_pokemon.choisir_attaque())
+                        current_pokemon.attack(target, current_pokemon.choose_attack())
 
             current_turn = (current_turn + 1) % len(all_pokemon)
 
             if all_pokemon_fainted() or current_turn > 10000:
                 pygame.mixer.music.stop()
-                print("Le combat est terminé.")
+                print("The battle is over.")
                 break
 
-    winner = [pokemon for pokemon in all_pokemon if pokemon.est_vivant()]
+    winner = [pokemon for pokemon in all_pokemon if pokemon.is_alive()]
     if winner and len(winner) == 1:
-        print(f"Le Pokémon gagnant est : {winner[0].nom}")
-        if winner[0] == joueur.pokemon:
-            print("\033[93mVous avez gagné le combat !\033[0m")
+        print(f"The winning Pokémon is: {winner[0].name}")
+        if winner[0] == player.pokemon:
+            print("\033[93mYou won the battle!\033[0m")
         else:
-            print("\033[91mVous avez perdu le combat !\033[0m")
+            print("\033[91mYou lost the battle!\033[0m")
     else:
-        print("Il n'y a pas de Pokémon gagnant.")
+        print("There is no winning Pokémon.")
 
-def choisir_pokemon():
-    print("Choisissez un Pokémon parmi les suivants :")
+def choose_pokemon():
+    print("Choose a Pokémon from the following:")
     for i, pokemon in enumerate(all_pokemon):
-        print(f"{i + 1}. {pokemon.nom}")
+        print(f"{i + 1}. {pokemon.name}")
 
-    choix = None
-    while choix is None:
+    choice = None
+    while choice is None:
         try:
-            choix = int(input("Entrez le numéro du Pokémon que vous souhaitez : ")) - 1
-            if choix < 0 or choix >= len(all_pokemon):
-                print("Numéro de Pokémon invalide. Réessayez.")
-                choix = None
+            choice = int(input("Enter the number of the Pokémon you want: ") - 1
+            if choice < 0 or choice >= len(all_pokemon):
+                print("Invalid Pokémon number. Try again.")
+                choice = None
         except ValueError:
-            print("Veuillez entrer un numéro valide.")
+            print("Please enter a valid number.")
 
-    pokemon_joueur = all_pokemon[choix]
-    print(f"Vous avez choisi {pokemon_joueur.nom} !")
+    chosen_pokemon = all_pokemon[choice]
+    print(f"You chose {chosen_pokemon.name}!")
 
-    return pokemon_joueur
+    return chosen_pokemon
 
-def nombre_adversaires():
+def number_of_opponents():
     global all_pokemon
-    print(f"Definir le nombre de Pokemons:")
-    choix = int(input(f"Choisir un nombre entre 3 et {len(all_pokemon)}: "))
-    if choix >= 3:
-        for i in range (0,len(all_pokemon) - choix):
-            pkm = random.choice(all_pokemon)
-            all_pokemon.remove(pkm)
+    print(f"Set the number of opponent Pokémons:")
+    choice = int(input(f"Choose a number between 3 and {len(all_pokemon)}: ")
+    if choice >= 3:
+        for i in range(0, len(all_pokemon) - choice):
+            opponent = random.choice(all_pokemon)
+            all_pokemon.remove(opponent)
     else:
-        print("choix invalide.")
-        nombre_adversaires()
+        print("Invalid choice.")
+        number_of_opponents()
 
-
-def musique():
-    if input("Voulez-vous lancer une musique ? (o/n) ") == "o":
+def play_music():
+    if input("Do you want to play music? (y/n) ") == "y":
         pygame.mixer.music.play(-1)
 
 if __name__ == '__main__':
-    # Création des pokemons et ajout dans la liste
-    print("\033[93mBienvenue !\033[0m")
-    pokemon_order = []
+    # Create Pokémons and add them to the list
+    print("\033[93mWelcome!\033[0m")
     all_pokemon = pkms.all_pokemon
-    nombre_adversaires()
-    a = len(all_pokemon)+1
-    player = Joueur(choisir_pokemon())
-    all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
-    musique()
-    battle_loop(all_pokemon,player)
-        
-    ##########################
-    # a essayer hors du site #
-    #   Pour des raisons de  #
-    #        Couleurs        #
-    # et de Choix d'attaques #
-    ##########################
+    number_of_opponents()
+    player = Player(choose_pokemon())
+    all_pokemon.sort(key=lambda x: x.speed, reverse=True)
+    play_music()
+    battle_loop(all_pokemon, player)
