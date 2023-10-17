@@ -4,16 +4,15 @@ import random
 class Pokemon:
     def __init__(self, nom, pvmax, Att, Vitesse,Def, Type):
         """
-        Initialise un Pokemon avec des attributs de base.
+        Init a Pokemon with its name, hp, attack, defense, speed and type.
 
         Args:
-            nom (str): Le nom du Pokemon.
-            pv (int): Les points de vie actuels du Pokemon.
-            pvmax (int): Les points de vie maximum du Pokemon.
-            Att (int) : L'attaque du Pokemon
-            Vitesse (int): La vitesse du Pokemon.
-            Def (int): La defense duokemon.
-            Type (str): Le type du Pokemon.
+            nom (str): Pokemon's name.
+            pvmax (int): Pokemon's max hp.
+            Att (int) : Pokemon's attack.
+            Vitesse (int): Pokemon's speed.
+            Def (int): Pokemon's defense.
+            Type (str): Pokemon's type(Max one).
         """
         self.nom = nom
         self.base = pvmax
@@ -24,7 +23,7 @@ class Pokemon:
         self.pv = self.calculate_hp()
         self.pvmax = self.pv
         self.attaques = self.generer_attaques_aleatoires()
-        # statut du pokemon
+        # pokemon's status
         self.paralyse = False
         self.brule = False
         self.poison = False
@@ -36,10 +35,10 @@ class Pokemon:
         self.abri = False
 
     def generer_attaques_aleatoires(self):
-        # Selectionner 4 attaques aleatoires parmi les attaques du type du Pokemon
+        # Select 4 random attacks from the list of attacks available for this type of Pokemon
         attaques_disponibles = attaques_par_type.get(self.type, [])
         if len(attaques_disponibles) < 4:
-            raise Exception("Pas assez d'attaques disponibles pour ce type de Pokemon.")
+            raise Exception("Not enough attacks available for this type of Pokemon")
         return random.sample(attaques_disponibles, 4)
 
     def calculate_hp(self):
@@ -71,16 +70,16 @@ class Pokemon:
     def learn_attack(self, attack):
         if len(self.attaques) < 4 and attack not in self.attaques:
             self.attaques.append(attack)
-            print(f"{self.nom} a appris {attack.nom}")
+            print(f"{self.nom} has learned {attack.nom}!")
         else:
-            print(f"{self.nom} ne peux pas apprendre {attack.nom}")
+            print(f"{self.nom} can't learn {attack.nom}!")
     
     def est_vivant(self):
         """
-        Verifie si le Pokemon est en vie.
+        Check if the Pokemon is alive.
 
         Returns:
-            bool: True si le Pokemon a des PV restants, False sinon.
+            bool: True if the Pokemon is alive, False otherwise.
         """
         if self.pv > 0:
             return True
@@ -88,20 +87,20 @@ class Pokemon:
     
     def BoitPotion(self, gain):
         """
-        Fait boire une potion au Pokemon pour restaurer ses PV.
+        Make the Pokemon drink a potion to restore its HP.
 
         Args:
-            gain (int): Le nombre de PV restaures.
+            gain (int): The number of HP restored by the potion.
 
         Returns:
-            int: Le nombre de PV actuels du Pokemon apres la restauration.
+            int: The Pokemon's current HP after the restoration.
         """
-        print(f"\x1b[32m{self.nom} boit une potion de {gain} PV\x1b[0m")
+        print(f"\x1b[32m{self.nom} drinks a potion and restores {gain} HP.\x1b[0m")
         if self.pv + gain > self.pvmax:
             self.pv = self.pvmax
         else:
             self.pv += gain
-        print(f"{self.nom} a \x1b[34m{self.pv} PV\x1b[0m")
+        print(f"{self.nom} has \x1b[32m{self.pv} HP\x1b[0m.")
         return self.pv
     
     def choisir_attaque(self):
@@ -110,25 +109,25 @@ class Pokemon:
 
     def BoitPotionMax(self):
         """
-        Fait boire une potion max au Pokemon pour le soigner completement.
+        Make the Pokemon drink a max potion to restore its HP to the max.
 
         Returns:
-            int: Le nombre de PV actuels du Pokemon apres la restauration.
+            int: The Pokemon's current HP after the restoration.
         """
-        print(f" \x1b[34m {self.nom} boit une potion max et est completement soigne! \x1b[0m")
+        print(f" \x1b[34m {self.nom} drinks a max potion and restores all its HP.\x1b[0m")
         self.pv = self.pvmax
         print(f"{self.nom} a \x1b[34m{self.pv} PV\x1b[0m")
         return self.pv
 
     def Typing(self, cible) -> int:
         """
-        Calcule l'efficacite d'une attaque en fonction des types.
+        Calculating the effectiveness of an attack.
 
         Args:
-            cible (Pokemon): Le Pokemon cible de l'attaque.
+            cible (Pokemon): The Pokemon that is attacked.
 
         Returns:
-            int: Le facteur d'efficacite de l'attaque.
+            int: The effectiveness of the attack.
         """
         if self.type in self.TYPE_EFFECTIVENESS:
             if cible.type in self.TYPE_EFFECTIVENESS[self.type]:
@@ -140,182 +139,182 @@ class Pokemon:
         global pokemon_order
         if self.abri == True:
             self.abri = False
-            print(f"L'abri de {self.nom} s'est éstompé!")
+            print(f"{self.nom}'s protection has disappeared!")
         if self.endormi == False:
             if self.confus == True:
                 p = random.randint(0, 100)
                 if p <= 50:
-                    print(f"{self.nom} est confus et se blesse dans sa confusion!")
+                    print(f"{self.nom} is confused and attacks itself!")
                     self.pv -= self.pvmax // 8
-                    print(f"{self.nom} perd \x1b[31m{self.pvmax // 8} PV\x1b[0m.")
+                    print(f"{self.nom} loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
                     return
             if self.paralyse == True:
                 p = random.randint(0, 100)
                 if p <= 25:
-                    print(f"{self.nom} est paralysé et ne peut pas attaquer!")
+                    print(f"{self.nom} is paralyzed and can't attack!")
                     return
-            print(f"{self.nom} attaque {cible.nom} avec {attaque.nom}.")
+            print(f"{self.nom} attacks {cible.nom} with {attaque.nom}!")
             if random.randint(0,100) <= attaque.precision:
                 efficacite = self.Typing(cible)
                 degats = attaque.calculer_degats(self, cible, efficacite)
 
                 if cible.abri == True:
                     cible.abri = False
-                    print(f"{cible.nom} a utilisé abri et a évité l'attaque!")
+                    print(f"{cible.nom} used its protection and avoided the attack!")
                     degats = 0
                     efficacite = 1
 
                 if efficacite > 1:
-                    efficacite_message = "\x1b[32mC'est super efficace!\x1b[0m"
+                    efficacite_message = "\x1b[32mIt's super effective!\x1b[0m"
                 elif efficacite < 1 and efficacite > 0:
-                    efficacite_message = "\x1b[mCe n'est pas très efficace...\x1b[0m"
+                    efficacite_message = "\x1b[mIt's not very effective...\x1b[0m"
                 elif efficacite == 0:
-                    efficacite_message = f"\x1b[31mÇa n'affecte pas {cible.nom}.\x1b[0m"
+                    efficacite_message = f"\x1b[31mIt doesn't affect {cible.nom}...\x1b[0m"
                 else:
                     efficacite_message = ""
 
-                print(f"{efficacite_message} {self.nom} inflige \x1b[31m{degats} \x1b[0m degâts à {cible.nom}.")
+                print(f"{efficacite_message} {self.nom} deals \x1b[31m{degats} HP\x1b[0m to {cible.nom}.")
 
-                # S'assurer que les PV de l'adversaire ne descendent pas en dessous de 0
+                # Maxes sure the Pokemon doesn't go below 0 HP
                 cible.pv = max(cible.pv - degats, 0)
 
-                # Effet de l'attaque
+                # Applies the effect of the attack
 
                 if attaque.effet:
-                    # chance de l'effet
+                    # Checks if the effect is triggered
                     
                     a = random.randint(0, 100)
                     if a <= attaque.effet_proba:
                         if cible.statut == False:
 
-                            # Negatif
+                            # Negatives
 
                             if attaque.effet == "paralyse":
                                 cible.paralyse = True
                                 cible.statut = True
-                                print(f"{cible.nom} est paralysé!")
+                                print(f"{cible.nom} is paralyzed!")
                             
                             elif attaque.effet == "burn":
                                 cible.brule = True
                                 cible.statut = True
-                                print(f"{cible.nom} est brulé!")
+                                print(f"{cible.nom} is burned!")
                             
                             elif attaque.effet == "poison":
                                 cible.poison = True
                                 cible.statut = True
-                                print(f"{cible.nom} est empoisonné!")
+                                print(f"{cible.nom} is poisoned!")
                             
                             elif attaque.effet == "sleep":
                                 cible.endormi = True
                                 cible.statut = True
-                                print(f"{cible.nom} s'endort!")
+                                print(f"{cible.nom} is asleep!")
                             
                             elif attaque.effet == "confus":
                                 cible.confus = True
                                 cible.statut = True
-                                print(f"{cible.nom} est confus!")
+                                print(f"{cible.nom} is confused!")
 
                             elif attaque.effet == "maudis":
                                 cible.maudit = True
                                 cible.statut = True
-                                print(f"{cible.nom} est maudit!")
+                                print(f"{cible.nom} is cursed!")
 
                             elif attaque.effet == "freeze":
                                 cible.freeze = True
                                 cible.statut = True
-                                print(f"{cible.nom} est gelé!")
+                                print(f"{cible.nom} is frozen!")
                         
                         if attaque.effet == "onehit":
                             cible.pv = 0
-                            print(f"{cible.nom} est mis KO en un coup!")
+                            print(f"{cible.nom} is knocked out in one hit!")
 
                         # Positif
 
                         elif attaque.effet == "heal":
                             self.hp = self.hpmax
-                            print(f"{self.nom} est soigné!")
+                            print(f"{self.nom} is healed!")
 
                         elif attaque.effet == "abri":
                             self.abri = True
-                            print(f"{self.nom} se protège!")
+                            print(f"{self.nom} protects itself!")
 
                         # Stats +
 
                         elif attaque.effet == "attaque+":
                             self.attaque += 1
-                            print(f"{self.nom} a augmenté son attaque!")
+                            print(f"{self.nom}'s attack has increased!")
                         
                         elif attaque.effet == "vitesse+":
                             self.vitesse += 1
-                            print(f"{self.nom} a augmenté sa vitesse!")
+                            print(f"{self.nom}'s speed has increased!")
                             all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
 
                         elif attaque.effet == "defense+":
                             self.defense += 1
-                            print(f"{self.nom} a augmenté sa défense!")
+                            print(f"{self.nom}'s defense has increased!")
 
                         # Stats -
 
                         elif attaque.effet == "attaque-":
                             cible.attaque -= 1
-                            print(f"L'attaque de {cible.nom} a baissée!")
+                            print(f"{cible.nom}'s attack has decreased!")
 
                         elif attaque.effet == "vitesse-":
                             cible.vitesse -= 1
-                            print(f"La vitesse de {cible.nom} a baissée!")
+                            print(f"{cible.nom}'s speed has decreased!")
                             all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
 
                         elif attaque.effet == "defense-":
                             cible.defense -= 1
-                            print(f"La défense de {cible.nom} a baissée!")
+                            print(f"{cible.nom}'s defense has decreased!")
         
             else:
-                print("L'attaque a manqué sa cible...")
+                print("The attack missed!")
 
         if self.brule:
             self.pv -= self.pvmax // 16
-            print(f"{self.nom} est brulé! Il perd \x1b[31m{self.pvmax // 16} PV\x1b[0m.")
+            print(f"{self.nom} is burned! It loses \x1b[31m{self.pvmax // 16} HP\x1b[0m.")
 
         if self.poison:
             self.pv -= self.pvmax // 8
-            print(f"{self.nom} est empoisonné! Il perd \x1b[31m{self.pvmax // 8} PV\x1b[0m.")
+            print(f"{self.nom} is poisoned! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
 
         if self.endormi:
             if random.randint(0, 100) <= 25:
                 self.endormi = False
-                print(f"{self.nom} s'est réveillé!")
+                print(f"{self.nom} woke up!")
             else:
-                print(f"{self.nom} dort et ne peut pas attaquer!")
+                print(f"{self.nom} is asleep and can't attack!")
 
         if self.maudit:
             self.pv -= self.pvmax // 8
-            print(f"{self.nom} est maudit! Il perd \x1b[31m{self.pvmax // 8} PV\x1b[0m.")
+            print(f"{self.nom} is cursed! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
 
         if cible.pv == 0:
-            print(f"\x1b[31m{cible.nom} est KO.\x1b[0m")
+            print(f"\x1b[31m{cible.nom} is knocked out!\x1b[0m")
         else:
-            print(f"Il reste \x1b[m{cible.pv} PV\x1b[0m à {cible.nom}.")
+            print(f"{cible.nom} has \x1b[31m{cible.pv} HP left\x1b[0m.")
         
     def __add__(self, pvs):
         """
-        Ajoute la valeur donnee à l'attribut `pv`.
+        adds the value of `pvs` to the current `pv` attribute.
         
-        Parametres:
-            pvs (int): La valeur à ajouter à `pv`.
+        takes:
+            pvs (int): the value to add to `pv`.
         
-        Renvoie:
-            Aucun
+        Returns :
+            None
         """
         self.pv += pvs
         
     def __sub__(self, pvs):
         """
-        Soustrait la valeur de `pvs` à l'attribut `pv` actuel.
+        subtracts the value of `pvs` to the current `pv` attribute.
         
-        Parametres :
-            pvs (int) : La valeur à soustraire à `pv`.
+        takes :
+            pvs (int) : the value to subtract to `pv`.
         
-        Renvoie :
+        Returns :
             None
         """
         self.pv -= pvs
@@ -384,4 +383,7 @@ Aquali = Pokemon('Aquali', 130, 65, 65, 60, 'eau')
 Mew = Pokemon('Mew', 100, 100, 100, 100, 'psy')
 Raikou = Pokemon('Raikou', 90, 85, 115, 75, 'electrique')
 Artikodin = Pokemon('Artikodin', 90, 85, 85, 100, 'glace')
-all_pokemon = [Pikachu, Carapuce, Salameche, Bulbizarre, Chuchmur, Obalie, Meditikka, Papinox, Chamallot, Tylton, Tarsal, Munja, Relicanth, Tenefix, Draby, Medhyena, Terhal, Azurill, Groudon, Raichu, Tortank, Dracaufeu, Florizarre, Ronflex, Lokhlass, Mackogneur, Nidoking, Rhinoferos, Ptera, Alakazam, Sarmuraï, Tyranocif, Metamorph, Flagadoss, Leuphorie, Rayquaza, Noctali, Registeel, Magicarpe, Aquali, Mew, Raikou, Artikodin]
+all_pokemon = [Pikachu, Carapuce, Salameche, Bulbizarre, Chuchmur, Obalie, Meditikka, Papinox, Chamallot, Tylton, Tarsal, Munja, Relicanth,
+                Tenefix, Draby, Medhyena, Terhal, Azurill, Groudon, Raichu, Tortank, Dracaufeu, Florizarre, Ronflex, Lokhlass, Mackogneur,
+                  Nidoking, Rhinoferos, Ptera, Alakazam, Sarmuraï, Tyranocif, Metamorph, Flagadoss, Leuphorie, Rayquaza, Noctali, Registeel,
+                    Magicarpe, Aquali, Mew, Raikou, Artikodin]
