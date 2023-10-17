@@ -26,7 +26,7 @@ class Player:
             if attack.effect:
                 print(f"Effect: {attack.effect} ; Probability: {attack.effect_probability}%")
 
-        choice = int(input("Enter the attack number: ") - 1
+        choice = int(input("Enter the attack number: ")) - 1
         if 0 <= choice < len(self.pokemon.attacks):
             return self.pokemon.attacks[choice]
         else:
@@ -79,7 +79,7 @@ def battle_loop(all_pokemon, player=None):
                             print(f"{i + 1}. {pokemon.name}")
 
                     # Ask the player to choose a target
-                    target_choice = int(input("Enter the target number: ") - 1
+                    target_choice = int(input("Enter the target number: ")) - 1
                     print("\n")
                     if 0 <= target_choice < len(all_pokemon) and all_pokemon[target_choice].is_alive() and all_pokemon[target_choice] != player.pokemon:
                         opponent = all_pokemon[target_choice]
@@ -92,7 +92,7 @@ def battle_loop(all_pokemon, player=None):
                 elif player_choice == "2":
                     # Player chooses to use a potion
                     print(f"Choose a potion:\n0. Potion ({player.potion})\n1. Super Potion ({player.superpotion})\n2. Max Potion ({player.potionmax})\n")
-                    potion_choice = int(input("Enter the potion number: ")
+                    potion_choice = int(input("Enter the potion number: "))
                     player.use_potion(player.pokemon, potion_choice)
                     current_turn += 1
 
@@ -147,6 +147,7 @@ def battle_loop(all_pokemon, player=None):
         print("There is no winning Pokémon.")
 
 def choose_pokemon():
+    global all_pokemon
     print("Choose a Pokémon from the following:")
     for i, pokemon in enumerate(all_pokemon):
         print(f"{i + 1}. {pokemon.name}")
@@ -154,7 +155,7 @@ def choose_pokemon():
     choice = None
     while choice is None:
         try:
-            choice = int(input("Enter the number of the Pokémon you want: ") - 1
+            choice = int(input("Enter the number of the Pokémon you want: ")) - 1
             if choice < 0 or choice >= len(all_pokemon):
                 print("Invalid Pokémon number. Try again.")
                 choice = None
@@ -169,7 +170,7 @@ def choose_pokemon():
 def number_of_opponents():
     global all_pokemon
     print(f"Set the number of opponent Pokémons:")
-    choice = int(input(f"Choose a number between 3 and {len(all_pokemon)}: ")
+    choice = int(input(f"Choose a number between 3 and {len(all_pokemon)}: "))
     if choice >= 3:
         for i in range(0, len(all_pokemon) - choice):
             opponent = random.choice(all_pokemon)
