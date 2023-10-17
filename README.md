@@ -4,7 +4,7 @@ Pokémon Battle Simulator
 
 ## Description
 
-The Pokémon Battle Game is a text-based game that allows players to choose their Pokémon and engage in battles against CPU-controlled opponents. It's a fun and nostalgic recreation of Pokémon battles, even if it's not really finished yet.
+The Pokémon Battle Simulator is a text-based game that allows players to choose their Pokémon and engage in battles against CPU-controlled opponents. It's a fun and nostalgic recreation of Pokémon battles, even if it's not really finished yet.
 
 ## Installation
 
