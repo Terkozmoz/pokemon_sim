@@ -21,14 +21,14 @@ class Player:
 
     def choose_attack(self):
         print("Choose an attack:")
-        for i, attack in enumerate(self.pokemon.attacks):
-            print(f"{i + 1}. {attack.name} ;\n Power: {attack.power} Accuracy: {attack.accuracy}")
-            if attack.effect:
-                print(f"Effect: {attack.effect} ; Probability: {attack.effect_probability}%")
+        for i, attack in enumerate(self.pokemon.attaques):
+            print(f"{i + 1}. {attack.nom} ;\n Power: {attack.puissance} Accuracy: {attack.precision}")
+            if attack.effet:
+                print(f"Effect: {attack.effet} ; Probability: {attack.effet_proba}%")
 
         choice = int(input("Enter the attack number: ")) - 1
-        if 0 <= choice < len(self.pokemon.attacks):
-            return self.pokemon.attacks[choice]
+        if 0 <= choice < len(self.pokemon.attaques):
+            return self.pokemon.attaques[choice]
         else:
             print("Invalid choice. Try again.")
             return self.choose_attack()
@@ -36,15 +36,15 @@ class Player:
     def use_potion(self, target, potion_choice):
         if potion_choice == 0 and self.potion >= 1:
             self.potion -= 1
-            target.drink_potion(20)
+            target.BoitPotion(20)
             print(f"You have {self.potion} Potions remaining")
         elif potion_choice == 1 and self.superpotion >= 1:
             self.superpotion -= 1
-            target.drink_potion(50)
+            target.BoitPotion(50)
             print(f"You have {self.superpotion} Super Potions remaining")
         elif potion_choice == 2 and self.potionmax >= 1:
             self.potionmax -= 1
-            target.drink_max_potion()
+            target.BoitPotionMax()
             print(f"You have {self.potionmax} Max Potions remaining")
         else:
             print("Invalid potion type.")
@@ -53,37 +53,37 @@ class Player:
 def battle_loop(all_pokemon, player=None):
     current_turn = 1
     healed_pokemon = []
-    all_pokemon.sort(key=lambda x: x.speed, reverse=True)
+    all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
     player_turn = all_pokemon.index(player.pokemon) + 1
 
     def all_pokemon_fainted():
-        alive_pokemon = [pokemon for pokemon in all_pokemon if pokemon.is_alive()]
+        alive_pokemon = [pokemon for pokemon in all_pokemon if pokemon.est_vivant()]
         return len(alive_pokemon) == 1
 
     while True:
         print("\n")
         if current_turn == player_turn:
-            if player.pokemon.hp > 0:
+            if player.pokemon.pv > 0:
                 # Player's turn
-                print(f"You have {player.pokemon.hp}/{player.pokemon.max_hp} HP")
+                print(f"You have {player.pokemon.pv}/{player.pokemon.pvmax} HP")
                 player_choice = input("Choose an action for your Pokémon:\n1. Attack\n2. Use a Potion\n3. Skip Turn\n4. Flee: ")
 
                 if player_choice == "1":
                     # Player chooses to attack
                     attack_player = player.choose_attack()
-                    print(f"Choose a target for the attack {attack_player.name}:")
+                    print(f"Choose a target for the attack {attack_player.nom}:")
 
                     # Display target options
                     for i, pokemon in enumerate(all_pokemon):
-                        if pokemon != player.pokemon and pokemon.is_alive():
-                            print(f"{i + 1}. {pokemon.name}")
+                        if pokemon != player.pokemon and pokemon.est_vivant():
+                            print(f"{i + 1}. {pokemon.nom}")
 
                     # Ask the player to choose a target
                     target_choice = int(input("Enter the target number: ")) - 1
                     print("\n")
-                    if 0 <= target_choice < len(all_pokemon) and all_pokemon[target_choice].is_alive() and all_pokemon[target_choice] != player.pokemon:
+                    if 0 <= target_choice < len(all_pokemon) and all_pokemon[target_choice].est_vivant() and all_pokemon[target_choice] != player.pokemon:
                         opponent = all_pokemon[target_choice]
-                        player.pokemon.attack(opponent, attack_player)
+                        player.pokemon.Attaque(opponent, attack_player)
                         current_turn += 1
                     else:
                         print("Invalid target choice. The attack failed.")
@@ -111,23 +111,23 @@ def battle_loop(all_pokemon, player=None):
         else:
             current_pokemon = all_pokemon[current_turn - 1]
 
-            if current_pokemon.is_alive() and current_pokemon != player.pokemon:
+            if current_pokemon.est_vivant() and current_pokemon != player.pokemon:
                 # Variable to track if a significant change has occurred
 
                 # Find a random living Pokémon target
-                if current_pokemon not in healed_pokemon and current_pokemon.hp < current_pokemon.max_hp - 10 and random.randint(1, 5) == 1:
-                    # The Pokémon has a 1 in 5 chance of healing by 10 HP
+                if current_pokemon not in healed_pokemon and current_pokemon.pv < current_pokemon.pvmax - 10 and random.randint(1, 5) == 1:
+                    # The Pokémon has a 1 in 5 chance of healing by 10 pv
                     if random.randint(1, 10) == 1:
                         # The Pokémon has a 1 in 10 chance of using a max potion
-                        current_pokemon.drink_max_potion()
+                        current_pokemon.BoitPotionMax()
                         healed_pokemon.append(current_pokemon)
-                    current_pokemon.drink_potion(10)
+                    current_pokemon.BoitPotion(10)
                     healed_pokemon.append(current_pokemon)
                 else:
-                    available_targets = [pokemon for pokemon in all_pokemon if pokemon.is_alive() and pokemon != current_pokemon]
+                    available_targets = [pokemon for pokemon in all_pokemon if pokemon.est_vivant() and pokemon != current_pokemon]
                     if available_targets:
                         target = random.choice(available_targets)
-                        current_pokemon.attack(target, current_pokemon.choose_attack())
+                        current_pokemon.Attaque(target, current_pokemon.choisir_attaque())
 
             current_turn = (current_turn + 1) % len(all_pokemon)
 
@@ -136,9 +136,9 @@ def battle_loop(all_pokemon, player=None):
                 print("The battle is over.")
                 break
 
-    winner = [pokemon for pokemon in all_pokemon if pokemon.is_alive()]
+    winner = [pokemon for pokemon in all_pokemon if pokemon.est_vivant()]
     if winner and len(winner) == 1:
-        print(f"The winning Pokémon is: {winner[0].name}")
+        print(f"The winning Pokémon is: {winner[0].nom}")
         if winner[0] == player.pokemon:
             print("\033[93mYou won the battle!\033[0m")
         else:
@@ -150,7 +150,7 @@ def choose_pokemon():
     global all_pokemon
     print("Choose a Pokémon from the following:")
     for i, pokemon in enumerate(all_pokemon):
-        print(f"{i + 1}. {pokemon.name}")
+        print(f"{i + 1}. {pokemon.nom}")
 
     choice = None
     while choice is None:
@@ -163,7 +163,7 @@ def choose_pokemon():
             print("Please enter a valid number.")
 
     chosen_pokemon = all_pokemon[choice]
-    print(f"You chose {chosen_pokemon.name}!")
+    print(f"You chose {chosen_pokemon.nom}!")
 
     return chosen_pokemon
 
@@ -189,6 +189,6 @@ if __name__ == '__main__':
     all_pokemon = pkms.all_pokemon
     number_of_opponents()
     player = Player(choose_pokemon())
-    all_pokemon.sort(key=lambda x: x.speed, reverse=True)
+    all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
     play_music()
     battle_loop(all_pokemon, player)
