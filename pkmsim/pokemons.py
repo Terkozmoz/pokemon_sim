@@ -67,14 +67,14 @@ class Pokemon:
         'fee': {'combat': 2, 'dragon': 2, 'tenebres': 0.5, 'feu': 0.5, 'poison': 0.5, 'acier': 0.5}
     }
         
-    def learn_attack(self, attack):
+    def Learn_attack(self, attack):
         if len(self.attaques) < 4 and attack not in self.attaques:
             self.attaques.append(attack)
             print(f"{self.nom} has learned {attack.nom}!")
         else:
             print(f"{self.nom} can't learn {attack.nom}!")
     
-    def est_vivant(self):
+    def Est_vivant(self):
         """
         Check if the Pokemon is alive.
 
@@ -103,7 +103,7 @@ class Pokemon:
         print(f"{self.nom} has \x1b[32m{self.pv} HP\x1b[0m.")
         return self.pv
     
-    def choisir_attaque(self):
+    def Choisir_attaque(self):
         attaque = random.choice(self.attaques)
         return attaque
 
@@ -272,12 +272,18 @@ class Pokemon:
                 print("The attack missed!")
 
         if self.brule:
-            self.pv -= self.pvmax // 16
-            print(f"{self.nom} is burned! It loses \x1b[31m{self.pvmax // 16} HP\x1b[0m.")
+            self.pv -= self.pvmax // 8
+            print(f"{self.nom} is burned! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
+            if random.randint(0, 100) <= 25:
+                self.brule = False
+                print(f"{self.nom} is no longer burned!")
 
         if self.poison:
             self.pv -= self.pvmax // 8
             print(f"{self.nom} is poisoned! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
+            if random.randint(0, 100) <= 25:
+                self.poison = False
+                print(f"{self.nom} is no longer poisoned!")
 
         if self.endormi:
             if random.randint(0, 100) <= 25:
@@ -287,8 +293,8 @@ class Pokemon:
                 print(f"{self.nom} is asleep and can't attack!")
 
         if self.maudit:
-            self.pv -= self.pvmax // 8
-            print(f"{self.nom} is cursed! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
+            self.pv -= self.pvmax // 16
+            print(f"{self.nom} is cursed! It loses \x1b[31m{self.pvmax // 16} HP\x1b[0m.")
 
         if cible.pv == 0:
             print(f"\x1b[31m{cible.nom} is knocked out!\x1b[0m")
