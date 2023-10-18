@@ -230,5 +230,5 @@ fairy_attaques = [
     Attaque("Vent Féerique", 40, 100, "fee"),
     Attaque("Voix Enjôleuse", 40, 100, "fee"),
     Attaque("Champ Brumeux", 0, 100, "fee", "attaque+", 100),
-    Attaque("Dodo-Dodo", 0, 100, "fee", "sleep", 100),
+    Attaque("Berceuse", 0, 100, "normal", "sleep", 100),
 ]
