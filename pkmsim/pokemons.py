@@ -246,31 +246,31 @@ class Pokemon:
                             # Stats +
 
                             elif attaque.effet == "attaque+":
-                                self.attaque += 1
+                                self.attaque += 10
                                 print(f"{self.nom}'s attack has increased!")
                             
                             elif attaque.effet == "vitesse+":
-                                self.vitesse += 1
+                                self.vitesse += 3
                                 print(f"{self.nom}'s speed has increased!")
                                 all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
 
                             elif attaque.effet == "defense+":
-                                self.defense += 1
+                                self.defense += 10
                                 print(f"{self.nom}'s defense has increased!")
 
                             # Stats -
 
                             elif attaque.effet == "attaque-":
-                                cible.attaque -= 1
+                                cible.attaque -= 10
                                 print(f"{cible.nom}'s attack has decreased!")
 
                             elif attaque.effet == "vitesse-":
-                                cible.vitesse -= 1
+                                cible.vitesse -= 3
                                 print(f"{cible.nom}'s speed has decreased!")
                                 all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
 
                             elif attaque.effet == "defense-":
-                                cible.defense -= 1
+                                cible.defense -= 10
                                 print(f"{cible.nom}'s defense has decreased!")
         
             else:
