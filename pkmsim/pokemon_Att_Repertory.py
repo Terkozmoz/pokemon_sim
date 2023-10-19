@@ -27,6 +27,7 @@ electric_attaques = [
     Attaque("Élecanon", 120, 50, "electrique", "paralyse", 100),
     Attaque("Rayon Chargé", 50, 90, "electrique", "attaque+", 70),
     Attaque("Coup d'Jus", 90, 85, "electrique", "paralyse", 30),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Feu"
@@ -39,6 +40,7 @@ fire_attaques = [
     Attaque("Pied Brûleur", 85, 90, "feu", "burn", 10),
     Attaque("Feu d'Enfer", 100, 50, "feu", "burn", 100),
     Attaque("Nitrocharge", 50, 100, "feu", "vitesse+", 10),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Eau"
@@ -51,6 +53,7 @@ water_attaques = [
     Attaque("Ébullition", 80, 100, "eau", "burn", 30),
     Attaque("Tourbillon", 35, 85, "eau"),
     Attaque("Saumure", 65, 100, "eau"),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Plante"
@@ -63,6 +66,7 @@ grass_attaques = [
     Attaque("Bomb-Graine", 80, 100, "plante"),
     Attaque("Mégafouet", 120, 85, "plante"),
     Attaque("Giga-Sangsue", 80, 100, "plante"),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Normal"
@@ -88,6 +92,8 @@ ice_attaques = [
     Attaque("Souffle Glacé", 60, 90, "glace", "freeze", 10),
     Attaque("Poing Glace", 75, 100, "glace"),
     Attaque("Lyophilisation", 70, 90, "glace", "freeze", 10),
+    Attaque("Glaciation", 0, 30, "glace", "onehit", 100),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Combat"
@@ -99,6 +105,7 @@ fighting_attaques = [
     Attaque("Close Combat", 120, 80, "combat"),
     Attaque("Surpuissance", 120, 90, "combat"),
     Attaque("Frappe Atlas", 150, 100, "combat"),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Poison"
@@ -111,6 +118,7 @@ poison_attaques = [
     Attaque("Poison-Croix", 70, 100, "poison"),
     Attaque("Pics Toxik", 20, 100, "poison"),
     Attaque("Giclé-Toxique", 120, 70, "poison"),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Sol"
@@ -122,7 +130,8 @@ ground_attaques = [
     Attaque("Tunnelier", 80, 95, "sol"),
     Attaque("Piétisol", 60, 100, "sol"),
     Attaque("Tourbi-Sable", 35, 85, "sol"),
-    Attaque("Charge Magma", 95, 95, "sol", "burn", 30),
+    Attaque("Charge Magma", 95, 95, "feu", "burn", 30),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Vol"
@@ -134,7 +143,8 @@ flying_attaques = [
     Attaque("Piqué", 120, 100, "vol"),
     Attaque("Atterisage", 0, 100, "vol", "heal", 50),
     Attaque("Tranch'Air", 75, 95, "vol"),
-    Attaque("Anti-Brume", 0, 100, "vol", "defance+", 100),
+    Attaque("Anti-Brume", 0, 100, "vol", "defense+", 100),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Psy"
@@ -147,6 +157,7 @@ psychic_attaques = [
     Attaque("Prescience", 120, 100, "psy"),
     Attaque("Coup d'Boule", 80, 90, "normal"),
     Attaque("Tranche-Psy", 70, 100, "psy"),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Insecte"
@@ -159,6 +170,7 @@ bug_attaques = [
     Attaque("Change Éclair", 70, 100, "insecte"),
     Attaque("Rayon Signal", 75, 100, "insecte"),
     Attaque("Piège de Venin", 20, 100, "insecte", "poison", 100),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Roche"
@@ -167,10 +179,11 @@ rock_attaques = [
     Attaque("Tranche Pierre", 100, 80, "roche"),
     Attaque("Jet-Pierres", 50, 90, "roche"),
     Attaque("Poliroche", 0, 100, "roche", "vitesse+", 100),
-    Attaque("Frappe Atlas", 150, 80, "roche"),
+    Attaque("Frappe Atlas", 150, 80, "combat"),
     Attaque("Anti-Air", 50, 100, "roche"),
     Attaque("Roulade", 30, 90, "roche"),
-    Attaque("Gyroballe", 80, 100, "roche"),
+    Attaque("Gyroballe", 80, 100, "acier", "vitesse-", 100),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Spectre"
@@ -178,11 +191,12 @@ ghost_attaques = [
     Attaque("Ball'Ombre", 80, 100, "spectre"),
     Attaque("Ombre Nocturne", 0, 100, "spectre", "sleep", 100),
     Attaque("Malédiction", 0, 100, "spectre", "maudis", 100),
-    Attaque("Léchouille", 20, 100, "spectre"),
+    Attaque("Léchouille", 20, 100, "spectre", "paralyse", 30),
     Attaque("Châtiment", 65, 100, "spectre"),
-    Attaque("Vent Mauvais", 60, 100, "spectre"),
+    Attaque("Vent Mauvais", 60, 100, "poison"),
     Attaque("Hantise", 90, 100, "spectre"),
     Attaque("Poing Ombre", 60, 100, "spectre"),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Ténèbres"
@@ -191,22 +205,24 @@ dark_attaques = [
     Attaque("Poursuite", 40, 100, "tenebres"),
     Attaque("Dark Pulse", 95, 100, "tenebres"),
     Attaque("Vol-vie", 60, 100, "tenebres"),
-    Attaque("Mâchouille", 80, 100, "tenebres"),
+    Attaque("Mâchouille", 80, 100, "tenebres","confus", 30),
     Attaque("Coup Bas", 70, 100, "tenebres"),
-    Attaque("Hurlement", 55, 95, "tenebres"),
-    Attaque("Baston", 10, 100, "tenebres"),
+    Attaque("Hurlement", 55, 95, "tenebres", "vitesse-", 100),
+    Attaque("Baston", 10, 100, "tenebres","defense+", 100),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Dragon"
 dragon_attaques = [
     Attaque("Dracogriffe", 80, 100, "dragon"),
     Attaque("Dracosouffle", 40, 100, "dragon"),
-    Attaque("Colère", 120, 100, "dragon"),
+    Attaque("Colère", 120, 100, "dragon", "attaque+", 50),
     Attaque("Dracosouffle", 60, 100, "dragon"),
     Attaque("Danse Draco", 0, 100, "dragon", "attaque+", 100),
     Attaque("Tornade", 40, 100, "dragon"),
     Attaque("Dracocharge", 100, 75, "dragon"),
     Attaque("Draco Météore", 130, 90, "dragon"),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Acier"
@@ -217,8 +233,9 @@ steel_attaques = [
     Attaque("Tête de Fer", 80, 100, "acier"),
     Attaque("Aile d'Acier", 70, 90, "acier"),
     Attaque("Poliroche", 0, 100, "acier", "vitesse+", 100),
-    Attaque("Gyroballe", 0, 100, "acier", "vitesse-", 100),
+    Attaque("Gyroballe", 80, 100, "acier", "vitesse-", 100),
     Attaque("Éclat Magique", 90, 90, "acier"),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
 
 # Attaques pour le type "Fee"
@@ -231,4 +248,5 @@ fairy_attaques = [
     Attaque("Voix Enjôleuse", 40, 100, "fee"),
     Attaque("Champ Brumeux", 0, 100, "fee", "attaque+", 100),
     Attaque("Berceuse", 0, 100, "normal", "sleep", 100),
+    Attaque("Abri", 0, 100, "normal", "abri", 100),
 ]
