@@ -1,6 +1,6 @@
 # Pokemon_Main.py
 # made by @Terkozmoz (github)
-# 2023-10-18
+# 2023-10-19
 # Music by @Bliitzit (Youtube)
 # 2020-06-27
 
@@ -53,7 +53,7 @@ def battle_loop(all_pokemon, player=None):
     current_turn = 1
     healed_pokemon = []
     all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
-    player_turn = all_pokemon.index(player.pokemon) + 1
+    player_turn = all_pokemon.index(player.pokemon)
 
     def all_pokemon_fainted():
         alive_pokemon = [pokemon for pokemon in all_pokemon if pokemon.Est_vivant()]
@@ -63,6 +63,8 @@ def battle_loop(all_pokemon, player=None):
         print("\n")
         if current_turn == player_turn:
             if player.pokemon.pv > 0:
+                if player.pokemon.statut:
+                    print(f"Your Pokémon is {player.pokemon.statut}!")
                 # Player's turn
                 print(f"You have {player.pokemon.pv}/{player.pokemon.pvmax} HP")
                 player_choice = input("Choose an action for your Pokémon:\n1. Attack\n2. Use a Potion\n3. Skip Turn\n4. Flee: ")
@@ -108,7 +110,7 @@ def battle_loop(all_pokemon, player=None):
                 current_turn += 1
 
         else:
-            current_pokemon = all_pokemon[current_turn - 1]
+            current_pokemon = all_pokemon[current_turn]
 
             if current_pokemon.Est_vivant() and current_pokemon != player.pokemon:
                 # Variable to track if a significant change has occurred
