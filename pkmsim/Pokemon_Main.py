@@ -171,8 +171,8 @@ def choose_pokemon():
 def number_of_opponents():
     global all_pokemon
     print(f"Set the number of opponent Pokémons:")
-    choice = int(input(f"Choose a number between 3 and {len(all_pokemon)}: "))
-    if choice >= 3:
+    choice = int(input(f"Choose a number between 4 and {len(all_pokemon)}: "))
+    if len(all_pokemon) >= choice >= 4:
         for i in range(0, len(all_pokemon) - choice):
             opponent = random.choice(all_pokemon)
             all_pokemon.remove(opponent)
