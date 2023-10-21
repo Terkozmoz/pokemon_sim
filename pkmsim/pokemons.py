@@ -1,6 +1,7 @@
 # pokemons.py
 import pokemon_Att_Repertory as att
 import random
+import pygame
 class Pokemon:
     def __init__(self, nom, pvmax, Att, Vitesse,Def, Type):
         """
@@ -23,7 +24,7 @@ class Pokemon:
         self.pv = self.calculate_hp()
         self.pvmax = self.pv
         self.attaques = self.generer_attaques_aleatoires()
-        self.statut = False
+        self.statut = None
         # pokemon's status
         self.paralyse = False
         self.brule = False
@@ -189,7 +190,7 @@ class Pokemon:
                         
                         a = random.randint(0, 100)
                         if a <= attaque.effet_proba:
-                            if cible.statut == False:
+                            if cible.statut == None:
 
                                 # Negatives
 
@@ -201,7 +202,7 @@ class Pokemon:
                                 
                                 elif attaque.effet == "burn":
                                     cible.brule = True
-                                    cible.statut = True
+                                    cible.statut = "burned"
                                     print(f"\x1b[31m{cible.nom} is burned!\x1b[0m")
                                 
                                 elif attaque.effet == "poison":
@@ -281,18 +282,23 @@ class Pokemon:
             print(f"{self.nom} is burned! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
             if random.randint(0, 100) <= 25:
                 self.brule = False
+                self.statut = None
                 print(f"{self.nom} is no longer burned!")
+            print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
 
         if self.poison:
             self.pv -= self.pvmax // 8
             print(f"{self.nom} is poisoned! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
             if random.randint(0, 100) <= 25:
                 self.poison = False
+                self.statut = None
                 print(f"{self.nom} is no longer poisoned!")
+            print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
 
         if self.endormi:
             if random.randint(0, 100) <= 25:
                 self.endormi = False
+                self.statut = None
                 print(f"{self.nom} woke up!")
             else:
                 print(f"{self.nom} is asleep and can't attack!")
@@ -300,6 +306,7 @@ class Pokemon:
         if self.freeze:
             if random.randint(0, 100) <= 25:
                 self.freeze = False
+                self.statut = None
                 print(f"{self.nom} is no longer frozen!")
             else:
                 print(f"{self.nom} is frozen and can't attack!")
@@ -307,6 +314,7 @@ class Pokemon:
         if self.maudit:
             self.pv -= self.pvmax // 16
             print(f"{self.nom} is cursed! It loses \x1b[31m{self.pvmax // 16} HP\x1b[0m.")
+            print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
 
         if cible.pv == 0:
             print(f"\x1b[31m{cible.nom} is knocked out!\x1b[0m")
@@ -336,6 +344,46 @@ class Pokemon:
             None
         """
         self.pv -= pvs
+
+def play_music(i=0):
+    choix = input("Do you want to play music? (y/n) ")
+    if choix == "y":
+        pygame.mixer.music.play(-1)
+    elif choix == "maybe":
+        print("You're not very decisive, are you?")
+        play_music(i+1)
+    elif choix == "secret":
+        print("You found a secret! You can now choose the music you want to play!")
+        choix = input("Enter the path of the music you want to play: ")
+        pygame.mixer.music.load(choix)
+    elif choix == "n":
+        print("You're no fun...")
+    elif choix == "yes":
+        print("You found a secret music!")
+        pygame.mixer.music.load("assets\\theme\\battle_theme_alt.mp3")
+        play_music(i+1)
+    elif i == 10:
+        print("are you really gonna keep trying?")
+        play_music(i+1)
+    elif i == 20:
+        print("You're really stubborn, aren't you?")
+        play_music(i+1)
+    elif i == 30:
+        print("You're not gonna give up, are you?")
+        play_music(i+1)
+    elif i == 40:
+        print("You're really persistent...")
+        play_music(i+1)
+    elif i == 50:
+        print("just play the game already...")
+        play_music(i+1)
+    elif i == 60:
+        print("You're really annoying...")
+        print("I'm gonna stop you right there")
+        exit()
+    else:
+        print("invalid choice. Try again.")
+        play_music(i+1)
 
 attaques_par_type = {
     "electrique": att.electric_attaques,
@@ -401,7 +449,8 @@ Aquali = Pokemon('Aquali', 130, 65, 65, 60, 'eau')
 Mew = Pokemon('Mew', 100, 100, 100, 100, 'psy')
 Raikou = Pokemon('Raikou', 90, 85, 115, 75, 'electrique')
 Artikodin = Pokemon('Artikodin', 90, 85, 85, 100, 'glace')
+Sulfura = Pokemon('Sulfura', 90, 85, 85, 75, 'feu')
 all_pokemon = [Pikachu, Carapuce, Salameche, Bulbizarre, Chuchmur, Obalie, Meditikka, Papinox, Chamallot, Tylton, Tarsal, Munja, Relicanth,
                 Tenefix, Draby, Medhyena, Terhal, Azurill, Groudon, Raichu, Tortank, Dracaufeu, Florizarre, Ronflex, Lokhlass, Mackogneur,
                   Nidoking, Rhinoferos, Ptera, Alakazam, Sarmuraï, Tyranocif, Metamorph, Flagadoss, Leuphorie, Rayquaza, Noctali, Registeel,
-                    Magicarpe, Aquali, Mew, Raikou, Artikodin]
+                    Magicarpe, Aquali, Mew, Raikou, Artikodin, Sulfura ]
