@@ -1,7 +1,7 @@
 # Pokemon_Main.py
 # made by @Terkozmoz (github)
-# 2023-10-19
-# Music by @Bliitzit (Youtube)
+# 2023-10-21
+# Musics by @Bliitzit (Youtube)
 # 2020-06-27
 
 import random
@@ -68,11 +68,12 @@ def battle_loop(all_pokemon, player=None):
                 # Player's turn
                 print(f"You have {player.pokemon.pv}/{player.pokemon.pvmax} HP")
                 player_choice = input("Choose an action for your Pokémon:\n1. Attack\n2. Use a Potion\n3. Skip Turn\n4. Flee: ")
+                print("\n")
 
                 if player_choice == "1":
                     # Player chooses to attack
                     attack_player = player.Choisir_attaque()
-                    print(f"Choose a target for the attack {attack_player.nom}:")
+                    print(f"\n Choose a target for the attack {attack_player.nom}:")
 
                     # Display target options
                     for i, pokemon in enumerate(all_pokemon):
@@ -180,9 +181,45 @@ def number_of_opponents():
         print("Invalid choice.")
         number_of_opponents()
 
-def play_music():
-    if input("Do you want to play music? (y/n) ") == "y":
+def play_music(i=0):
+    choix = input("Do you want to play music? (y/n) ")
+    if choix == "y":
         pygame.mixer.music.play(-1)
+    elif choix == "maybe":
+        print("You're not very decisive, are you?")
+        play_music(i+1)
+    elif choix == "secret":
+        print("You found a secret! You can now choose the music you want to play!")
+        choix = input("Enter the path of the music you want to play: ")
+        pygame.mixer.music.load(choix)
+    elif choix == "n":
+        print("You're no fun...")
+    elif choix == "yes":
+        print("You found a secret music!")
+        pygame.mixer.music.load("assets\\theme\\battle_theme_alt.mp3")
+        play_music(i+1)
+    if i == 10:
+        print("are you really gonna keep trying?")
+        play_music(i+1)
+    elif i == 20:
+        print("You're really stubborn, aren't you?")
+        play_music(i+1)
+    elif i == 30:
+        print("You're not gonna give up, are you?")
+        play_music(i+1)
+    elif i == 40:
+        print("You're really persistent...")
+        play_music(i+1)
+    elif i == 50:
+        print("just play the game already...")
+        play_music(i+1)
+    elif i == 60:
+        print("You're really annoying...")
+        print("I'm gonna stop you right there")
+        exit()
+    else:
+        print("invalid choice. Try again.")
+        play_music(i+1)
 
 if __name__ == '__main__':
     # Create Pokémons and add them to the list
