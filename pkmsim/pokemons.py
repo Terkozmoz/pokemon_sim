@@ -132,8 +132,8 @@ class Pokemon:
         if self.statut == "abri":
             self.abri = False
             print(f"{self.nom}'s protection has disappeared!")
-        if self.statut == "asleep":
-            if self.statut == "frozen":
+        if self.statut != "asleep":
+            if self.statut != "frozen":
 
                 if self.statut == "confused":
                     print(f"{self.nom} is confused...")
