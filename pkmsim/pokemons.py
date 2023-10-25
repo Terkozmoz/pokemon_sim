@@ -180,8 +180,7 @@ class Pokemon:
 
                     print(f"{efficacite_message} {self.nom} deals \x1b[31m{degats} HP\x1b[0m to {cible.nom}.")
 
-                    # Maxes sure the Pokemon doesn't go below 0 HP
-                    cible.pv = max(cible.pv - degats, 0)
+                    cible.pv -= degats
 
                     # Applies the effect of the attack
 
@@ -315,6 +314,9 @@ class Pokemon:
             self.pv -= self.pvmax // 16
             print(f"{self.nom} is cursed! It loses \x1b[31m{self.pvmax // 16} HP\x1b[0m.")
             print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
+        
+        if self.pv == 0:
+            print(f"\x1b[31m{self.nom} is knocked out!\x1b[0m")
 
         if cible.pv == 0:
             print(f"\x1b[31m{cible.nom} is knocked out!\x1b[0m")
@@ -344,6 +346,8 @@ class Pokemon:
             None
         """
         self.pv -= pvs
+        if self.pv <= 0:
+            self.pv = 0
 
 def play_music(i=0):
     choix = input("Do you want to play music? (y/n) ")
