@@ -25,15 +25,6 @@ class Pokemon:
         self.pvmax = self.pv
         self.attaques = self.generer_attaques_aleatoires()
         self.statut = None
-        # pokemon's status
-        self.paralyse = False
-        self.brule = False
-        self.poison = False
-        self.endormi = False
-        self.confus = False
-        self.maudit = False
-        self.freeze = False
-        self.abri = False
 
     def generer_attaques_aleatoires(self):
         # Select 4 random attacks from the list of attacks available for this type of Pokemon
@@ -138,13 +129,13 @@ class Pokemon:
     def Attaque(self, cible, attaque):
         global place
         global pokemon_order
-        if self.abri == True:
+        if self.statue == "abri":
             self.abri = False
             print(f"{self.nom}'s protection has disappeared!")
-        if self.endormi == False:
-            if self.freeze == False:
+        if self.statut == "asleep":
+            if self.statut == "frozen":
 
-                if self.confus == True:
+                if self.statut == "confused":
                     print(f"{self.nom} is confused...")
                     p = random.randint(0, 100)
                     if p <= 50:
@@ -152,7 +143,7 @@ class Pokemon:
                         self.pv -= self.pvmax // 8
                         print(f"{self.nom} loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
                         return
-                if self.paralyse == True:
+                if self.statut == "paralyzed":
                     print(f"{self.nom} is paralyzed...")
                     p = random.randint(0, 100)
                     if p <= 25:
@@ -163,8 +154,8 @@ class Pokemon:
                     efficacite = self.Typing(cible)
                     degats = attaque.calculer_degats(self, cible, efficacite)
 
-                    if cible.abri == True:
-                        cible.abri = False
+                    if cible.statut == "abri":
+                        cible.statut = False
                         print(f"{cible.nom} used its protection and avoided the attack!")
                         degats = 0
                         efficacite = 1
@@ -194,38 +185,31 @@ class Pokemon:
                                 # Negatives
 
                                 if attaque.effet == "paralyse":
-                                    cible.paralyse = True
                                     cible.statut = "paralyzed"
                                     #print "a" in yellow
                                     print(f"\x1b[33m{cible.nom} is paralyzed!\x1b[0m")
                                 
                                 elif attaque.effet == "burn":
-                                    cible.brule = True
                                     cible.statut = "burned"
                                     print(f"\x1b[31m{cible.nom} is burned!\x1b[0m")
                                 
                                 elif attaque.effet == "poison":
-                                    cible.poison = True
                                     cible.statut = "poisoned"
                                     print(f"\x1b[35m{cible.nom} is poisoned!\x1b[0m")
                                 
                                 elif attaque.effet == "sleep":
-                                    cible.endormi = True
                                     cible.statut = "asleep"
                                     print(f"\x1b[34m{cible.nom} is asleep!\x1b[0m")
                                 
                                 elif attaque.effet == "confus":
-                                    cible.confus = True
                                     cible.statut = "confused"
                                     print(f"\x1b[33m{cible.nom} is confused!\x1b[0m")
 
                                 elif attaque.effet == "maudis":
-                                    cible.maudit = True
                                     cible.statut = "cursed"
                                     print(f"\x1b[31m{cible.nom} is cursed!\x1b[0m")
 
                                 elif attaque.effet == "freeze":
-                                    cible.freeze = True
                                     cible.statut = "frozen"
                                     print(f"\x1b[36m{cible.nom} is frozen!\x1b[0m")
                             
@@ -240,7 +224,7 @@ class Pokemon:
                                 print(f"{self.nom} is healed!")
 
                             elif attaque.effet == "abri":
-                                self.abri = True
+                                self.effet = "abri"
                                 print(f"{self.nom} protects itself!")
 
                             # Stats +
@@ -276,16 +260,15 @@ class Pokemon:
             else:
                 print("The attack missed!")
 
-        if self.brule:
+        if self.statut == "burned":
             self.pv -= self.pvmax // 8
             print(f"{self.nom} is burned! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
             if random.randint(0, 100) <= 25:
-                self.brule = False
                 self.statut = None
                 print(f"{self.nom} is no longer burned!")
             print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
 
-        if self.poison:
+        if self.statut == "poisoned":
             self.pv -= self.pvmax // 8
             print(f"{self.nom} is poisoned! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
             if random.randint(0, 100) <= 25:
@@ -294,23 +277,21 @@ class Pokemon:
                 print(f"{self.nom} is no longer poisoned!")
             print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
 
-        if self.endormi:
+        if self.statut == "asleep":
             if random.randint(0, 100) <= 25:
-                self.endormi = False
                 self.statut = None
                 print(f"{self.nom} woke up!")
             else:
                 print(f"{self.nom} is asleep and can't attack!")
 
-        if self.freeze:
+        if self.statut == "frozen":
             if random.randint(0, 100) <= 25:
-                self.freeze = False
                 self.statut = None
                 print(f"{self.nom} is no longer frozen!")
             else:
                 print(f"{self.nom} is frozen and can't attack!")
 
-        if self.maudit:
+        if self.statut == "cursed":
             self.pv -= self.pvmax // 16
             print(f"{self.nom} is cursed! It loses \x1b[31m{self.pvmax // 16} HP\x1b[0m.")
             print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
