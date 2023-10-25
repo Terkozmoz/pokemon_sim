@@ -129,7 +129,7 @@ class Pokemon:
     def Attaque(self, cible, attaque):
         global place
         global pokemon_order
-        if self.statue == "abri":
+        if self.statut == "abri":
             self.abri = False
             print(f"{self.nom}'s protection has disappeared!")
         if self.statut == "asleep":
