@@ -67,6 +67,7 @@ grass_attaques = [
     Attaque("Mégafouet", 120, 85, "plante"),
     Attaque("Giga-Sangsue", 80, 100, "plante"),
     Attaque("Abri", 0, 100, "normal", "abri", 100),
+    Attaque("Poudre Dodo", 0, 75, "plante", "sleep", 100),
 ]
 
 # Attaques pour le type "Normal"
