@@ -1,6 +1,6 @@
 # Pokemon_Main.py
 # made by @Terkozmoz (github)
-# 2023-10-21
+# 2023-10-25
 # Musics by @Bliitzit (Youtube)
 # 2020-06-27
 
@@ -47,7 +47,6 @@ class Player:
             print(f"You have {self.potionmax} Max Potions remaining")
         else:
             print("Invalid potion type.")
-            self.Use_potion(target, potion_choice)
 
 def battle_loop(all_pokemon, player=None):
     current_turn = 1
@@ -135,6 +134,7 @@ def battle_loop(all_pokemon, player=None):
 
             if all_pokemon_fainted() or current_turn > len(all_pokemon)*100:
                 pygame.mixer.music.stop()
+                print("\n")
                 print("The battle is over.")
                 break
 
