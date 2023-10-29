@@ -220,7 +220,7 @@ class Pokemon:
                             # Positif
 
                             elif attaque.effet == "heal":
-                                self.hp = self.hpmax
+                                self.pv = self.pvmax
                                 print(f"{self.nom} is healed!")
 
                             elif attaque.effet == "abri":
@@ -232,6 +232,7 @@ class Pokemon:
                             elif attaque.effet == "attaque+":
                                 self.attaque += 10
                                 print(f"{self.nom}'s attack has increased!")
+                                print(self.attaque)
                             
                             elif attaque.effet == "vitesse+":
                                 self.vitesse += 3
@@ -266,7 +267,6 @@ class Pokemon:
             if random.randint(0, 100) <= 25:
                 self.statut = None
                 print(f"{self.nom} is no longer burned!")
-            print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
 
         if self.statut == "poisoned":
             self.pv -= self.pvmax // 8
@@ -275,7 +275,6 @@ class Pokemon:
                 self.poison = False
                 self.statut = None
                 print(f"{self.nom} is no longer poisoned!")
-            print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
 
         if self.statut == "asleep":
             if random.randint(0, 100) <= 25:
@@ -294,12 +293,15 @@ class Pokemon:
         if self.statut == "cursed":
             self.pv -= self.pvmax // 16
             print(f"{self.nom} is cursed! It loses \x1b[31m{self.pvmax // 16} HP\x1b[0m.")
-            print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
-        
-        if self.pv == 0:
-            print(f"\x1b[31m{self.nom} is knocked out!\x1b[0m")
 
-        if cible.pv == 0:
+        if self.statut:
+        
+            if self.pv <= 0:
+                print(f"\x1b[31m{self.nom} is knocked out!\x1b[0m")
+            else:
+                print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
+
+        if cible.pv <= 0:
             print(f"\x1b[31m{cible.nom} is knocked out!\x1b[0m")
         else:
             print(f"{cible.nom} has \x1b[31m{cible.pv} HP left\x1b[0m.")
