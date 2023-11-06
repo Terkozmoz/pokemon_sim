@@ -3,81 +3,81 @@ import pokemon_Att_Repertory as att
 import random
 import pygame
 class Pokemon:
-    def __init__(self, nom, pvmax, Att, Vitesse,Def, Type):
+    def __init__(self, name, max_hp, Att, speed,Def, Type):
         """
         Init a Pokemon with its name, hp, attack, defense, speed and type.
 
         Args:
-            nom (str): Pokemon's name.
-            pvmax (int): Pokemon's max hp.
+            name (str): Pokemon's name.
+            max_hp (int): Pokemon's max hp.
             Att (int) : Pokemon's attack.
-            Vitesse (int): Pokemon's speed.
+            speed (int): Pokemon's speed.
             Def (int): Pokemon's defense.
             Type (str): Pokemon's type(Max one).
         """
-        self.nom = nom
-        self.base = pvmax
-        self.attaque = Att
+        self.name = name
+        self.base = max_hp
+        self.attack = Att
         self.defense = Def
-        self.vitesse = Vitesse
+        self.speed = speed
         self.type = Type
-        self.pv = self.calculate_hp()
-        self.pvmax = self.pv
-        self.attaques = self.generer_attaques_aleatoires()
-        self.statut = None
+        self.hp = self.calculate_hp()
+        self.max_hp = self.hp
+        self.attacks = self.random_attacks()
+        self.status = None
 
-    def generer_attaques_aleatoires(self):
+    def random_attacks(self):
         # Select 4 random attacks from the list of attacks available for this type of Pokemon
-        attaques_disponibles = attaques_par_type.get(self.type, [])
-        if len(attaques_disponibles) < 4:
+        attacks_disponibles = attacks_by_type.get(self.type, [])
+        if len(attacks_disponibles) < 4:
             raise Exception("Not enough attacks available for this type of Pokemon")
-        return random.sample(attaques_disponibles, 4)
+        return random.sample(attacks_disponibles, 4)
 
     def calculate_hp(self):
-        if self.nom != 'Munja':
+        if self.name != 'Munja':
             return int(0.01 * (2 * self.base) * 50 + 50 + 10)
         return self.base
     
     TYPE_EFFECTIVENESS = {
-        'electrique': {'eau': 2, 'vol': 2, 'plante': 0.5, 'dragon': 0.5, 'sol': 0},
-        'feu': {'plante': 2, 'insecte': 2, 'acier': 2, 'glace': 2, 'eau': 0.5, 'roche': 0.5, 'dragon': 0.5},
-        'eau': {'feu': 2, 'roche': 2, 'sol': 2, 'plante': 0.5, 'dragon': 0.5},
-        'plante': {'eau': 2, 'sol': 2, 'roche': 2, 'feu': 0.5, 'poison': 0.5, 'vol': 0.5, 'insecte': 0.5, 'dragon': 0.5, 'acier': 0.5},
-        'normal': {'spectre': 0, 'roche': 0.5, 'acier': 0.5},
-        'glace': {'plante': 2, 'sol': 2, 'vol': 2, 'dragon': 2, 'feu': 0.5, 'eau': 0.5, 'acier': 0.5},
-        'combat': {'normal': 2, 'glace': 2, 'roche': 2, 'acier': 2, 'tenebres': 2, 'poison': 0.5, 'vol': 0.5, 'psy': 0.5, 'insecte': 0.5, 'fee': 0.5, 'spectre': 0},
-        'poison': {'plante': 2, 'fee': 2, 'sol': 0.5, 'roche': 0.5, 'spectre': 0.5, 'acier': 0},
-        'sol': {'feu': 2, 'electrique': 2, 'poison': 2, 'roche': 2, 'acier': 2, 'plante': 0.5, 'insecte': 0.5, 'vol': 0},
-        'vol': {'plante': 2, 'combat': 2, 'insecte': 2, 'electrique': 0.5, 'roche': 0.5, 'acier': 0.5},
-        'psy': {'combat': 2, 'poison': 2, 'acier': 0.5, 'tenebres': 0, 'spectre': 2},
-        'insecte': {'insecte': 2, 'psy': 2, 'tenebres': 2, 'feu': 0.5, 'combat': 0.5, 'poison': 0.5, 'vol': 0.5, 'spectre': 0.5, 'acier': 0.5, 'fee': 0.5},
-        'roche': {'feu': 2, 'glace': 2, 'vol': 2, 'insecte': 2, 'combat': 0.5, 'sol': 0.5, 'acier': 0.5},
-        'spectre': {'psy': 2, 'tenebres': 0.5, 'normal': 0},
-        'dragon': {'dragon': 2, 'acier': 0.5, 'fee': 0},
-        'tenebres': {'psy': 2, 'spectre': 0.5, 'combat': 0.5, 'fee': 0.5},
-        'acier': {'glace': 2, 'roche': 2, 'fee': 2, 'feu': 0.5, 'eau': 0.5, 'electrique': 0.5},
-        'fee': {'combat': 2, 'dragon': 2, 'tenebres': 0.5, 'feu': 0.5, 'poison': 0.5, 'acier': 0.5}
+        'electric': {'water': 2, 'flying': 2, 'grass': 0.5, 'dragon': 0.5, 'ground': 0},
+        'fire': {'grass': 2, 'insect': 2, 'steel': 2, 'ice': 2, 'water': 0.5, 'rock': 0.5, 'dragon': 0.5},
+        'water': {'fire': 2, 'rock': 2, 'ground': 2, 'grass': 0.5, 'dragon': 0.5},
+        'grass': {'water': 2, 'ground': 2, 'rock': 2, 'fire': 0.5, 'poison': 0.5, 'flying': 0.5, 'insect': 0.5, 'dragon': 0.5, 'steel': 0.5},
+        'normal': {'ghost': 0, 'rock': 0.5, 'steel': 0.5},
+        'ice': {'grass': 2, 'ground': 2, 'flying': 2, 'dragon': 2, 'fire': 0.5, 'water': 0.5, 'steel': 0.5},
+        'fighting': {'normal': 2, 'ice': 2, 'rock': 2, 'steel': 2, 'dark': 2, 'poison': 0.5, 'flying': 0.5, 'psychic': 0.5, 'insect': 0.5, 'fairy': 0.5, 'ghost': 0},
+        'poison': {'grass': 2, 'fairy': 2, 'ground': 0.5, 'rock': 0.5, 'ghost': 0.5, 'steel': 0},
+        'ground': {'fire': 2, 'electric': 2, 'poison': 2, 'rock': 2, 'steel': 2, 'grass': 0.5, 'insect': 0.5, 'flying': 0},
+        'flying': {'grass': 2, 'fighting': 2, 'insect': 2, 'electric': 0.5, 'rock': 0.5, 'steel': 0.5},
+        'psychic': {'fighting': 2, 'poison': 2, 'steel': 0.5, 'dark': 0, 'ghost': 2},
+        'insect': {'insect': 2, 'psychic': 2, 'dark': 2, 'fire': 0.5, 'fighting': 0.5, 'poison': 0.5, 'flying': 0.5, 'ghost': 0.5, 'steel': 0.5, 'fairy': 0.5},
+        'rock': {'fire': 2, 'ice': 2, 'flying': 2, 'insect': 2, 'fighting': 0.5, 'ground': 0.5, 'steel': 0.5},
+        'ghost': {'psychic': 2, 'dark': 0.5, 'normal': 0},
+        'dragon': {'dragon': 2, 'steel': 0.5, 'fairy': 0},
+        'dark': {'psychic': 2, 'ghost': 0.5, 'fighting': 0.5, 'fairy': 0.5},
+        'steel': {'ice': 2, 'rock': 2, 'fairy': 2, 'fire': 0.5, 'water': 0.5, 'electric': 0.5},
+        'fairy': {'fighting': 2, 'dragon': 2, 'dark': 0.5, 'fire': 0.5, 'poison': 0.5, 'steel': 0.5}
     }
         
     def Learn_attack(self, attack):
-        if len(self.attaques) < 4 and attack not in self.attaques:
-            self.attaques.append(attack)
-            print(f"{self.nom} has learned {attack.nom}!")
+        if len(self.attacks) < 4 and attack not in self.attacks:
+            self.attacks.append(attack)
+            print(f"{self.name} has learned {attack.name}!")
         else:
-            print(f"{self.nom} can't learn {attack.nom}!")
+            print(f"{self.name} can't learn {attack.name}!")
     
-    def Est_vivant(self):
+    def Is_alive(self):
         """
         Check if the Pokemon is alive.
 
         Returns:
             bool: True if the Pokemon is alive, False otherwise.
         """
-        if self.pv > 0:
+        if self.hp > 0:
             return True
         return False
     
-    def BoitPotion(self, gain):
+    def DrinkPotion(self, gain):
         """
         Make the Pokemon drink a potion to restore its HP.
 
@@ -87,250 +87,250 @@ class Pokemon:
         Returns:
             int: The Pokemon's current HP after the restoration.
         """
-        print(f"\x1b[32m{self.nom} drinks a potion and restores {gain} HP.\x1b[0m")
-        if self.pv + gain > self.pvmax:
-            self.pv = self.pvmax
+        print(f"\x1b[32m{self.name} drinks a potion and restores {gain} HP.\x1b[0m")
+        if self.hp + gain > self.max_hp:
+            self.hp = self.max_hp
         else:
-            self.pv += gain
-        print(f"{self.nom} has \x1b[32m{self.pv} HP\x1b[0m.")
-        return self.pv
+            self.hp += gain
+        print(f"{self.name} has \x1b[32m{self.hp} HP\x1b[0m.")
+        return self.hp
     
-    def Choisir_attaque(self):
-        attaque = random.choice(self.attaques)
-        return attaque
+    def Choose_attack(self):
+        attack = random.choice(self.attacks)
+        return attack
 
-    def BoitPotionMax(self):
+    def DrinkPotionMax(self):
         """
         Make the Pokemon drink a max potion to restore its HP to the max.
 
         Returns:
             int: The Pokemon's current HP after the restoration.
         """
-        print(f" \x1b[34m {self.nom} drinks a max potion and restores all its HP.\x1b[0m")
-        self.pv = self.pvmax
-        print(f"{self.nom} a \x1b[34m{self.pv} PV\x1b[0m")
-        return self.pv
+        print(f" \x1b[34m {self.name} drinks a max potion and restores all its HP.\x1b[0m")
+        self.hp = self.max_hp
+        print(f"{self.name} a \x1b[34m{self.hp} hp\x1b[0m")
+        return self.hp
 
-    def Typing(self, cible) -> int:
+    def Typing(self, target) -> int:
         """
         Calculating the effectiveness of an attack.
 
         Args:
-            cible (Pokemon): The Pokemon that is attacked.
+            target (Pokemon): The Pokemon that is attacked.
 
         Returns:
             int: The effectiveness of the attack.
         """
         if self.type in self.TYPE_EFFECTIVENESS:
-            if cible.type in self.TYPE_EFFECTIVENESS[self.type]:
-                return self.TYPE_EFFECTIVENESS[self.type][cible.type]
+            if target.type in self.TYPE_EFFECTIVENESS[self.type]:
+                return self.TYPE_EFFECTIVENESS[self.type][target.type]
         return 1
                 
-    def Attaque(self, cible, attaque):
+    def Attack(self, target, attack):
         global place
         global pokemon_order
-        if self.statut == "abri":
-            self.abri = False
-            print(f"{self.nom}'s protection has disappeared!")
-        if self.statut != "asleep":
-            if self.statut != "frozen":
+        if self.status == "protect":
+            self.protect = False
+            print(f"{self.name}'s protection has disappeared!")
+        if self.status != "asleep":
+            if self.status != "frozen":
 
-                if self.statut == "confused":
-                    print(f"{self.nom} is confused...")
+                if self.status == "confused":
+                    print(f"{self.name} is confused...")
                     p = random.randint(0, 100)
                     if p <= 50:
-                        print(f"{self.nom} attacks itself!")
-                        self.pv -= self.pvmax // 8
-                        print(f"{self.nom} loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
+                        print(f"{self.name} attacks itself!")
+                        self.hp -= self.max_hp // 8
+                        print(f"{self.name} loses \x1b[31m{self.max_hp // 8} HP\x1b[0m.")
                         return
-                if self.statut == "paralyzed":
-                    print(f"{self.nom} is paralyzed...")
+                if self.status == "paralyzed":
+                    print(f"{self.name} is paralyzed...")
                     p = random.randint(0, 100)
                     if p <= 25:
-                        print(f"{self.nom} can't attack!")
+                        print(f"{self.name} can't attack!")
                         return
-                print(f"{self.nom} attacks {cible.nom} with {attaque.nom}!")
-                if random.randint(0,100) <= attaque.precision:
-                    efficacite = self.Typing(cible)
-                    degats = attaque.calculer_degats(self, cible, efficacite)
+                print(f"{self.name} attacks {target.name} with {attack.name}!")
+                if random.randint(0,100) <= attack.accuracy:
+                    efficiency = self.Typing(target)
+                    degats = attack.Calculate_damage(self, target, efficiency)
 
-                    if cible.statut == "abri":
-                        cible.statut = False
-                        print(f"{cible.nom} used its protection and avoided the attack!")
+                    if target.status == "protect":
+                        target.status = False
+                        print(f"{target.name} used its protection and avoided the attack!")
                         degats = 0
-                        efficacite = 1
+                        efficiency = 1
 
-                    if efficacite > 1:
-                        efficacite_message = "\x1b[32mIt's super effective!\x1b[0m"
-                    elif efficacite < 1 and efficacite > 0:
-                        efficacite_message = "\x1b[mIt's not very effective...\x1b[0m"
-                    elif efficacite == 0:
-                        efficacite_message = f"\x1b[31mIt doesn't affect {cible.nom}...\x1b[0m"
+                    if efficiency > 1:
+                        efficiency_message = "\x1b[32mIt's super effective!\x1b[0m"
+                    elif efficiency < 1 and efficiency > 0:
+                        efficiency_message = "\x1b[mIt's not very effective...\x1b[0m"
+                    elif efficiency == 0:
+                        efficiency_message = f"\x1b[31mIt doesn't affect {target.name}...\x1b[0m"
                     else:
-                        efficacite_message = ""
+                        efficiency_message = ""
 
-                    print(f"{efficacite_message} {self.nom} deals \x1b[31m{degats} HP\x1b[0m to {cible.nom}.")
+                    print(f"{efficiency_message} {self.name} deals \x1b[31m{degats} HP\x1b[0m to {target.name}.")
 
-                    cible.pv -= degats
+                    target.hp -= degats
 
                     # Applies the effect of the attack
 
-                    if attaque.effet:
+                    if attack.effect:
                         # Checks if the effect is triggered
                         
                         a = random.randint(0, 100)
-                        if a <= attaque.effet_proba:
-                            if cible.statut == None:
+                        if a <= attack.effect_probability:
+                            if target.status == None:
 
                                 # Negatives
 
-                                if attaque.effet == "paralyse":
-                                    cible.statut = "paralyzed"
+                                if attack.effect == "paralyse":
+                                    target.status = "paralyzed"
                                     #print "a" in yellow
-                                    print(f"\x1b[33m{cible.nom} is paralyzed!\x1b[0m")
+                                    print(f"\x1b[33m{target.name} is paralyzed!\x1b[0m")
                                 
-                                elif attaque.effet == "burn":
-                                    cible.statut = "burned"
-                                    print(f"\x1b[31m{cible.nom} is burned!\x1b[0m")
+                                elif attack.effect == "burn":
+                                    target.status = "burned"
+                                    print(f"\x1b[31m{target.name} is burned!\x1b[0m")
                                 
-                                elif attaque.effet == "poison":
-                                    cible.statut = "poisoned"
-                                    print(f"\x1b[35m{cible.nom} is poisoned!\x1b[0m")
+                                elif attack.effect == "poison":
+                                    target.status = "poisoned"
+                                    print(f"\x1b[35m{target.name} is poisoned!\x1b[0m")
                                 
-                                elif attaque.effet == "sleep":
-                                    cible.statut = "asleep"
-                                    print(f"\x1b[34m{cible.nom} is asleep!\x1b[0m")
+                                elif attack.effect == "sleep":
+                                    target.status = "asleep"
+                                    print(f"\x1b[34m{target.name} is asleep!\x1b[0m")
                                 
-                                elif attaque.effet == "confus":
-                                    cible.statut = "confused"
-                                    print(f"\x1b[33m{cible.nom} is confused!\x1b[0m")
+                                elif attack.effect == "confuse":
+                                    target.status = "confused"
+                                    print(f"\x1b[33m{target.name} is confused!\x1b[0m")
 
-                                elif attaque.effet == "maudis":
-                                    cible.statut = "cursed"
-                                    print(f"\x1b[31m{cible.nom} is cursed!\x1b[0m")
+                                elif attack.effect == "curse":
+                                    target.status = "cursed"
+                                    print(f"\x1b[31m{target.name} is cursed!\x1b[0m")
 
-                                elif attaque.effet == "freeze":
-                                    cible.statut = "frozen"
-                                    print(f"\x1b[36m{cible.nom} is frozen!\x1b[0m")
+                                elif attack.effect == "freeze":
+                                    target.status = "frozen"
+                                    print(f"\x1b[36m{target.name} is frozen!\x1b[0m")
                             
-                            if attaque.effet == "onehit":
-                                cible.pv = 0
-                                print(f"{cible.nom} is knocked out in one hit!")
+                            if attack.effect == "onehit":
+                                target.hp = 0
+                                print(f"{target.name} is knocked out in one hit!")
 
                             # Positif
 
-                            elif attaque.effet == "heal":
-                                self.pv = self.pvmax
-                                print(f"{self.nom} is healed!")
+                            elif attack.effect == "heal":
+                                self.hp = self.max_hp
+                                print(f"{self.name} is healed!")
 
-                            elif attaque.effet == "abri":
-                                self.effet = "abri"
-                                print(f"{self.nom} protects itself!")
+                            elif attack.effect == "protect":
+                                self.effect = "protect"
+                                print(f"{self.name} protects itself!")
 
                             # Stats +
 
-                            elif attaque.effet == "attaque+":
-                                self.attaque += 10
-                                print(f"{self.nom}'s attack has increased!")
-                                print(self.attaque)
+                            elif attack.effect == "attack+":
+                                self.attack += 10
+                                print(f"{self.name}'s attack has increased!")
+                                print(self.attack)
                             
-                            elif attaque.effet == "vitesse+":
-                                self.vitesse += 3
-                                print(f"{self.nom}'s speed has increased!")
-                                all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
+                            elif attack.effect == "speed+":
+                                self.speed += 3
+                                print(f"{self.name}'s speed has increased!")
+                                all_pokemon.sort(key=lambda x: x.speed, reverse=True)
 
-                            elif attaque.effet == "defense+":
+                            elif attack.effect == "defense+":
                                 self.defense += 10
-                                print(f"{self.nom}'s defense has increased!")
+                                print(f"{self.name}'s defense has increased!")
 
                             # Stats -
 
-                            elif attaque.effet == "attaque-":
-                                cible.attaque -= 10
-                                print(f"{cible.nom}'s attack has decreased!")
+                            elif attack.effect == "attack-":
+                                target.attack -= 10
+                                print(f"{target.name}'s attack has decreased!")
 
-                            elif attaque.effet == "vitesse-":
-                                cible.vitesse -= 3
-                                print(f"{cible.nom}'s speed has decreased!")
-                                all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
+                            elif attack.effect == "speed-":
+                                target.speed -= 3
+                                print(f"{target.name}'s speed has decreased!")
+                                all_pokemon.sort(key=lambda x: x.speed, reverse=True)
 
-                            elif attaque.effet == "defense-":
-                                cible.defense -= 10
-                                print(f"{cible.nom}'s defense has decreased!")
+                            elif attack.effect == "defense-":
+                                target.defense -= 10
+                                print(f"{target.name}'s defense has decreased!")
         
             else:
                 print("The attack missed!")
 
-        if self.statut == "burned":
-            self.pv -= self.pvmax // 8
-            print(f"{self.nom} is burned! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
+        if self.status == "burned":
+            self.hp -= self.max_hp // 8
+            print(f"{self.name} is burned! It loses \x1b[31m{self.max_hp // 8} HP\x1b[0m.")
             if random.randint(0, 100) <= 25:
-                self.statut = None
-                print(f"{self.nom} is no longer burned!")
+                self.status = None
+                print(f"{self.name} is no longer burned!")
 
-        if self.statut == "poisoned":
-            self.pv -= self.pvmax // 8
-            print(f"{self.nom} is poisoned! It loses \x1b[31m{self.pvmax // 8} HP\x1b[0m.")
+        if self.status == "poisoned":
+            self.hp -= self.max_hp // 8
+            print(f"{self.name} is poisoned! It loses \x1b[31m{self.max_hp // 8} HP\x1b[0m.")
             if random.randint(0, 100) <= 25:
                 self.poison = False
-                self.statut = None
-                print(f"{self.nom} is no longer poisoned!")
+                self.status = None
+                print(f"{self.name} is no longer poisoned!")
 
-        if self.statut == "asleep":
+        if self.status == "asleep":
             if random.randint(0, 100) <= 25:
-                self.statut = None
-                print(f"{self.nom} woke up!")
+                self.status = None
+                print(f"{self.name} woke up!")
             else:
-                print(f"{self.nom} is asleep and can't attack!")
+                print(f"{self.name} is asleep and can't attack!")
 
-        if self.statut == "frozen":
+        if self.status == "frozen":
             if random.randint(0, 100) <= 25:
-                self.statut = None
-                print(f"{self.nom} is no longer frozen!")
+                self.status = None
+                print(f"{self.name} is no longer frozen!")
             else:
-                print(f"{self.nom} is frozen and can't attack!")
+                print(f"{self.name} is frozen and can't attack!")
 
-        if self.statut == "cursed":
-            self.pv -= self.pvmax // 16
-            print(f"{self.nom} is cursed! It loses \x1b[31m{self.pvmax // 16} HP\x1b[0m.")
+        if self.status == "cursed":
+            self.hp -= self.max_hp // 16
+            print(f"{self.name} is cursed! It loses \x1b[31m{self.max_hp // 16} HP\x1b[0m.")
 
-        if self.statut:
+        if self.status:
         
-            if self.pv <= 0:
-                print(f"\x1b[31m{self.nom} is knocked out!\x1b[0m")
+            if self.hp <= 0:
+                print(f"\x1b[31m{self.name} is knocked out!\x1b[0m")
             else:
-                print(f"{self.nom} have \x1b[31m{self.pv} HP\x1b[0m.")
+                print(f"{self.name} have \x1b[31m{self.hp} HP\x1b[0m.")
 
-        if cible.pv <= 0:
-            print(f"\x1b[31m{cible.nom} is knocked out!\x1b[0m")
+        if target.hp <= 0:
+            print(f"\x1b[31m{target.name} is knocked out!\x1b[0m")
         else:
-            print(f"{cible.nom} has \x1b[31m{cible.pv} HP left\x1b[0m.")
+            print(f"{target.name} has \x1b[31m{target.hp} HP left\x1b[0m.")
         
-    def __add__(self, pvs):
+    def __add__(self, hps):
         """
-        adds the value of `pvs` to the current `pv` attribute.
+        adds the value of `hps` to the current `hp` attribute.
         
         takes:
-            pvs (int): the value to add to `pv`.
+            hps (int): the value to add to `hp`.
         
         Returns :
             None
         """
-        self.pv += pvs
+        self.hp += hps
         
-    def __sub__(self, pvs):
+    def __sub__(self, hps):
         """
-        subtracts the value of `pvs` to the current `pv` attribute.
+        subtracts the value of `hps` to the current `hp` attribute.
         
         takes :
-            pvs (int) : the value to subtract to `pv`.
+            hps (int) : the value to subtract to `hp`.
         
         Returns :
             None
         """
-        self.pv -= pvs
-        if self.pv <= 0:
-            self.pv = 0
+        self.hp -= hps
+        if self.hp <= 0:
+            self.hp = 0
 
 def play_music(i=0):
     choix = input("Do you want to play music? (y/n) ")
@@ -372,72 +372,73 @@ def play_music(i=0):
         print("invalid choice. Try again.")
         play_music(i+1)
 
-attaques_par_type = {
-    "electrique": att.electric_attaques,
-    "feu": att.fire_attaques,
-    "eau": att.water_attaques,
-    "plante": att.grass_attaques,
-    "normal": att.normal_attaques,
-    "glace": att.ice_attaques,
-    "combat": att.fighting_attaques,
-    "poison": att.poison_attaques,
-    "sol": att.ground_attaques,
-    "vol": att.flying_attaques,
-    "psy": att.psychic_attaques,
-    "insecte": att.bug_attaques,
-    "roche": att.rock_attaques,
-    "spectre": att.ghost_attaques,
-    "tenebres": att.dark_attaques,
-    "dragon": att.dragon_attaques,
-    "acier": att.steel_attaques,
-    "fee": att.fairy_attaques,
+attacks_by_type = {
+    "electric": att.electric_attacks,
+    "fire": att.fire_attacks,
+    "water": att.water_attacks,
+    "grass": att.grass_attacks,
+    "normal": att.normal_attacks,
+    "ice": att.ice_attacks,
+    "fighting": att.fighting_attacks,
+    "poison": att.poison_attacks,
+    "ground": att.ground_attacks,
+    "flying": att.flying_attacks,
+    "psychic": att.psychic_attacks,
+    "insect": att.bug_attacks,
+    "rock": att.rock_attacks,
+    "ghost": att.ghost_attacks,
+    "dark": att.dark_attacks,
+    "dragon": att.dragon_attacks,
+    "steel": att.steel_attacks,
+    "fairy": att.fairy_attacks,
 }
 
-Pikachu = Pokemon('Pikachu', 70, 30, 90, 40, 'electrique')
-Carapuce = Pokemon('Carapuce', 50, 25, 43, 45, 'eau')
-Salameche = Pokemon('Salameche', 65, 25, 65, 43, 'feu')
-Bulbizarre = Pokemon('Bulbizarre', 50, 31, 45, 40, 'plante')
-Chuchmur = Pokemon('Chuchmur', 60, 19, 64, 45, 'normal')
-Obalie = Pokemon('Obalie', 70, 28, 25, 40, 'glace')
-Meditikka = Pokemon('Meditikka', 60, 24, 60, 30, 'combat')
-Papinox = Pokemon('Papinox', 85, 15, 65, 65, 'poison')
-Chamallot = Pokemon('Chamallot', 60, 25, 35, 35, 'sol')
-Tylton = Pokemon('Tylton', 70, 15, 50, 40, 'vol')
-Tarsal = Pokemon('Tarsal', 45, 39, 40, 35, 'psy')
-Munja = Pokemon('Munja', 1, 50, 56, 30, 'insecte')
-Relicanth = Pokemon('Relicanth', 65, 25, 55, 35, 'roche')
-Tenefix = Pokemon('Tenefix', 40, 25, 50, 35, 'spectre')
-Draby = Pokemon('Draby', 65, 24, 50, 45, 'dragon')
-Medhyena = Pokemon('Medhyena', 30, 28, 35, 30, 'tenebres')
-Terhal = Pokemon('Terhal', 20, 23, 30, 35, 'acier')
-Azurill = Pokemon('Azurill', 30, 30, 25, 20, 'fee')
-Groudon = Pokemon('Groudon', 70, 40, 90, 90, 'sol')
-Raichu = Pokemon('Raichu', 60, 40, 110, 35, 'electrique')
-Tortank = Pokemon('Tortank', 75, 40, 78, 100, 'eau')
-Dracaufeu = Pokemon('Dracaufeu', 78, 40, 100, 85, 'feu')
-Florizarre = Pokemon('Florizarre', 80, 35, 70, 83, 'plante')
-Ronflex = Pokemon('Ronflex', 160, 50, 30, 65, 'normal')
-Lokhlass = Pokemon('Lokhlass', 130, 45, 60, 70, 'glace')
-Mackogneur = Pokemon('Mackogneur', 90, 80, 45, 65, 'combat')
+Pikachu = Pokemon('Pikachu', 70, 30, 90, 40, 'electric')
+Squirtle = Pokemon('Squirtle', 50, 25, 43, 45, 'water')
+Charmander = Pokemon('Charmander', 65, 25, 65, 43, 'fire')
+Bulbasaur = Pokemon('Bulbasaur', 50, 31, 45, 40, 'grass')
+Charmur = Pokemon('Charmur', 60, 19, 64, 45, 'normal')
+Seel = Pokemon('Seel', 70, 28, 25, 40, 'ice')
+Meditite = Pokemon('Meditite', 60, 24, 60, 30, 'fighting')
+Gloom = Pokemon('Gloom', 85, 15, 65, 65, 'poison')
+Dugtrio = Pokemon('Dugtrio', 60, 25, 35, 35, 'ground')
+Pidgey = Pokemon('Pidgey', 70, 15, 50, 40, 'flying')
+Abra = Pokemon('Abra', 45, 39, 40, 35, 'psychic')
+Wurmple = Pokemon('Wurmple', 1, 50, 56, 30, 'insect')
+Relicanth = Pokemon('Relicanth', 65, 25, 55, 35, 'rock')
+Shuppet = Pokemon('Shuppet', 40, 25, 50, 35, 'ghost')
+Bagon = Pokemon('Bagon', 65, 24, 50, 45, 'dragon')
+Poochyena = Pokemon('Poochyena', 30, 28, 35, 30, 'dark')
+Aron = Pokemon('Aron', 20, 23, 30, 35, 'steel')
+Marill = Pokemon('Marill', 30, 30, 25, 20, 'fairy')
+Groudon = Pokemon('Groudon', 70, 40, 90, 90, 'ground')
+Raichu = Pokemon('Raichu', 60, 40, 110, 35, 'electric')
+Blastoise = Pokemon('Blastoise', 75, 40, 78, 100, 'water')
+Charizard = Pokemon('Charizard', 78, 40, 100, 85, 'fire')
+Venusaur = Pokemon('Venusaur', 80, 35, 70, 83, 'grass')
+Snorlax = Pokemon('Snorlax', 160, 50, 30, 65, 'normal')
+Lapras = Pokemon('Lapras', 130, 45, 60, 70, 'ice')
+Machamp = Pokemon('Machamp', 90, 80, 45, 65, 'fighting')
 Nidoking = Pokemon('Nidoking', 81, 47, 85, 77, 'poison')
-Rhinoferos = Pokemon('Rhinoferos', 80, 45, 40, 95, 'sol')
-Ptera = Pokemon('Ptera', 80, 61, 110, 45, 'vol')
-Alakazam = Pokemon('Alakazam', 55, 50, 120, 45, 'psy')
-Sarmuraï = Pokemon('Sarmuraï', 70, 85, 60, 100, 'eau')
-Tyranocif = Pokemon('Tyranocif', 100, 70, 61, 110, 'roche')
-Metamorph = Pokemon('Metamorph', 48, 48, 48, 48, 'normal')
-Flagadoss = Pokemon('Flagadoss', 95, 45, 30, 55, 'psy')
-Leuphorie = Pokemon('Leuphorie', 250, 10, 55, 10, 'fee')
+Rhydon = Pokemon('Rhydon', 80, 45, 40, 95, 'ground')
+Aerodactyl = Pokemon('Aerodactyl', 80, 61, 110, 45, 'flying')
+Alakazam = Pokemon('Alakazam', 55, 50, 120, 45, 'psychic')
+Samurott = Pokemon('Samurott', 70, 85, 60, 100, 'water')
+Tyranitar = Pokemon('Tyranitar', 100, 70, 61, 110, 'rock')
+Ditto = Pokemon('Ditto', 48, 48, 48, 48, 'normal')
+Slowbro = Pokemon('Slowbro', 95, 45, 30, 55, 'psychic')
+Blissey = Pokemon('Blissey', 250, 10, 55, 10, 'fairy')
 Rayquaza = Pokemon('Rayquaza', 105, 70, 95, 90, 'dragon')
-Noctali = Pokemon('Noctali', 95, 65, 65, 110, 'tenebres')
-Registeel = Pokemon('Registeel', 80, 75, 50, 150, 'acier')
-Magicarpe = Pokemon('Magicarpe', 20, 10, 80, 55, 'eau')
-Aquali = Pokemon('Aquali', 130, 65, 65, 60, 'eau')
-Mew = Pokemon('Mew', 100, 100, 100, 100, 'psy')
-Raikou = Pokemon('Raikou', 90, 85, 115, 75, 'electrique')
-Artikodin = Pokemon('Artikodin', 90, 85, 85, 100, 'glace')
-Sulfura = Pokemon('Sulfura', 90, 85, 85, 75, 'feu')
-all_pokemon = [Pikachu, Carapuce, Salameche, Bulbizarre, Chuchmur, Obalie, Meditikka, Papinox, Chamallot, Tylton, Tarsal, Munja, Relicanth,
-                Tenefix, Draby, Medhyena, Terhal, Azurill, Groudon, Raichu, Tortank, Dracaufeu, Florizarre, Ronflex, Lokhlass, Mackogneur,
-                  Nidoking, Rhinoferos, Ptera, Alakazam, Sarmuraï, Tyranocif, Metamorph, Flagadoss, Leuphorie, Rayquaza, Noctali, Registeel,
-                    Magicarpe, Aquali, Mew, Raikou, Artikodin, Sulfura ]
+Umbreon = Pokemon('Umbreon', 95, 65, 65, 110, 'dark')
+Registeel = Pokemon('Registeel', 80, 75, 50, 150, 'steel')
+Magikarp = Pokemon('Magikarp', 20, 10, 80, 55, 'water')
+Vaporeon = Pokemon('Vaporeon', 130, 65, 65, 60, 'water')
+Mew = Pokemon('Mew', 100, 100, 100, 100, 'psychic')
+Raikou = Pokemon('Raikou', 90, 85, 115, 75, 'electric')
+Articuno = Pokemon('Articuno', 90, 85, 85, 100, 'ice')
+Moltres = Pokemon('Moltres', 90, 85, 85, 75, 'fire')
+
+all_pokemon = [Pikachu, Squirtle, Charmander, Bulbasaur, Charmur, Seel, Meditite, Gloom, Dugtrio, Pidgey, Abra, Wurmple, Relicanth,
+               Shuppet, Bagon, Poochyena, Aron, Marill, Groudon, Raichu, Blastoise, Charizard, Venusaur, Snorlax, Lapras, Machamp,
+               Nidoking, Rhydon, Aerodactyl, Alakazam, Samurott, Tyranitar, Ditto, Slowbro, Blissey, Rayquaza, Umbreon, Registeel,
+               Magikarp, Vaporeon, Mew, Raikou, Articuno, Moltres]
