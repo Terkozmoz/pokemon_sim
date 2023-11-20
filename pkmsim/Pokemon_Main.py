@@ -1,6 +1,6 @@
 # Pokemon_Main.py
 # Made by @Terkozmoz (GitHub)
-# Date: 2023-11-06
+# Date: 2023-11-20
 # Music by @Bliitzit (YouTube)
 # Date: 2020-06-27
 
@@ -20,13 +20,14 @@ class Player:
         self.potionmax = random.randint(0, 1)
 
     def Choose_attack(self):
+        self.pokemon.zero_pp()
         for i, attack in enumerate(self.pokemon.attacks):
-            print(f"{i + 1}. {attack.name} ;\n Power: {attack.power} Accuracy: {attack.accuracy}")
+            print(f"{i + 1}. {attack.name} ;\n Power: {attack.power} Accuracy: {attack.accuracy} \nPP: {attack.pp}")
             if attack.effect:
                 print(f"Effect: {attack.effect} ; Probability: {attack.effect_probability}%")
 
         choice = int(input("Enter the attack number: ")) - 1
-        if 0 <= choice < len(self.pokemon.attacks):
+        if 0 <= choice < len(self.pokemon.attacks) and self.pokemon.attacks[choice].pp > 0:
             return self.pokemon.attacks[choice]
         else:
             print("Invalid choice. Try again.")
@@ -43,7 +44,7 @@ class Player:
             print(f"You have {self.superpotion} Super Potions remaining")
         elif potion_choice == 2 and self.potionmax >= 1:
             self.potionmax -= 1
-            target.DrinkMaxPotion()
+            target.DrinkPotionMax()
             print(f"You have {self.potionmax} Max Potions remaining")
         else:
             print("Invalid potion type.")
@@ -120,7 +121,7 @@ def battle_loop(all_pokemon, player=None):
                     # The Pokémon has a 1 in 5 chance of healing by 10 hp
                     if random.randint(1, 10) == 1:
                         # The Pokémon has a 1 in 10 chance of using a max potion
-                        current_pokemon.DrinkMaxPotion()
+                        current_pokemon.DrinkPotionMax()
                         healed_pokemon.append(current_pokemon)
                     current_pokemon.DrinkPotion(10)
                     healed_pokemon.append(current_pokemon)
@@ -164,6 +165,13 @@ def choose_pokemon():
         except ValueError:
             print("Please enter a valid number.")
 
+    if choice == 0:
+        """
+        print("You found a secret Pokémon!")
+        chosen_pokemon = pkms.Mewthree
+        all_pokemon.append(chosen_pokemon)
+        """
+ 
     chosen_pokemon = all_pokemon[choice]
     print(f"You chose {chosen_pokemon.name}!")
 
