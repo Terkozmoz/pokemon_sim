@@ -224,7 +224,7 @@ class Pokemon:
                                 print(f"{self.name} is healed!")
 
                             elif attack.effect == "protect":
-                                self.effect = "protect"
+                                self.status = "protect"
                                 print(f"{self.name} protects itself!")
 
                             # Stats +
