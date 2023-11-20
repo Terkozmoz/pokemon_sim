@@ -60,11 +60,19 @@ class Pokemon:
     }
         
     def Learn_attack(self, attack):
-        if len(self.attacks) < 4 and attack not in self.attacks:
+        if len(self.attacks) < 4 and attack not in self.attacks or attack == 'Struggle':
             self.attacks.append(attack)
             print(f"{self.name} has learned {attack.name}!")
         else:
             print(f"{self.name} can't learn {attack.name}!")
+
+    def zero_pp(self):
+        for attack in self.attacks:
+            if attack.pp > 0:
+                return False
+            else:
+                self.Learn_attack(att.Struggle)
+                return True
     
     def Is_alive(self):
         """
@@ -97,6 +105,9 @@ class Pokemon:
     
     def Choose_attack(self):
         attack = random.choice(self.attacks)
+        if attack.pp == 0:
+            self.zero_pp()
+            return self.Choose_attack()
         return attack
 
     def DrinkPotionMax(self):
@@ -150,6 +161,7 @@ class Pokemon:
                         print(f"{self.name} can't attack!")
                         return
                 print(f"{self.name} attacks {target.name} with {attack.name}!")
+                attack.pp -= 1
                 if random.randint(0,100) <= attack.accuracy:
                     efficiency = self.Typing(target)
                     degats = attack.Calculate_damage(self, target, efficiency)
@@ -212,6 +224,10 @@ class Pokemon:
                                 elif attack.effect == "freeze":
                                     target.status = "frozen"
                                     print(f"\x1b[36m{target.name} is frozen!\x1b[0m")
+
+                                elif attack.effect == "recoil":
+                                    self.hp -= degats // 3
+                                    print(f"{self.name} loses \x1b[31m{degats // 3} HP because of the recoil\x1b[0m.")
                             
                             if attack.effect == "onehit":
                                 target.hp = 0
@@ -232,7 +248,6 @@ class Pokemon:
                             elif attack.effect == "attack+":
                                 self.attack += 10
                                 print(f"{self.name}'s attack has increased!")
-                                print(self.attack)
                             
                             elif attack.effect == "speed+":
                                 self.speed += 3
@@ -391,6 +406,7 @@ attacks_by_type = {
     "dragon": att.dragon_attacks,
     "steel": att.steel_attacks,
     "fairy": att.fairy_attacks,
+    None : att.normal_attacks
 }
 
 Pikachu = Pokemon('Pikachu', 70, 30, 90, 40, 'electric')
@@ -437,6 +453,7 @@ Mew = Pokemon('Mew', 100, 100, 100, 100, 'psychic')
 Raikou = Pokemon('Raikou', 90, 85, 115, 75, 'electric')
 Articuno = Pokemon('Articuno', 90, 85, 85, 100, 'ice')
 Moltres = Pokemon('Moltres', 90, 85, 85, 75, 'fire')
+Mewthree = Pokemon('Mewthree', 500, 500, 500, 500, None)
 
 all_pokemon = [Pikachu, Squirtle, Charmander, Bulbasaur, Charmur, Seel, Meditite, Gloom, Dugtrio, Pidgey, Abra, Wurmple, Relicanth,
                Shuppet, Bagon, Poochyena, Aron, Marill, Groudon, Raichu, Blastoise, Charizard, Venusaur, Snorlax, Lapras, Machamp,
