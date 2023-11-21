@@ -22,9 +22,3 @@ def fireworks():
         i += 1
 
     print("\033[93mThank you for playing!\033[0m")
-
-try:
-    fireworks()
-except KeyboardInterrupt:
-    clear_screen()
-    print("Fireworks show ended.")
