@@ -249,7 +249,7 @@ class Pokemon:
                                     self.hp -= degats // 3
                                     print(f"{self.name} loses \x1b[31m{degats // 3} HP because of the recoil\x1b[0m.")
                             
-                            if attack.effect == "onehit":
+                            if attack.effect == "one-hit":
                                 target.hp = 0
                                 print(f"{target.name} is knocked out in one hit!")
 
