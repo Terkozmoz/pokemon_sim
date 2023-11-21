@@ -57,15 +57,16 @@ def battle_loop(all_pokemon, player=None):
     healed_pokemon = []
     all_pokemon.sort(key=lambda x: x.speed, reverse=True)
     player_turn = all_pokemon.index(player.pokemon)
+    print("\n")
 
     def all_pokemon_fainted():
         alive_pokemon = [pokemon for pokemon in all_pokemon if pokemon.Is_alive()]
         return len(alive_pokemon) == 1
 
     while True:
-        print("\n")
         if current_turn == player_turn:
             if player.pokemon.hp > 0:
+                print("\n")
                 # Display the all Pokémon's statuses
                 for pokemon in all_pokemon:
                     if pokemon.status and pokemon != player.pokemon and pokemon.Is_alive():
@@ -126,9 +127,13 @@ def battle_loop(all_pokemon, player=None):
                 current_turn += 1
 
         else:
-            current_pokemon = all_pokemon[current_turn]
+            if current_turn < len(all_pokemon):
+                current_pokemon = all_pokemon[current_turn]
+            else:
+                current_pokemon = all_pokemon[current_turn % len(all_pokemon)]
 
             if current_pokemon.Is_alive() and current_pokemon != player.pokemon:
+                print("\n")
                 # Variable to track if a significant change has occurred
 
                 # Find a random living Pokémon target
@@ -147,6 +152,10 @@ def battle_loop(all_pokemon, player=None):
                         current_pokemon.Attack(target, current_pokemon.Choose_attack())
 
             current_turn = (current_turn + 1) % len(all_pokemon)
+
+            all_pokemon = [pokemon for pokemon in all_pokemon if pokemon.Is_alive()]
+            for i, pokemon in enumerate(all_pokemon):
+                pokemon.number = i + 1
 
             if all_pokemon_fainted() or current_turn > len(all_pokemon)*100:
                 pygame.mixer.music.stop()
