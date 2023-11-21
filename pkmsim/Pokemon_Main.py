@@ -7,6 +7,8 @@
 import random
 import pygame
 import pokemons as pkms
+import firework as fw
+import time as t
 
 # Initialize Pygame and load the music
 pygame.init()
@@ -20,9 +22,10 @@ class Player:
         self.potionmax = random.randint(0, 1)
 
     def Choose_attack(self):
-        self.pokemon.zero_pp()
+        self.pokemon.Zero_pp()
+
         for i, attack in enumerate(self.pokemon.attacks):
-            print(f"{i + 1}. {attack.name} ;\n Power: {attack.power} Accuracy: {attack.accuracy} \nPP: {attack.pp}")
+            print(f"{i + 1}. {attack.name} ;\n Power: {attack.power} Accuracy: {attack.accuracy} \nPP: {self.pokemon.attack_pp[i]}")
             if attack.effect:
                 print(f"Effect: {attack.effect} ; Probability: {attack.effect_probability}%")
 
@@ -63,8 +66,20 @@ def battle_loop(all_pokemon, player=None):
         print("\n")
         if current_turn == player_turn:
             if player.pokemon.hp > 0:
+                # Display the all Pokémon's statuses
+                for pokemon in all_pokemon:
+                    if pokemon.status and pokemon != player.pokemon and pokemon.Is_alive():
+                        if pokemon.status != "protect":
+                            print(f"The ennemy {pokemon.name} is {pokemon.status}!")
+                        else:
+                            print(f"The ennemy {pokemon.name} protects itself!")
+                
                 if player.pokemon.status:
-                    print(f"Your Pokémon is {player.pokemon.status}!")
+                    if player.pokemon.status != "protect":
+                        print(f"Your Pokémon is {player.pokemon.status}!")
+                    else:
+                        print(f"Your Pokémon protects itself!")
+                
                 # Player's turn
                 print(f"You have {player.pokemon.hp}/{player.pokemon.max_hp} HP")
                 player_choice = input("Choose an action for your Pokémon:\n1. Attack\n2. Use a Potion\n3. Skip Turn\n4. Flee: ")
@@ -118,9 +133,9 @@ def battle_loop(all_pokemon, player=None):
 
                 # Find a random living Pokémon target
                 if current_pokemon not in healed_pokemon and current_pokemon.hp < current_pokemon.max_hp - 10 and random.randint(1, 5) == 1:
-                    # The Pokémon has a 1 in 5 chance of healing by 10 hp
+                    # The Pokémon has a 1 in 5 chance of using a potion
                     if random.randint(1, 10) == 1:
-                        # The Pokémon has a 1 in 10 chance of using a max potion
+                        # The Pokémon has a 1 in 10 (total of 1 in 50) chance of using a Max Potion
                         current_pokemon.DrinkPotionMax()
                         healed_pokemon.append(current_pokemon)
                     current_pokemon.DrinkPotion(10)
@@ -144,6 +159,8 @@ def battle_loop(all_pokemon, player=None):
         print(f"The winning Pokémon is: {winner[0].name}")
         if winner[0] == player.pokemon:
             print("\033[93mYou won the battle!\033[0m")
+            t.sleep(1)
+            fw.firework()
         else:
             print("\033[91mYou lost the battle!\033[0m")
     else:
