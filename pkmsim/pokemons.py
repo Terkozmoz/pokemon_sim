@@ -208,16 +208,17 @@ class Pokemon:
 
                     # Applies the effect of the attack
 
-                    if attack.effect:
+                    if attack.effect and efficiency != 0:
                         # Checks if the effect is triggered
                         
                         a = random.randint(0, 100)
                         if a <= attack.effect_probability:
                             if target.status == None:
+                                print(f"{target.name} is affected by {attack.effect}!")
 
                                 # Negatives
 
-                                if attack.effect == "paralyse":
+                                if attack.effect == "paralyze":
                                     target.status = "paralyzed"
                                     print(f"\x1b[33m{target.name} is paralyzed!\x1b[0m")
                                 
