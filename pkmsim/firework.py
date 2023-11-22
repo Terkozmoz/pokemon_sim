@@ -22,3 +22,5 @@ def fireworks():
         i += 1
 
     print("\033[93mThank you for playing!\033[0m")
+    time.sleep(1)
+    exit()
