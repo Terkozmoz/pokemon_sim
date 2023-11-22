@@ -113,7 +113,7 @@ fighting_attacks = [
 
 # Attacks for the "Poison" type
 poison_attacks = [
-    Attack("Sludge Bomb", 90, 100, "poison", "poison", 10),
+    Attack("Sludge Bomb", 90, 100, 10, "poison", "poison", 10),
     Attack("Toxic", 0, 85, 15, "poison", "poison", 100),
     Attack("Poison Jab", 80, 100, 5, "poison", "poison", 20),
     Attack("Sludge", 20, 70, 20, "poison", "poison", 100),
