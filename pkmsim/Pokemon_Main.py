@@ -1,6 +1,6 @@
 # Pokemon_Main.py
 # Made by @Terkozmoz (GitHub)
-# Date: 2023-11-22
+# Date: 2023-11-20
 # Music by @Bliitzit (YouTube)
 # Date: 2020-06-27
 
@@ -13,6 +13,11 @@ import time as t
 # Initialize Pygame and load the music
 pygame.init()
 pygame.mixer.music.load("assets\\theme\\battle_theme.mp3")
+
+# Initialize the list of all Pokémon
+all_pokemon = pkms.all_pokemon
+
+# Define the Player class
 
 class Player:
     def __init__(self, pokemon):
@@ -52,6 +57,8 @@ class Player:
         else:
             print("Invalid potion type.")
 
+# Define the battle loop (the main game loop)
+
 def battle_loop(all_pokemon, player=None):
     current_turn = 1
     healed_pokemon = []
@@ -71,15 +78,19 @@ def battle_loop(all_pokemon, player=None):
                 for pokemon in all_pokemon:
                     if pokemon.status and pokemon != player.pokemon and pokemon.Is_alive():
                         if pokemon.status != "protect":
-                            print(f"The ennemy {pokemon.name} is {pokemon.status}!")
+                            
+                            print("\033[91mThe ennemy " + pokemon.name + " is " + pokemon.status + "!\033[0m")
                         else:
-                            print(f"The ennemy {pokemon.name} protects itself!")
+                            
+                            print("\033[91mThe ennemy " + pokemon.name + " protects itself!\033[0m")
                 
                 if player.pokemon.status:
                     if player.pokemon.status != "protect":
-                        print(f"Your Pokémon is {player.pokemon.status}!")
+                        
+                        print("\033[94mYour Pokémon is " + player.pokemon.status + "!\033[0m")
                     else:
-                        print(f"Your Pokémon protects itself!")
+                        
+                        print("\033[94mYour Pokémon protects itself!\033[0m")
                 
                 # Player's turn
                 print(f"You have {player.pokemon.hp}/{player.pokemon.max_hp} HP")
@@ -127,14 +138,16 @@ def battle_loop(all_pokemon, player=None):
                 current_turn += 1
 
         else:
+            # Opponent's turn
             if current_turn < len(all_pokemon):
                 current_pokemon = all_pokemon[current_turn]
             else:
+                # In case the current turn is greater than the number of Pokémon
                 current_pokemon = all_pokemon[current_turn % len(all_pokemon)]
 
+            # Makes sure the current Pokémon is alive and isn't the player's Pokémon
             if current_pokemon.Is_alive() and current_pokemon != player.pokemon:
                 print("\n")
-                # Variable to track if a significant change has occurred
 
                 # Find a random living Pokémon target
                 if current_pokemon not in healed_pokemon and current_pokemon.hp < current_pokemon.max_hp - 10 and random.randint(1, 5) == 1:
@@ -158,24 +171,31 @@ def battle_loop(all_pokemon, player=None):
                 pokemon.number = i + 1
 
             if all_pokemon_fainted() or current_turn > len(all_pokemon)*100:
+                # If all Pokémon are fainted, the battle is over or if the battle lasts too long, it ends (in case of normal vs ghost type situation)
                 pygame.mixer.music.stop()
                 print("\n")
                 print("The battle is over.")
                 break
 
     winner = [pokemon for pokemon in all_pokemon if pokemon.Is_alive()]
+    # Define and display the winner
     if winner and len(winner) == 1:
         print(f"The winning Pokémon is: {winner[0].name}")
         if winner[0] == player.pokemon:
             print("\033[93mYou won the battle!\033[0m")
             t.sleep(1)
-            fw.firework()
+            fw.fireworks()
         else:
             print("\033[91mYou lost the battle!\033[0m")
+
     else:
         print("There is no winning Pokémon.")
 
+    t.sleep(1)
+    exit()
+
 def choose_pokemon():
+    # allows the player to choose a pokemon
     global all_pokemon
     print("Choose a Pokémon from the following:")
     for i, pokemon in enumerate(all_pokemon):
@@ -204,6 +224,7 @@ def choose_pokemon():
     return chosen_pokemon
 
 def number_of_opponents():
+    #allows the player to choose the number of opponents
     global all_pokemon
     print(f"Set the number of opponent Pokémons:")
     choice = int(input(f"Choose a number between 4 and {len(all_pokemon)}: "))
@@ -215,12 +236,15 @@ def number_of_opponents():
         print("Invalid choice.")
         number_of_opponents()
 
-if __name__ == '__main__':
+def main():
     # Create Pokémons and add them to the list
+    fw.clear_screen
     print("\033[93mWelcome!\033[0m")
-    all_pokemon = pkms.all_pokemon
     number_of_opponents()
     player = Player(choose_pokemon())
     all_pokemon.sort(key=lambda x: x.speed, reverse=True)
     pkms.play_music()
     battle_loop(all_pokemon, player)
+    
+if __name__ == '__main__':
+    main()
