@@ -1,6 +1,6 @@
 # Pokemon_Main.py
 # Made by @Terkozmoz (GitHub)
-# Date: 2023-11-20
+# Date: 2023-11-22
 # Music by @Bliitzit (YouTube)
 # Date: 2020-06-27
 
