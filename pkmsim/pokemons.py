@@ -508,4 +508,6 @@ Mewthree = Pokemon('Mewthree', 500, 500, 500, 500, None)
 all_pokemon = [Pikachu, Squirtle, Charmander, Bulbasaur, Charmur, Seel, Meditite, Gloom, Dugtrio, Pidgey, Abra, Wurmple, Relicanth,
                Shuppet, Bagon, Poochyena, Aron, Marill, Groudon, Raichu, Blastoise, Charizard, Venusaur, Snorlax, Lapras, Machamp,
                Nidoking, Rhydon, Aerodactyl, Alakazam, Samurott, Tyranitar, Ditto, Slowbro, Blissey, Rayquaza, Umbreon, Registeel,
-               Magikarp, Vaporeon, Mew, Raikou, Articuno, Moltres, Zapdos]
+               Magikarp, Vaporeon, Mew, Raikou, Articuno, Moltres, Zapdos, Dialga, Palkia, Giratina, Deoxys, Arceus, Arcanine, Arbok,
+               Beedrill, Bellossom, Regirock, Regice, Regigiagas, Regieleki, Regidraco, Darkrai, Cresselia, Uxie, Mesprit, Azelf, Lugia,
+               HoOh, Celebi, Heatran, Victini, Suicune, Entei]
