@@ -215,7 +215,6 @@ class Pokemon:
                         a = random.randint(0, 100)
                         if a <= attack.effect_probability:
                             if target.status == None:
-                                print(f"{target.name} is affected by {attack.effect}!")
 
                                 # Negatives
 
@@ -295,8 +294,8 @@ class Pokemon:
                                 target.defense -= 10
                                 print(f"{target.name}'s defense has decreased!")
         
-            else:
-                print("The attack missed!")
+                else:
+                    print("The attack missed!")
 
         if self.status == "burned":
             self.hp -= self.max_hp // 8
