@@ -4,20 +4,20 @@ import random
 import pygame
 
 class Pokemon:
-    def __init__(self, name, max_hp, Att, speed,Def, Type, Type2=None):
+    def __init__(self, name, base_hp, Att, speed,Def, Type, Type2=None):
         """
         Init a Pokemon with its name, hp, attack, defense, speed and type.
 
         Args:
             name (str): Pokemon's name.
-            max_hp (int): Pokemon's max hp.
+            base_hp (int): Pokemon's base hp (stat).
             Att (int) : Pokemon's attack.
             speed (int): Pokemon's speed.
             Def (int): Pokemon's defense.
             Type (str): Pokemon's type(One or Two).
         """
         self.name = name
-        self.base = max_hp
+        self.base = base_hp
         self.attack = Att
         self.defense = Def
         self.speed = speed
@@ -510,4 +510,3 @@ all_pokemon = [Pikachu, Squirtle, Charmander, Bulbasaur, Charmur, Seel, Meditite
                Magikarp, Vaporeon, Mew, Raikou, Articuno, Moltres, Zapdos, Dialga, Palkia, Giratina, Deoxys, Arceus, Arcanine, Arbok,
                Beedrill, Bellossom, Regirock, Regice, Regigiagas, Regieleki, Regidraco, Darkrai, Cresselia, Uxie, Mesprit, Azelf, Lugia,
                HoOh, Celebi, Heatran, Victini, Suicune, Entei]
-
