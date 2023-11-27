@@ -163,7 +163,7 @@ class Pokemon:
         global pokemon_order
         self.staring_hp = self.hp
         if self.status == "protect":
-            self.protect = False
+            self.status = None
             print(f"{self.name}'s protection has disappeared!")
         if self.status != "asleep":
             if self.status != "frozen":
@@ -510,3 +510,4 @@ all_pokemon = [Pikachu, Squirtle, Charmander, Bulbasaur, Charmur, Seel, Meditite
                Magikarp, Vaporeon, Mew, Raikou, Articuno, Moltres, Zapdos, Dialga, Palkia, Giratina, Deoxys, Arceus, Arcanine, Arbok,
                Beedrill, Bellossom, Regirock, Regice, Regigiagas, Regieleki, Regidraco, Darkrai, Cresselia, Uxie, Mesprit, Azelf, Lugia,
                HoOh, Celebi, Heatran, Victini, Suicune, Entei]
+
