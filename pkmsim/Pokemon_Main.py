@@ -1,6 +1,6 @@
 # Pokemon_Main.py
 # Made by @Terkozmoz (GitHub)
-# Date: 2023-11-20
+# Last Update: 2023-12-04
 # Music by @Bliitzit (YouTube)
 # Date: 2020-06-27
 
@@ -25,6 +25,15 @@ class Player:
         self.potion = 1
         self.superpotion = 1
         self.potionmax = random.randint(0, 1)
+
+    """
+    Initialize the player's Pokémon and the number of potions
+    The number of potions is randomized between 0 and 1 for the Max Potion, so they aren't guaranteed to have one
+    ### Methods ###
+    Choose_attack() allows the player to choose an attack
+    Use_potion() allows the player to use a potion
+    They are borh used in the battle loop
+    """
 
     def Choose_attack(self):
         self.pokemon.Zero_pp()
@@ -66,16 +75,32 @@ def battle_loop(all_pokemon, player=None):
     player_turn = all_pokemon.index(player.pokemon)
     print("\n")
 
+    """
+    The battle loop is the main game loop
+    It is used to run the battle
+    ### Variables ###
+    current_turn is the current turn number
+    healed_pokemon is a list of Pokémon that have been healed by a potion
+    all_pokemon is the list of all Pokémon in the battle
+    player_turn is the turn number of the player's Pokémon
+    ### Methods ###
+    all_pokemon_fainted() checks if all Pokémon are fainted
+    It is used to end the battle
+    """
+
     def all_pokemon_fainted():
         alive_pokemon = [pokemon for pokemon in all_pokemon if pokemon.Is_alive()]
         return len(alive_pokemon) == 1
 
     while True:
         if current_turn == player_turn:
+            # Player's turn
             if player.pokemon.hp > 0:
+                # If the player's Pokémon is alive
                 print("\n")
                 # Display the all Pokémon's statuses
                 for pokemon in all_pokemon:
+                    # Print the status of the Pokémon if it has one
                     if pokemon.status and pokemon != player.pokemon and pokemon.Is_alive():
                         if pokemon.status != "protect":
                             
@@ -85,6 +110,7 @@ def battle_loop(all_pokemon, player=None):
                             print("\033[91mThe ennemy " + pokemon.name + " protects itself!\033[0m")
                 
                 if player.pokemon.status:
+                    # Print the status of the player's Pokémon if it has one
                     if player.pokemon.status != "protect":
                         
                         print("\033[94mYour Pokémon is " + player.pokemon.status + "!\033[0m")
@@ -92,7 +118,7 @@ def battle_loop(all_pokemon, player=None):
                         
                         print("\033[94mYour Pokémon protects itself!\033[0m")
                 
-                # Player's turn
+                # Player's turn menu
                 print(f"You have {player.pokemon.hp}/{player.pokemon.max_hp} HP")
                 player_choice = input("Choose an action for your Pokémon:\n1. Attack\n2. Use a Potion\n3. Skip Turn\n4. Flee: ")
                 print("\n")
@@ -111,10 +137,12 @@ def battle_loop(all_pokemon, player=None):
                     target_choice = int(input("Enter the target number: ")) - 1
                     print("\n")
                     if 0 <= target_choice < len(all_pokemon) and all_pokemon[target_choice].Is_alive() and all_pokemon[target_choice] != player.pokemon:
+                        # If the target is valid, attack it
                         opponent = all_pokemon[target_choice]
                         player.pokemon.Attack(opponent, attack_player)
                         current_turn += 1
                     else:
+                        # If the target is invalid, the attack fails
                         print("Invalid target choice. The attack failed.")
                         current_turn += 1
 
@@ -135,6 +163,7 @@ def battle_loop(all_pokemon, player=None):
                     print("You have fled the battle.")
                     break
             else:
+                # If the player's Pokémon is fainted, skip their turn
                 current_turn += 1
 
         else:
@@ -159,6 +188,7 @@ def battle_loop(all_pokemon, player=None):
                     current_pokemon.DrinkPotion(10)
                     healed_pokemon.append(current_pokemon)
                 else:
+                    # The Pokémon attacks a random living Pokémon
                     available_targets = [pokemon for pokemon in all_pokemon if pokemon.Is_alive() and pokemon != current_pokemon]
                     if available_targets:
                         target = random.choice(available_targets)
@@ -183,8 +213,13 @@ def battle_loop(all_pokemon, player=None):
         print(f"The winning Pokémon is: {winner[0].name}")
         if winner[0] == player.pokemon:
             print("\033[93mYou won the battle!\033[0m")
+            print("Fireworks? (might not work in some cases)")
+            if input("y/y: ") == "y":
+                t.sleep(1)
+                fw.fireworks()
+            print("\033[93mThank you for playing!\033[0m")
             t.sleep(1)
-            fw.fireworks()
+            exit()
         else:
             print("\033[91mYou lost the battle!\033[0m")
 
@@ -209,14 +244,8 @@ def choose_pokemon():
                 print("Invalid Pokémon number. Try again.")
                 choice = None
         except ValueError:
+            # If the input is not a number
             print("Please enter a valid number.")
-
-    if choice == 0:
-        """
-        print("You found a secret Pokémon!")
-        chosen_pokemon = pkms.Mewthree
-        all_pokemon.append(chosen_pokemon)
-        """
  
     chosen_pokemon = all_pokemon[choice]
     print(f"You chose {chosen_pokemon.name}!")
