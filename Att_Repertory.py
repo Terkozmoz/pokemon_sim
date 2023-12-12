@@ -1,4 +1,4 @@
-# pokemon_attack_repertory.py
+# Attack_Repertory.py
 class Attack:
     def __init__(self, name, power, accuracy, pp_max, attack_type, effect=None, effect_probability=0):
         self.name = name
