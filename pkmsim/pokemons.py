@@ -1,5 +1,6 @@
 # pokemons.py
-import pokemon_Att_Repertory as att
+
+import att_repertory as att
 import random
 import pygame
 
@@ -26,6 +27,14 @@ class Pokemon:
         self.hp = self.calculate_hp()
         self.max_hp = self.hp
         self.attacks = self.random_attacks()
+        self.status = None
+        self.attack_pp = [0, 0, 0, 0]
+        self.kos = 0
+        for i in range(len(self.attacks)):
+            self.attack_pp[i] = self.attacks[i].pp
+
+    def reset(self):
+        self.hp = self.max_hp
         self.status = None
         self.attack_pp = [0, 0, 0, 0]
         for i in range(len(self.attacks)):
@@ -339,6 +348,7 @@ class Pokemon:
 
         if target.hp <= 0:
             print(f"\x1b[31m{target.name} is knocked out!\x1b[0m")
+            self.kos += 1
         else:
             print(f"{target.name} has \x1b[31m{target.hp} HP left\x1b[0m.")
         
@@ -407,6 +417,13 @@ def play_music(i=0):
     else:
         print("invalid choice. Try again.")
         play_music(i+1)
+
+def reset_pokemon():
+    global all_pokemon
+    all_pokemon = base_all_pokemon
+    for pokemon in all_pokemon:
+        pokemon.reset()
+
 
 attacks_by_type = {
     "electric": att.electric_attacks,
@@ -510,3 +527,4 @@ all_pokemon = [Pikachu, Squirtle, Charmander, Bulbasaur, Charmur, Seel, Meditite
                Magikarp, Vaporeon, Mew, Raikou, Articuno, Moltres, Zapdos, Dialga, Palkia, Giratina, Deoxys, Arceus, Arcanine, Arbok,
                Beedrill, Bellossom, Regirock, Regice, Regigiagas, Regieleki, Regidraco, Darkrai, Cresselia, Uxie, Mesprit, Azelf, Lugia,
                HoOh, Celebi, Heatran, Victini, Suicune, Entei]
+base_all_pokemon = all_pokemon.copy()
