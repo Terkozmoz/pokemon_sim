@@ -1,3 +1,5 @@
+# firework.py
+
 import time
 import random
 import os
@@ -21,6 +23,11 @@ def fireworks():
         clear_screen()
         i += 1
 
-    print("\033[93mThank you for playing!\033[0m")
-    time.sleep(1)
-    exit()
+    print("keep playing? (y/n)")
+    if input("y/n: ") == "y":
+        clear_screen()
+        pass
+    else:
+        print("\033[93mThank you for playing!\033[0m")
+        time.sleep(1)
+        exit()
