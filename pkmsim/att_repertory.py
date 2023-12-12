@@ -1,4 +1,5 @@
-# Attack_Repertory.py
+# attack_repertory.py
+
 class Attack:
     def __init__(self, name, power, accuracy, pp_max, attack_type, effect=None, effect_probability=0):
         self.name = name
@@ -11,12 +12,12 @@ class Attack:
         self.pp = pp_max
 
     def Calculate_damage(self, attacker, defender, effectiveness):
-        # Damage calculation formula without considering the level
+        # Damage calculation formula
         A = attacker.attack
         D = defender.defense
         P = self.power
         E = effectiveness
-        damage = int(int((((100 + A + (15 * 50)) * P) / (D + 50)) / 20) * E)
+        damage = int(int((((100 + A + (15 * (50 + attacker.kos / 10))) * P) / (D + 50)) / 20) * E)
         return int(damage)
 
 # Attacks for the "Electric" type
