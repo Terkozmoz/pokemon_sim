@@ -1,8 +1,4 @@
-# Pokemon_Main.py
-# Made by @Terkozmoz (GitHub)
-# Last Update: 2023-12-04
-# Music by @Bliitzit (YouTube)
-# Date: 2020-06-27
+# battle.py
 
 import random
 import pygame
@@ -14,17 +10,20 @@ import time as t
 pygame.init()
 pygame.mixer.music.load("assets\\theme\\battle_theme.mp3")
 
-# Initialize the list of all Pokémon
-all_pokemon = pkms.all_pokemon
+# Initialize the bonus pottions
+
+bonus_potion = 0
+bonus_superpotion = 0
+bonus_potionmax = 0
 
 # Define the Player class
 
 class Player:
     def __init__(self, pokemon):
         self.pokemon = pokemon
-        self.potion = 1
-        self.superpotion = 1
-        self.potionmax = random.randint(0, 1)
+        self.potion = 1 + bonus_potion
+        self.superpotion = 1 + bonus_superpotion
+        self.potionmax = random.randint(0, 1) + bonus_potionmax
 
     """
     Initialize the player's Pokémon and the number of potions
@@ -43,12 +42,18 @@ class Player:
             if attack.effect:
                 print(f"Effect: {attack.effect} ; Probability: {attack.effect_probability}%")
 
-        choice = int(input("Enter the attack number: ")) - 1
-        if 0 <= choice < len(self.pokemon.attacks) and self.pokemon.attacks[choice].pp > 0:
-            return self.pokemon.attacks[choice]
+        choice = int(input("Enter the index of the attack: ")) - 1
+
+        if 0 <= choice < len(self.pokemon.attacks):
+            attack = self.pokemon.attacks[choice]
+            if self.pokemon.attack_pp[self.pokemon.attacks.index(attack)] > 0:
+                return attack
+            else:
+                print("Attack out of PP. Choose another.")
+                return self.Choose_attack()  # Recursive call for attack out of PP
         else:
             print("Invalid choice. Try again.")
-            return self.Choose_attack()
+            return self.Choose_attack()  # Recursive call for invalid index
 
     def Use_potion(self, target, potion_choice):
         if potion_choice == 0 and self.potion >= 1:
@@ -214,12 +219,11 @@ def battle_loop(all_pokemon, player=None):
         if winner[0] == player.pokemon:
             print("\033[93mYou won the battle!\033[0m")
             print("Fireworks? (might not work in some cases)")
-            if input("y/y: ") == "y":
+            if input("y/n: ") == "y":
                 t.sleep(1)
                 fw.fireworks()
-            print("\033[93mThank you for playing!\033[0m")
-            t.sleep(1)
-            exit()
+                reset_game()
+
         else:
             print("\033[91mYou lost the battle!\033[0m")
 
@@ -227,7 +231,8 @@ def battle_loop(all_pokemon, player=None):
         print("There is no winning Pokémon.")
 
     t.sleep(1)
-    exit()
+    fw.clear_screen()
+    reset_game()
 
 def choose_pokemon():
     # allows the player to choose a pokemon
@@ -252,9 +257,10 @@ def choose_pokemon():
 
     return chosen_pokemon
 
-def number_of_opponents():
+def number_of_opponents(all_pokemon):
     #allows the player to choose the number of opponents
-    global all_pokemon
+    choice = None
+    
     print(f"Set the number of opponent Pokémons:")
     choice = int(input(f"Choose a number between 4 and {len(all_pokemon)}: "))
     if len(all_pokemon) >= choice >= 4:
@@ -265,15 +271,27 @@ def number_of_opponents():
         print("Invalid choice.")
         number_of_opponents()
 
-def main():
-    # Create Pokémons and add them to the list
+def reset_game():
+    global all_pokemon
+    pkms.reset_pokemon()
+    all_pokemon.clear()  # Clear the existing list instead of reassigning
+    all_pokemon.extend(pkms.base_all_pokemon)  # Extend with the updated list of pokemons
+
+def start(pokes = None):
+    if not pokes:
+        global all_pokemon
+        all_pokemon = pkms.all_pokemon
+    else:
+        all_pokemon = pokes
     fw.clear_screen
     print("\033[93mWelcome!\033[0m")
-    number_of_opponents()
+    number_of_opponents(all_pokemon)
     player = Player(choose_pokemon())
     all_pokemon.sort(key=lambda x: x.speed, reverse=True)
     pkms.play_music()
     battle_loop(all_pokemon, player)
     
 if __name__ == '__main__':
-    main()
+    start()
+
+# 3 674
