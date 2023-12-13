@@ -15,15 +15,18 @@ pygame.mixer.music.load("assets\\theme\\battle_theme.mp3")
 bonus_potion = 0
 bonus_superpotion = 0
 bonus_potionmax = 0
+bonus_pball = 0
 
 # Define the Player class
 
 class Player:
     def __init__(self, pokemon):
         self.pokemon = pokemon
+        # Items
         self.potion = 1 + bonus_potion
         self.superpotion = 1 + bonus_superpotion
         self.potionmax = random.randint(0, 1) + bonus_potionmax
+        self.pball = 1 + bonus_pball # allows the player to catch (and instantly defeat) a pokemon
 
     """
     Initialize the player's Pokémon and the number of potions
@@ -70,6 +73,25 @@ class Player:
             print(f"You have {self.potionmax} Max Potions remaining")
         else:
             print("Invalid potion type.")
+
+    def Use_pball(self):
+        if self.pball >= 1:
+            print("choose a pokemon to catch:")
+            for i, pokemon in enumerate(all_pokemon):
+                if pokemon.Is_alive() and pokemon != self.pokemon:
+                    print(f"{i + 1}. {pokemon.name}")
+            choice = int(input("Enter the pokemon number: ")) - 1
+            if 0 <= choice < len(all_pokemon):
+                print(f"You throw a Pokeball at {all_pokemon[choice].name}!")
+                self.pball -= 1
+                print(f"You have {self.pball} Pokeballs remaining")
+                if random.randint(1, 10) == 1:
+                    print("The pokemon was caught! It won't be able to fight anymore.")
+                    all_pokemon[choice].hp = 0
+                else:
+                    print("The pokemon broke free!")
+        else:
+            print("No Pokeballs left.")
 
 # Define the battle loop (the main game loop)
 
@@ -125,7 +147,7 @@ def battle_loop(all_pokemon, player=None):
                 
                 # Player's turn menu
                 print(f"You have {player.pokemon.hp}/{player.pokemon.max_hp} HP")
-                player_choice = input("Choose an action for your Pokémon:\n1. Attack\n2. Use a Potion\n3. Skip Turn\n4. Flee: ")
+                player_choice = input("Choose an action for your Pokémon:\n1. Attack\n2. Use an item\n3. Skip Turn\n4. Flee: ")
                 print("\n")
 
                 if player_choice == "1":
@@ -152,10 +174,15 @@ def battle_loop(all_pokemon, player=None):
                         current_turn += 1
 
                 elif player_choice == "2":
-                    # Player chooses to use a potion
-                    print(f"Choose a potion:\n0. Potion ({player.potion})\n1. Super Potion ({player.superpotion})\n2. Max Potion ({player.potionmax})\n")
-                    potion_choice = int(input("Enter the potion number: "))
-                    player.Use_potion(player.pokemon, potion_choice)
+                    # Player chooses to use a item
+                    print(f"Do you want to use a potion or a pokeball?\n0. Potion ({player.potion})\n1. Super Potion ({player.superpotion})\n2. Max Potion ({player.potionmax})\n3. Pokeball ({player.pball})\n")
+                    choice = int(input("Enter the item number: "))
+                    if choice <= 2:
+                        player.Use_potion(player.pokemon, choice)
+                    elif choice == 3:
+                        Player.Use_pball(self=player)
+                    else:
+                        print("Invalid choice. Your turn is skipped.")
                     current_turn += 1
 
                 elif player_choice == "3":
@@ -167,6 +194,11 @@ def battle_loop(all_pokemon, player=None):
                     # Player chooses to flee the battle
                     print("You have fled the battle.")
                     break
+
+                else:
+                    # If the player's choice is invalid, skip their turn
+                    print("Invalid choice. Your turn is skipped.")
+                    current_turn += 1
             else:
                 # If the player's Pokémon is fainted, skip their turn
                 current_turn += 1
