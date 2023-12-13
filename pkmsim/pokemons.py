@@ -4,6 +4,8 @@ import att_repertory as att
 import random
 import pygame
 
+leveled_ups = []
+
 class Pokemon:
     def __init__(self, name, base_hp, Att, speed,Def, Type, Type2=None):
         """
@@ -30,6 +32,8 @@ class Pokemon:
         self.status = None
         self.attack_pp = [0, 0, 0, 0]
         self.kos = 0
+        self.level = 50
+        self.starting_stats = [self.attack, self.defense, self.speed]
         for i in range(len(self.attacks)):
             self.attack_pp[i] = self.attacks[i].pp
 
@@ -37,6 +41,11 @@ class Pokemon:
         self.hp = self.max_hp
         self.status = None
         self.attack_pp = [0, 0, 0, 0]
+        self.attacks = []
+        self.attacks = self.random_attacks()
+        self.attack = self.starting_stats[0]
+        self.defense = self.starting_stats[1]
+        self.speed = self.starting_stats[2]
         for i in range(len(self.attacks)):
             self.attack_pp[i] = self.attacks[i].pp
 
@@ -128,11 +137,21 @@ class Pokemon:
         return self.hp
     
     def Choose_attack(self):
-        i = random.randint(0, 3)
-        attack = self.attacks[i]
-        if self.attack_pp[i] == 0:
-            self.Zero_pp()
-            return self.Choose_attack()
+        valid = False
+        l = 0
+        while valid == False:
+            l += 1
+            i = random.randint(0, len(self.attacks) - 1)
+            attack = self.attacks[i]
+            if self.attack_pp[i] == 0:
+                self.Zero_pp()
+            else:
+                valid = True
+            if l >= 100:
+                self.attack_pp.append(-1)
+                self.Learn_struggle()
+                attack = self.attacks[5]
+                valid = True
         return attack
 
     def DrinkPotionMax(self):
@@ -349,6 +368,10 @@ class Pokemon:
         if target.hp <= 0:
             print(f"\x1b[31m{target.name} is knocked out!\x1b[0m")
             self.kos += 1
+            if self.kos // 10 == 1:
+                self.level += 1
+                print(f"{self.name} is now level {self.level}!")
+                leveled_ups.append([self.name, self.level])
         else:
             print(f"{target.name} has \x1b[31m{target.hp} HP left\x1b[0m.")
         
@@ -456,9 +479,10 @@ Seel = Pokemon('Seel', 70, 28, 25, 40, 'water')
 Meditite = Pokemon('Meditite', 60, 24, 60, 30, 'fighting')
 Gloom = Pokemon('Gloom', 85, 15, 65, 65, 'poison')
 Dugtrio = Pokemon('Dugtrio', 60, 25, 35, 35, 'ground')
+Munja = Pokemon('Munja', 1, 90, 40, 40, 'bug', 'ghost')
 Pidgey = Pokemon('Pidgey', 70, 15, 50, 40, 'flying')
 Abra = Pokemon('Abra', 45, 39, 40, 35, 'psychic')
-Wurmple = Pokemon('Wurmple', 1, 50, 56, 30, 'insect')
+Wurmple = Pokemon('Wurmple', 45, 20, 20, 30, 'insect')
 Relicanth = Pokemon('Relicanth', 65, 25, 55, 35, 'rock', 'water')
 Shuppet = Pokemon('Shuppet', 40, 25, 50, 35, 'ghost')
 Bagon = Pokemon('Bagon', 65, 24, 50, 45, 'dragon')
@@ -521,10 +545,10 @@ Entei = Pokemon('Entei', 115, 115, 85, 100, 'fire')
 
 Mewthree = Pokemon('Mewthree', 500, 500, 500, 500, None)
 
-all_pokemon = [Pikachu, Squirtle, Charmander, Bulbasaur, Charmur, Seel, Meditite, Gloom, Dugtrio, Pidgey, Abra, Wurmple, Relicanth,
-               Shuppet, Bagon, Poochyena, Aron, Marill, Groudon, Raichu, Blastoise, Charizard, Venusaur, Snorlax, Lapras, Machamp,
-               Nidoking, Rhydon, Aerodactyl, Alakazam, Samurott, Tyranitar, Ditto, Slowbro, Blissey, Rayquaza, Umbreon, Registeel,
-               Magikarp, Vaporeon, Mew, Raikou, Articuno, Moltres, Zapdos, Dialga, Palkia, Giratina, Deoxys, Arceus, Arcanine, Arbok,
-               Beedrill, Bellossom, Regirock, Regice, Regigiagas, Regieleki, Regidraco, Darkrai, Cresselia, Uxie, Mesprit, Azelf, Lugia,
-               HoOh, Celebi, Heatran, Victini, Suicune, Entei]
+all_pokemon = [Pikachu, Squirtle, Charmander, Bulbasaur, Charmur, Seel, Meditite, Gloom, Dugtrio, Munja, Pidgey, Abra, Wurmple,
+               Relicanth, Shuppet, Bagon, Poochyena, Aron, Marill, Groudon, Raichu, Blastoise, Charizard, Venusaur, Snorlax, Lapras,
+               Machamp, Nidoking, Rhydon, Aerodactyl, Alakazam, Samurott, Tyranitar, Ditto, Slowbro, Blissey, Rayquaza, Umbreon,
+               Registeel, Magikarp, Vaporeon, Mew, Raikou, Articuno, Moltres, Zapdos, Dialga, Palkia, Giratina, Deoxys, Arceus, Arcanine,
+               Arbok, Beedrill, Bellossom, Regirock, Regice, Regigiagas, Regieleki, Regidraco, Darkrai, Cresselia, Uxie, Mesprit, Azelf,
+               Lugia, HoOh, Celebi, Heatran, Victini, Suicune, Entei]
 base_all_pokemon = all_pokemon.copy()
