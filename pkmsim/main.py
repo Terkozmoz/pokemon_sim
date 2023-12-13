@@ -101,14 +101,20 @@ def move_player(area, player_pos, direction):
     elif direction == 'd':
         new_player_pos = (player_pos[0], player_pos[1] + 1)
     # Diagonals
-    elif direction == 'wa' or direction == 'zq':
+    elif direction == 'wa' or direction == 'zq' or direction == 'aw' or direction == 'qz':
         new_player_pos = (player_pos[0] - 1, player_pos[1] - 1)
-    elif direction == 'wd' or direction == 'zd':
+    elif direction == 'wd' or direction == 'zd' or direction == 'dw' or direction == 'dz':
         new_player_pos = (player_pos[0] - 1, player_pos[1] + 1)
-    elif direction == 'sa' or direction == 'sq':
+    elif direction == 'sa' or direction == 'sq' or direction == 'as' or direction == 'qs':
         new_player_pos = (player_pos[0] + 1, player_pos[1] - 1)
-    elif direction == 'sd':
+    elif direction == 'sd' or direction == 'ds':
         new_player_pos = (player_pos[0] + 1, player_pos[1] + 1)
+
+    elif direction == 'e':
+        inventory()
+    # Else, the player didn't enter a valid direction
+    else:
+        new_player_pos = player_pos
     
     if not (0 <= new_player_pos[0] < 8 and 0 <= new_player_pos[1] < 8):
         # Player moved off the map
@@ -149,6 +155,13 @@ def check_item(area, player_pos):
 def check_battle(area, player_pos):
     return area[player_pos[0]][player_pos[1]] == '[ O# ]'
 
+def inventory():
+    print("You have:")
+    print(f"{b.bonus_potion} potions")
+    print(f"{b.bonus_superpotion} super potions")
+    print(f"{b.bonus_potionmax} max potions")
+    print("And that's it for now!")
+
 # Generate initial game area and get player position
 game_area, player_position = generate_area()
 
@@ -169,7 +182,10 @@ while True:
     if check_item(game_area, player_position):
         print("You found an item!")
         id = random.randint(1, 100)
-        if id <= 80:
+        if id <= 10:
+            print("You found a pokeball!")
+            b.bonus_pball += 1
+        elif id <= 80:
             print("You found a potion!")
             b.bonus_potion += 1
         elif id <= 95:
@@ -183,7 +199,10 @@ while True:
     if check_battle(game_area, player_position):
         print("You encountered an enemy!")
         b.start(all_pkms)
-        print("You defeated the enemy!")
+        print("End of the encounter!")
+        # shows leveled up pokemons
+        for lvlup in p.leveled_ups:
+            print(f"{lvlup[0]} leveled up to level {lvlup[1]}!")
 
     # Display the updated game area
     display_area(game_area)
