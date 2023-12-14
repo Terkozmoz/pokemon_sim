@@ -183,11 +183,6 @@ def inventory():
 
 # Shows some help for the player
 
-### FILE MANAGEMENT ###
-new = True
-appdata_path = os.getenv('APPDATA')
-game_folder = 'Tko/Pkmsim'
-os.makedirs(os.path.join(appdata_path, game_folder), exist_ok=True)
 def help():
     print("You are the \033[92m[ O ]\033[0m, you can move with wasd or zqsd. Diagonals also work")
     print("You can find items on the \033[94m[ X ]\033[0m spots")
@@ -201,12 +196,10 @@ def help():
     print("You can also see this help with help")
 
 ### FILE MANAGEMENT ###
-    path = 'assets/have_played.txt'
-
-    # Open the file in write mode
-    with open(path, 'w') as file:
-        # Write a string to the file
-        file.write(" You have played the game before ")
+new = True
+appdata_path = os.getenv('APPDATA')
+game_folder = 'Tko/Pkmsim'
+os.makedirs(os.path.join(appdata_path, game_folder), exist_ok=True)
 
 def save():
     path = os.path.join(appdata_path, 'Tko', 'Pkmsim', 'save.txt')
