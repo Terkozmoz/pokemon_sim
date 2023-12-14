@@ -8,7 +8,6 @@ import random
 import os
 import battle as b
 import pokemons as p
-new = True
 
 all_pkms = p.all_pokemon.copy()
 
@@ -183,6 +182,12 @@ def inventory():
     print("And that's it for now!")
 
 # Shows some help for the player
+
+### FILE MANAGEMENT ###
+new = True
+appdata_path = os.getenv('APPDATA')
+game_folder = 'Tko/Pkmsim'
+os.makedirs(os.path.join(appdata_path, game_folder), exist_ok=True)
 def help():
     print("You are the \033[92m[ O ]\033[0m, you can move with wasd or zqsd. Diagonals also work")
     print("You can find items on the \033[94m[ X ]\033[0m spots")
@@ -196,8 +201,6 @@ def help():
     print("You can also see this help with help")
 
 ### FILE MANAGEMENT ###
-
-def un_new_player():
     path = 'assets/have_played.txt'
 
     # Open the file in write mode
@@ -206,7 +209,7 @@ def un_new_player():
         file.write(" You have played the game before ")
 
 def save():
-    path = 'assets/save.txt'
+    path = os.path.join(appdata_path, 'Tko', 'Pkmsim', 'save.txt')
     sorted_mons = sorted(p.all_pokemon, key=lambda x: x.name)
 
     with open(path, 'w') as file:
@@ -220,7 +223,7 @@ def save():
             file.write(f"{mon.level}\n")
 
 def load():
-    path = 'assets/save.txt'
+    path = os.path.join(appdata_path, 'Tko', 'Pkmsim', 'save.txt')
     sorted_mons = sorted(p.all_pokemon, key=lambda x: x.name)
 
     with open(path, 'r') as file:
@@ -234,7 +237,7 @@ def load():
             mon.level = int(file.readline())
 
 def is_new():
-    if os.path.exists("assets/have_played.txt"):
+    if os.path.exists(os.path.join(appdata_path, 'Tko', 'Pkmsim', 'save.txt')):
         global new
         new = False
 
@@ -274,7 +277,6 @@ is_new()
 # Shows help if the player is playing for the first time
 if new == True:
     help()
-    un_new_player()
 
 ### MAIN LOOP ###
 
