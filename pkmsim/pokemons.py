@@ -1,336 +1,535 @@
-# battle.py
+# pokemons.py
 
+import att_repertory as att
 import random
 import pygame
-import pokemons as pkms
-import firework as fw
-import time as t
 
-# Initialize Pygame and load the music
-pygame.init()
-pygame.mixer.music.load("assets\\theme\\battle_theme.mp3")
+leveled_ups = []
+quest = None
 
-# Initialize the bonus pottions
+class Pokemon:
+    def __init__(self, name, base_hp, Att, speed,Def, Type, Type2=None):
+        """
+        Init a Pokemon with its name, hp, attack, defense, speed and type.
 
-bonus_potion = 0
-bonus_superpotion = 0
-bonus_potionmax = 0
+        Args:
+            name (str): Pokemon's name.
+            base_hp (int): Pokemon's base hp (stat).
+            Att (int) : Pokemon's attack.
+            speed (int): Pokemon's speed.
+            Def (int): Pokemon's defense.
+            Type (str): Pokemon's type(One or Two).
+        """
+        self.name = name
+        self.base = base_hp
+        self.attack = Att
+        self.defense = Def
+        self.speed = speed
+        self.type = Type
+        self.type2 = Type2
+        self.hp = self.calculate_hp()
+        self.max_hp = self.hp
+        self.attacks = self.random_attacks()
+        self.status = None
+        self.attack_pp = [0, 0, 0, 0]
+        self.kos = 0
+        self.level = 50
+        self.starting_stats = [self.attack, self.defense, self.speed]
+        for i in range(len(self.attacks)):
+            self.attack_pp[i] = self.attacks[i].pp
 
-# Initialize other items
+    def reset(self):
+        self.hp = self.max_hp
+        self.status = None
+        self.attack_pp = [0, 0, 0, 0]
+        self.attacks = []
+        self.attacks = self.random_attacks()
+        self.attack = self.starting_stats[0]
+        self.defense = self.starting_stats[1]
+        self.speed = self.starting_stats[2]
+        for i in range(len(self.attacks)):
+            self.attack_pp[i] = self.attacks[i].pp
 
-bonus_pball = 0
-r_shards = 0
-b_shards = 0
-y_shards = 0
-g_shards = 0
-w_shards = 0
+    def random_attacks(self):
+        if self.type2 == None:
+            # Select 4 random attacks from the list of attacks available for this type of Pokemon
+            attacks_disponibles = attacks_by_type.get(self.type, [])
+            if len(attacks_disponibles) < 4:
+                raise Exception(f"Not enough attacks available for this type of Pokemon: {self.name}")
+            return random.sample(attacks_disponibles, 4)
+        else:
+            # Select 4 random attacks from the list of attacks available for this type of Pokemon
+            attacks_disponibles = attacks_by_type.get(self.type, []) + attacks_by_type.get(self.type2, [])
+            if len(attacks_disponibles) < 4:
+                raise Exception(f"Not enough attacks available for this type of Pokemon: {self.name} {self.type} {self.type2}")
+            return random.sample(attacks_disponibles, 4)
 
+    def calculate_hp(self):
+        if self.name != 'Munja':
+            return int(0.01 * (2 * self.base) * 50 + 50 + 10)
+        return 1
+    
+    TYPE_EFFECTIVENESS = {
+        'electric': {'water': 2, 'flying': 2, 'grass': 0.5, 'dragon': 0.5, 'ground': 0},
+        'fire': {'grass': 2, 'insect': 2, 'steel': 2, 'ice': 2, 'water': 0.5, 'rock': 0.5, 'dragon': 0.5},
+        'water': {'fire': 2, 'rock': 2, 'ground': 2, 'grass': 0.5, 'dragon': 0.5},
+        'grass': {'water': 2, 'ground': 2, 'rock': 2, 'fire': 0.5, 'poison': 0.5, 'flying': 0.5, 'insect': 0.5, 'dragon': 0.5, 'steel': 0.5},
+        'normal': {'ghost': 0, 'rock': 0.5, 'steel': 0.5},
+        'ice': {'grass': 2, 'ground': 2, 'flying': 2, 'dragon': 2, 'fire': 0.5, 'water': 0.5, 'steel': 0.5},
+        'fighting': {'normal': 2, 'ice': 2, 'rock': 2, 'steel': 2, 'dark': 2, 'poison': 0.5, 'flying': 0.5, 'psychic': 0.5, 'insect': 0.5, 'fairy': 0.5, 'ghost': 0},
+        'poison': {'grass': 2, 'fairy': 2, 'ground': 0.5, 'rock': 0.5, 'ghost': 0.5, 'steel': 0},
+        'ground': {'fire': 2, 'electric': 2, 'poison': 2, 'rock': 2, 'steel': 2, 'grass': 0.5, 'insect': 0.5, 'flying': 0},
+        'flying': {'grass': 2, 'fighting': 2, 'insect': 2, 'electric': 0.5, 'rock': 0.5, 'steel': 0.5},
+        'psychic': {'fighting': 2, 'poison': 2, 'steel': 0.5, 'dark': 0, 'ghost': 2},
+        'insect': {'insect': 2, 'psychic': 2, 'dark': 2, 'fire': 0.5, 'fighting': 0.5, 'poison': 0.5, 'flying': 0.5, 'ghost': 0.5, 'steel': 0.5, 'fairy': 0.5},
+        'rock': {'fire': 2, 'ice': 2, 'flying': 2, 'insect': 2, 'fighting': 0.5, 'ground': 0.5, 'steel': 0.5},
+        'ghost': {'psychic': 2, 'dark': 0.5, 'normal': 0},
+        'dragon': {'dragon': 2, 'steel': 0.5, 'fairy': 0},
+        'dark': {'psychic': 2, 'ghost': 0.5, 'fighting': 0.5, 'fairy': 0.5},
+        'steel': {'ice': 2, 'rock': 2, 'fairy': 2, 'fire': 0.5, 'water': 0.5, 'electric': 0.5},
+        'fairy': {'fighting': 2, 'dragon': 2, 'dark': 0.5, 'fire': 0.5, 'poison': 0.5, 'steel': 0.5}
+    }
+        
+    def Learn_attack(self, attack):
+        if len(self.attacks) < 4 and attack not in self.attacks:
+            self.attacks.append(attack)
+            print(f"{self.name} has learned {attack.name}!")
+        else:
+            print(f"{self.name} can't learn {attack.name}!")
 
-# Define the Player class
+    def Learn_struggle(self):
+        self.attacks.append(att.Struggle)
+        self.attack_pp.append(-1)
 
-class Player:
-    def __init__(self, pokemon):
-        self.pokemon = pokemon
-        # Items
-        self.potion = 1 + bonus_potion
-        self.superpotion = 1 + bonus_superpotion
-        self.potionmax = random.randint(0, 1) + bonus_potionmax
-        self.pball = 1 + bonus_pball # allows the player to catch (and instantly defeat) a pokemon
+    def Zero_pp(self):
+        for attack in self.attacks:
+            if self.attack_pp[self.attacks.index(attack)] != 0:
+                return False
+        self.Learn_struggle()
+        return True
+    
+    def Is_alive(self):
+        """
+        Check if the Pokemon is alive.
 
-    """
-    Initialize the player's Pokémon and the number of potions
-    The number of potions is randomized between 0 and 1 for the Max Potion, so they aren't guaranteed to have one
-    ### Methods ###
-    Choose_attack() allows the player to choose an attack
-    Use_potion() allows the player to use a potion
-    They are borh used in the battle loop
-    """
+        Returns:
+            bool: True if the Pokemon is alive, False otherwise.
+        """
+        if self.hp > 0:
+            return True
+        return False
+    
+    def DrinkPotion(self, gain):
+        """
+        Make the Pokemon drink a potion to restore its HP.
 
+        Args:
+            gain (int): The number of HP restored by the potion.
+
+        Returns:
+            int: The Pokemon's current HP after the restoration.
+        """
+        print(f"\x1b[32m{self.name} drinks a potion and restores {gain} HP.\x1b[0m")
+        if self.hp + gain > self.max_hp:
+            self.hp = self.max_hp
+        else:
+            self.hp += gain
+        print(f"{self.name} has \x1b[32m{self.hp} HP\x1b[0m.")
+        return self.hp
+    
     def Choose_attack(self):
-        self.pokemon.Zero_pp()
-
-        for i, attack in enumerate(self.pokemon.attacks):
-            print(f"{i + 1}. {attack.name} ;\n Power: {attack.power} Accuracy: {attack.accuracy} \nPP: {self.pokemon.attack_pp[i]}")
-            if attack.effect:
-                print(f"Effect: {attack.effect} ; Probability: {attack.effect_probability}%")
-
-        choice = int(input("Enter the index of the attack: ")) - 1
-
-        if 0 <= choice < len(self.pokemon.attacks):
-            attack = self.pokemon.attacks[choice]
-            if self.pokemon.attack_pp[self.pokemon.attacks.index(attack)] > 0:
-                return attack
+        valid = False
+        l = 0
+        while valid == False:
+            l += 1
+            i = random.randint(0, len(self.attacks) - 1)
+            attack = self.attacks[i]
+            if self.attack_pp[i] == 0:
+                self.Zero_pp()
             else:
-                print("Attack out of PP. Choose another.")
-                return self.Choose_attack()  # Recursive call for attack out of PP
-        else:
-            print("Invalid choice. Try again.")
-            return self.Choose_attack()  # Recursive call for invalid index
+                valid = True
+            if l >= 100:
+                self.attack_pp.append(-1)
+                self.Learn_struggle()
+                attack = self.attacks[5]
+                valid = True
+        return attack
 
-    def Use_potion(self, target, potion_choice):
-        if potion_choice == 0 and self.potion >= 1:
-            self.potion -= 1
-            target.DrinkPotion(20)
-            print(f"You have {self.potion} Potions remaining")
-        elif potion_choice == 1 and self.superpotion >= 1:
-            self.superpotion -= 1
-            target.DrinkPotion(50)
-            print(f"You have {self.superpotion} Super Potions remaining")
-        elif potion_choice == 2 and self.potionmax >= 1:
-            self.potionmax -= 1
-            target.DrinkPotionMax()
-            print(f"You have {self.potionmax} Max Potions remaining")
-        else:
-            print("Invalid potion type.")
+    def DrinkPotionMax(self):
+        """
+        Make the Pokemon drink a max potion to restore its HP to the max.
 
-    def Use_pball(self):
-        if self.pball >= 1:
-            print("choose a pokemon to catch:")
-            for i, pokemon in enumerate(all_pokemon):
-                if pokemon.Is_alive() and pokemon != self.pokemon:
-                    print(f"{i + 1}. {pokemon.name}")
-            choice = int(input("Enter the pokemon number: ")) - 1
-            if 0 <= choice < len(all_pokemon):
-                print(f"You throw a Pokeball at {all_pokemon[choice].name}!")
-                self.pball -= 1
-                print(f"You have {self.pball} Pokeballs remaining")
-                if random.randint(1, 10) == 1:
-                    print("The pokemon was caught! It won't be able to fight anymore.")
-                    all_pokemon[choice].hp = 0
-                else:
-                    print("The pokemon broke free!")
-        else:
-            print("No Pokeballs left.")
+        Returns:
+            int: The Pokemon's current HP after the restoration.
+        """
+        print(f" \x1b[34m {self.name} drinks a max potion and restores all its HP.\x1b[0m")
+        self.hp = self.max_hp
+        print(f"{self.name} a \x1b[34m{self.hp} hp\x1b[0m")
+        return self.hp
 
-# Define the battle loop (the main game loop)
+    def Typing(self, attack, target) -> int:
+        """
+        Calculating the effectiveness of an attack.
 
-def battle_loop(all_pokemon, player=None):
-    current_turn = 1
-    healed_pokemon = []
-    all_pokemon.sort(key=lambda x: x.speed, reverse=True)
-    player_turn = all_pokemon.index(player.pokemon)
-    print("\n")
+        Args:
+            target (Pokemon): The Pokemon that is attacked.
 
-    """
-    The battle loop is the main game loop
-    It is used to run the battle
-    ### Variables ###
-    current_turn is the current turn number
-    healed_pokemon is a list of Pokémon that have been healed by a potion
-    all_pokemon is the list of all Pokémon in the battle
-    player_turn is the turn number of the player's Pokémon
-    ### Methods ###
-    all_pokemon_fainted() checks if all Pokémon are fainted
-    It is used to end the battle
-    """
-
-    def all_pokemon_fainted():
-        alive_pokemon = [pokemon for pokemon in all_pokemon if pokemon.Is_alive()]
-        return len(alive_pokemon) == 1
-
-    while True:
-        if current_turn == player_turn:
-            # Player's turn
-            if player.pokemon.hp > 0:
-                # If the player's Pokémon is alive
-                print("\n")
-                # Display the all Pokémon's statuses
-                for pokemon in all_pokemon:
-                    # Print the status of the Pokémon if it has one
-                    if pokemon.status and pokemon != player.pokemon and pokemon.Is_alive():
-                        if pokemon.status != "protect":
-                            
-                            print("\033[91mThe ennemy " + pokemon.name + " is " + pokemon.status + "!\033[0m")
-                        else:
-                            
-                            print("\033[91mThe ennemy " + pokemon.name + " protects itself!\033[0m")
+        Returns:
+            int: The effectiveness of the attack.
+        """
+        b = 1
+        a = 1
+        if attack.attack_type in self.TYPE_EFFECTIVENESS:
+            if target.type in self.TYPE_EFFECTIVENESS[attack.attack_type]:
+                a = self.TYPE_EFFECTIVENESS[attack.attack_type][target.type]
+            if target.type2 in self.TYPE_EFFECTIVENESS:
+                if target.type2 in self.TYPE_EFFECTIVENESS[attack.attack_type]:
+                    b = self.TYPE_EFFECTIVENESS[attack.attack_type][target.type2]
+        return a * b
                 
-                if player.pokemon.status:
-                    # Print the status of the player's Pokémon if it has one
-                    if player.pokemon.status != "protect":
+    def Attack(self, target, attack, is_player=False):
+        global place
+        global pokemon_order
+        self.staring_hp = self.hp
+        if self.status == "protect":
+            self.status = None
+            print(f"{self.name}'s protection has disappeared!")
+        if self.status != "asleep":
+            if self.status != "frozen":
+
+                if self.status == "confused":
+                    print(f"{self.name} is confused...")
+                    p = random.randint(0, 100)
+                    if p <= 50:
+                        print(f"{self.name} attacks itself!")
+                        self.hp -= self.max_hp // 8
+                        print(f"{self.name} loses \x1b[31m{self.max_hp // 8} HP\x1b[0m.")
+                        return
+                if self.status == "paralyzed":
+                    print(f"{self.name} is paralyzed...")
+                    p = random.randint(0, 100)
+                    if p <= 25:
+                        print(f"{self.name} can't attack!")
+                        return
+                print(f"{self.name} attacks {target.name} with {attack.name}!")
+                self.attack_pp[self.attacks.index(attack)] -= 1
+                if random.randint(0,100) <= attack.accuracy:
+                    efficiency = self.Typing(attack, target)
+                    degats = attack.Calculate_damage(self, target, efficiency)
+
+                    if target.status == "protect":
+                        target.status = False
+                        print(f"{target.name} used its protection and avoided the attack!")
+                        degats = 0
+                        efficiency = 1
+
+                    if efficiency > 1:
+                        efficiency_message = "\x1b[32mIt's super effective!\x1b[0m"
+                    elif efficiency < 1 and efficiency > 0:
+                        efficiency_message = "\x1b[mIt's not very effective...\x1b[0m"
+                    elif efficiency == 0:
+                        efficiency_message = f"\x1b[31mIt doesn't affect {target.name}...\x1b[0m"
+                    else:
+                        efficiency_message = ""
+
+                    print(f"{efficiency_message} {self.name} deals \x1b[31m{degats} HP\x1b[0m to {target.name}.")
+
+                    target.hp -= degats
+
+                    # Applies the effect of the attack
+
+                    if attack.effect and efficiency != 0:
+                        # Checks if the effect is triggered
                         
-                        print("\033[94mYour Pokémon is " + player.pokemon.status + "!\033[0m")
-                    else:
-                        
-                        print("\033[94mYour Pokémon protects itself!\033[0m")
-                
-                # Player's turn menu
-                print(f"You have {player.pokemon.hp}/{player.pokemon.max_hp} HP")
-                player_choice = input("Choose an action for your Pokémon:\n1. Attack\n2. Use an item\n3. Skip Turn\n4. Flee: ")
-                print("\n")
+                        a = random.randint(0, 100)
+                        if a <= attack.effect_probability:
+                            if target.status == None:
 
-                if player_choice == "1":
-                    # Player chooses to attack
-                    attack_player = player.Choose_attack()
-                    print(f"\n Choose a target for the attack {attack_player.name}:")
+                                # Negatives
 
-                    # Display target options
-                    for i, pokemon in enumerate(all_pokemon):
-                        if pokemon != player.pokemon and pokemon.Is_alive():
-                            print(f"{i + 1}. {pokemon.name}")
+                                if attack.effect == "paralyze":
+                                    target.status = "paralyzed"
+                                    print(f"\x1b[33m{target.name} is paralyzed!\x1b[0m")
+                                
+                                elif attack.effect == "burn":
+                                    target.status = "burned"
+                                    print(f"\x1b[31m{target.name} is burned!\x1b[0m")
+                                
+                                elif attack.effect == "poison":
+                                    target.status = "poisoned"
+                                    print(f"\x1b[35m{target.name} is poisoned!\x1b[0m")
+                                
+                                elif attack.effect == "sleep":
+                                    target.status = "asleep"
+                                    print(f"\x1b[34m{target.name} is asleep!\x1b[0m")
+                                
+                                elif attack.effect == "confuse":
+                                    target.status = "confused"
+                                    print(f"\x1b[33m{target.name} is confused!\x1b[0m")
 
-                    # Ask the player to choose a target
-                    target_choice = int(input("Enter the target number: ")) - 1
-                    print("\n")
-                    if 0 <= target_choice < len(all_pokemon) and all_pokemon[target_choice].Is_alive() and all_pokemon[target_choice] != player.pokemon:
-                        # If the target is valid, attack it
-                        opponent = all_pokemon[target_choice]
-                        player.pokemon.Attack(opponent, attack_player, True)
-                        current_turn += 1
-                    else:
-                        # If the target is invalid, the attack fails
-                        print("Invalid target choice. The attack failed.")
-                        current_turn += 1
+                                elif attack.effect == "curse":
+                                    target.status = "cursed"
+                                    print(f"\x1b[31m{target.name} is cursed!\x1b[0m")
 
-                elif player_choice == "2":
-                    # Player chooses to use a item
-                    print(f"Do you want to use a potion or a pokeball?\n0. Potion ({player.potion})\n1. Super Potion ({player.superpotion})\n2. Max Potion ({player.potionmax})\n3. Pokeball ({player.pball})\n")
-                    choice = int(input("Enter the item number: "))
-                    if choice <= 2:
-                        player.Use_potion(player.pokemon, choice)
-                    elif choice == 3:
-                        Player.Use_pball(self=player)
-                    else:
-                        print("Invalid choice. Your turn is skipped.")
-                    current_turn += 1
+                                elif attack.effect == "freeze":
+                                    target.status = "frozen"
+                                    print(f"\x1b[36m{target.name} is frozen!\x1b[0m")
 
-                elif player_choice == "3":
-                    # Player chooses to skip their turn
-                    print("You have skipped your turn.")
-                    current_turn += 1
+                                elif attack.effect == "recoil":
+                                    self.hp -= degats // 3
+                                    print(f"{self.name} loses \x1b[31m{degats // 3} HP because of the recoil\x1b[0m.")
+                            
+                            if attack.effect == "one-hit":
+                                target.hp = 0
+                                print(f"{target.name} is knocked out in one hit!")
 
-                elif player_choice == "4":
-                    # Player chooses to flee the battle
-                    print("You have fled the battle.")
-                    break
+                            # Positif
 
+                            elif attack.effect == "heal":
+                                self.hp = self.max_hp
+                                print(f"{self.name} is healed!")
+
+                            elif attack.effect == "protect":
+                                self.status = "protect"
+                                print(f"{self.name} protects itself!")
+
+                            # Stats +
+
+                            elif attack.effect == "attack+":
+                                self.attack += 10
+                                print(f"{self.name}'s attack has increased!")
+                            
+                            elif attack.effect == "speed+":
+                                self.speed += 3
+                                print(f"{self.name}'s speed has increased!")
+                                all_pokemon.sort(key=lambda x: x.speed, reverse=True)
+
+                            elif attack.effect == "defense+":
+                                self.defense += 10
+                                print(f"{self.name}'s defense has increased!")
+
+                            # Stats -
+
+                            elif attack.effect == "attack-":
+                                target.attack -= 10
+                                print(f"{target.name}'s attack has decreased!")
+
+                            elif attack.effect == "speed-":
+                                target.speed -= 3
+                                print(f"{target.name}'s speed has decreased!")
+                                all_pokemon.sort(key=lambda x: x.speed, reverse=True)
+
+                            elif attack.effect == "defense-":
+                                target.defense -= 10
+                                print(f"{target.name}'s defense has decreased!")
+        
                 else:
-                    # If the player's choice is invalid, skip their turn
-                    print("Invalid choice. Your turn is skipped.")
-                    current_turn += 1
+                    print("The attack missed!")
+
+        if self.status == "burned":
+            self.hp -= self.max_hp // 8
+            print(f"{self.name} is burned! It loses \x1b[31m{self.max_hp // 8} HP\x1b[0m.")
+            if random.randint(0, 100) <= 25:
+                self.status = None
+                print(f"{self.name} is no longer burned!")
+
+        if self.status == "poisoned":
+            self.hp -= self.max_hp // 8
+            print(f"{self.name} is poisoned! It loses \x1b[31m{self.max_hp // 8} HP\x1b[0m.")
+            if random.randint(0, 100) <= 25:
+                self.poison = False
+                self.status = None
+                print(f"{self.name} is no longer poisoned!")
+
+        if self.status == "asleep":
+            if random.randint(0, 100) <= 25:
+                self.status = None
+                print(f"{self.name} woke up!")
             else:
-                # If the player's Pokémon is fainted, skip their turn
-                current_turn += 1
+                print(f"{self.name} is asleep and can't attack!")
+
+        if self.status == "frozen":
+            if random.randint(0, 100) <= 25:
+                self.status = None
+                print(f"{self.name} is no longer frozen!")
+            else:
+                print(f"{self.name} is frozen and can't attack!")
+
+        if self.status == "cursed":
+            self.hp -= self.max_hp // 16
+            print(f"{self.name} is cursed! It loses \x1b[31m{self.max_hp // 16} HP\x1b[0m.")
+
+        if self.hp != self.staring_hp:
+        
+            if self.hp <= 0:
+                print(f"\x1b[31m{self.name} is knocked out!\x1b[0m")
+            else:
+                print(f"{self.name} have \x1b[31m{self.hp} HP\x1b[0m.")
+
+        if target.hp <= 0:
+            print(f"\x1b[31m{target.name} is knocked out!\x1b[0m")
+            self.kos += 1
+            if self.kos // 10 == 1:
+                self.level += 1
+                print(f"{self.name} is now level {self.level}!")
+                leveled_ups.append([self.name, self.level])
+            if quest != None:
+                if quest.type == "defeat" and is_player == True:
+                    quest.update_progress(1)
 
         else:
-            # Opponent's turn
-            if current_turn < len(all_pokemon):
-                current_pokemon = all_pokemon[current_turn]
-            else:
-                # In case the current turn is greater than the number of Pokémon
-                current_pokemon = all_pokemon[current_turn % len(all_pokemon)]
+            print(f"{target.name} has \x1b[31m{target.hp} HP left\x1b[0m.")
+        
+    def __add__(self, hps):
+        """
+        adds the value of `hps` to the current `hp` attribute.
+        
+        takes:
+            hps (int): the value to add to `hp`.
+        
+        Returns :
+            None
+        """
+        self.hp += hps
+        
+    def __sub__(self, hps):
+        """
+        subtracts the value of `hps` to the current `hp` attribute.
+        
+        takes :
+            hps (int) : the value to subtract to `hp`.
+        
+        Returns :
+            None
+        """
+        self.hp -= hps
+        if self.hp <= 0:
+            self.hp = 0
 
-            # Makes sure the current Pokémon is alive and isn't the player's Pokémon
-            if current_pokemon.Is_alive() and current_pokemon != player.pokemon:
-                print("\n")
+# Defines the Quest class
 
-                # Find a random living Pokémon target
-                if current_pokemon not in healed_pokemon and current_pokemon.hp < current_pokemon.max_hp - 10 and random.randint(1, 5) == 1:
-                    # The Pokémon has a 1 in 5 chance of using a potion
-                    if random.randint(1, 10) == 1:
-                        # The Pokémon has a 1 in 10 (total of 1 in 50) chance of using a Max Potion
-                        current_pokemon.DrinkPotionMax()
-                        healed_pokemon.append(current_pokemon)
-                    current_pokemon.DrinkPotion(10)
-                    healed_pokemon.append(current_pokemon)
-                else:
-                    # The Pokémon attacks a random living Pokémon
-                    available_targets = [pokemon for pokemon in all_pokemon if pokemon.Is_alive() and pokemon != current_pokemon]
-                    if available_targets:
-                        target = random.choice(available_targets)
-                        current_pokemon.Attack(target, current_pokemon.Choose_attack())
+class Quest:
+    def __init__(self, type=None, objective=None, quota=0, progress=0, target=None, reward=None, amount=0):
+        self.objective = objective  # Objective of the quest
+        self.quota = quota  # Required quota to complete the quest
+        self.progress = progress  # Current progress of the quest
+        self.target = target  # Target of the quest
+        self.reward = reward  # Reward for completing the quest
+        self.reward_amount = amount  # Amount of reward
+        self.define_type()  # Define the type of quest
 
-            current_turn = (current_turn + 1) % len(all_pokemon)
-
-            all_pokemon = [pokemon for pokemon in all_pokemon if pokemon.Is_alive()]
-            for i, pokemon in enumerate(all_pokemon):
-                pokemon.number = i + 1
-
-            if all_pokemon_fainted() or current_turn > len(all_pokemon)*100:
-                # If all Pokémon are fainted, the battle is over or if the battle lasts too long, it ends (in case of normal vs ghost type situation)
-                pygame.mixer.music.stop()
-                print("\n")
-                print("The battle is over.")
-                break
-
-    winner = [pokemon for pokemon in all_pokemon if pokemon.Is_alive()]
-    # Define and display the winner
-    if winner and len(winner) == 1:
-        print(f"The winning Pokémon is: {winner[0].name}")
-        if winner[0] == player.pokemon:
-            print("\033[93mYou won the battle!\033[0m")
-            print("Fireworks? (might not work in some cases)")
-            if input("y/n: ") == "y":
-                t.sleep(1)
-                fw.fireworks()
-                reset_game()
-
+    def define_type(self):
+        """Define the type of quest"""
+        if 'Collect' in self.objective:
+            self.type = 'collect'
+        elif 'Defeat' in self.objective:
+            self.type = 'defeat'
         else:
-            print("\033[91mYou lost the battle!\033[0m")
+            self.type = 'other'
 
+    def check_completion(self):
+        """Check if the quest is completed"""
+        return self.progress >= self.quota
+
+    def update_progress(self, amount):
+        """Update the quest progress"""
+        self.progress += amount
+        if self.progress > self.quota:
+            self.progress = self.quota
+
+def play_music(i=0):
+    choix = input("Do you want to play music? (y/n) ")
+    if choix == "y":
+        pygame.mixer.music.play(-1)
+    elif choix == "maybe":
+        print("You're not very decisive, are you?")
+        play_music(i+1)
+    elif choix == "secret":
+        print("You found a secret! You can now choose the music you want to play!")
+        choix = input("Enter the path of the music you want to play: ")
+        pygame.mixer.music.load(choix)
+    elif choix == "n":
+        print("You're no fun...")
+    elif choix == "yes":
+        print("You found a secret music! (yeah, just because you said yes instead of y)")
+        pygame.mixer.music.load("assets\\theme\\battle_theme_alt.mp3")
+        play_music(i+1)
+    elif i == 10:
+        print("are you really gonna keep trying?")
+        play_music(i+1)
+    elif i == 20:
+        print("You're really stubborn, aren't you?")
+        play_music(i+1)
+    elif i == 30:
+        print("You're not gonna give up, are you?")
+        play_music(i+1)
+    elif i == 40:
+        print("You're really persistent...")
+        play_music(i+1)
+    elif i == 50:
+        print("just play the game already...")
+        play_music(i+1)
+    elif i == 60:
+        print("You're really annoying...")
+        print("I'm gonna stop you right there")
+        exit()
     else:
-        print("There is no winning Pokémon.")
+        print("invalid choice. Try again.")
+        play_music(i+1)
 
-    t.sleep(1)
-    fw.clear_screen()
-    reset_game()
-
-def choose_pokemon():
-    # allows the player to choose a pokemon
+def reset_pokemon():
     global all_pokemon
-    print("Choose a Pokémon from the following:")
-    for i, pokemon in enumerate(all_pokemon):
-        print(f"{i + 1}. {pokemon.name}")
+    all_pokemon = base_all_pokemon
+    for pokemon in all_pokemon:
+        pokemon.reset()
 
-    choice = None
-    while choice is None:
-        try:
-            choice = int(input("Enter the number of the Pokémon you want: ")) - 1
-            if choice < 0 or choice >= len(all_pokemon):
-                print("Invalid Pokémon number. Try again.")
-                choice = None
-        except ValueError:
-            # If the input is not a number
-            print("Please enter a valid number.")
- 
-    chosen_pokemon = all_pokemon[choice]
-    print(f"You chose {chosen_pokemon.name}!")
 
-    return chosen_pokemon
+attacks_by_type = {
+    "electric": att.electric_attacks,
+    "fire": att.fire_attacks,
+    "water": att.water_attacks,
+    "grass": att.grass_attacks,
+    "normal": att.normal_attacks,
+    "ice": att.ice_attacks,
+    "fighting": att.fighting_attacks,
+    "poison": att.poison_attacks,
+    "ground": att.ground_attacks,
+    "flying": att.flying_attacks,
+    "psychic": att.psychic_attacks,
+    "insect": att.bug_attacks,
+    "rock": att.rock_attacks,
+    "ghost": att.ghost_attacks,
+    "dark": att.dark_attacks,
+    "dragon": att.dragon_attacks,
+    "steel": att.steel_attacks,
+    "fairy": att.fairy_attacks,
+    None : att.normal_attacks
+}
 
-def number_of_opponents(all_pokemon):
-    #allows the player to choose the number of opponents
-    choice = None
-    
-    print(f"Set the number of opponent Pokémons:")
-    choice = int(input(f"Choose a number between 4 and {len(all_pokemon)}: "))
-    if len(all_pokemon) >= choice >= 4:
-        for i in range(0, len(all_pokemon) - choice):
-            opponent = random.choice(all_pokemon)
-            all_pokemon.remove(opponent)
-    else:
-        print("Invalid choice.")
-        number_of_opponents()
+def read_pokemon_data(file_path):
+    pokemons = []
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        for line_num, line in enumerate(lines, start=1):
+            data = line.strip().split(',')
+            if len(data) < 6:
+                print(f"Error in line {line_num}: Insufficient data")
+                continue
+            try:
+                name = data[0]
+                hp, attack, defense, speed = map(int, data[1:5])
+                type1 = data[5]
+                type2 = data[6] if len(data) > 6 else None
+                pokemon = Pokemon(name, hp, attack, defense, speed, type1, type2)
+                pokemons.append(pokemon)
+            except (ValueError, TypeError):
+                print(f"Error in line {line_num}: Invalid data format")
+    return pokemons
 
-def reset_game():
-    global all_pokemon
-    pkms.reset_pokemon()
-    all_pokemon.clear()  # Clear the existing list instead of reassigning
-    all_pokemon.extend(pkms.base_all_pokemon)  # Extend with the updated list of pokemons
+file_name = 'assets/pokemons.txt'
+pokemon_list = read_pokemon_data(file_name)
 
-def start(pokes = None):
-    if not pokes:
-        global all_pokemon
-        all_pokemon = pkms.all_pokemon
-    else:
-        all_pokemon = pokes
-    fw.clear_screen
-    print("\033[93mWelcome!\033[0m")
-    number_of_opponents(all_pokemon)
-    player = Player(choose_pokemon())
-    all_pokemon.sort(key=lambda x: x.speed, reverse=True)
-    pkms.play_music()
-    battle_loop(all_pokemon, player)
-    
-if __name__ == '__main__':
-    start()
+Mewthree = Pokemon('Mewthree', 500, 500, 500, 500, None)
+
+all_pokemon = pokemon_list
+base_all_pokemon = all_pokemon.copy()
