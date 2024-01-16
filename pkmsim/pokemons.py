@@ -15,7 +15,16 @@ pygame.mixer.music.load("assets\\theme\\battle_theme.mp3")
 bonus_potion = 0
 bonus_superpotion = 0
 bonus_potionmax = 0
+
+# Initialize other items
+
 bonus_pball = 0
+r_shards = 0
+b_shards = 0
+y_shards = 0
+g_shards = 0
+w_shards = 0
+
 
 # Define the Player class
 
@@ -166,7 +175,7 @@ def battle_loop(all_pokemon, player=None):
                     if 0 <= target_choice < len(all_pokemon) and all_pokemon[target_choice].Is_alive() and all_pokemon[target_choice] != player.pokemon:
                         # If the target is valid, attack it
                         opponent = all_pokemon[target_choice]
-                        player.pokemon.Attack(opponent, attack_player)
+                        player.pokemon.Attack(opponent, attack_player, True)
                         current_turn += 1
                     else:
                         # If the target is invalid, the attack fails
@@ -325,5 +334,3 @@ def start(pokes = None):
     
 if __name__ == '__main__':
     start()
-
-# 3 674
