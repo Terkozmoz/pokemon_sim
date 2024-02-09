@@ -34,6 +34,7 @@ class Pokemon:
         self.attack_pp = [0, 0, 0, 0]
         self.kos = 0
         self.level = 50
+        self.ability = None
         self.starting_stats = [self.attack, self.defense, self.speed]
         for i in range(len(self.attacks)):
             self.attack_pp[i] = self.attacks[i].pp
@@ -211,10 +212,27 @@ class Pokemon:
                     if p <= 25:
                         print(f"{self.name} can't attack!")
                         return
+                    
+                if self.ability == "Flare Boost" and self.status == "burned":
+                    self.attack += 10
+                    print(f"{self.name}'s attack has increased!")
+
+                if self.status != None and self.ability == "Guts":
+                    self.attack += 10
+                    print(f"{self.name}'s attack has increased!")
+                
                 print(f"{self.name} attacks {target.name} with {attack.name}!")
                 self.attack_pp[self.attacks.index(attack)] -= 1
                 if random.randint(0,100) <= attack.accuracy:
                     efficiency = self.Typing(attack, target)
+                    if self.ability == "Corrosion":
+                        if target.type == "Steel" and attack.attack_type == "poison":
+                            efficiency = 1
+                    if target.ability == "Levitate":
+                        if self.ability != "Mold_Breaker":
+                            if attack.attack_type == "ground":
+                                efficiency = 0
+                                print(f"{target.name} avoids the attack with Levitate!")
                     degats = attack.Calculate_damage(self, target, efficiency)
 
                     if target.status == "protect":
@@ -236,6 +254,14 @@ class Pokemon:
 
                     target.hp -= degats
 
+                    if target.ability == "Flame Body":
+                        self.status = "burned"
+                        print(f"{self.name} is burned! because of {target.name}'s Flame Body!")
+
+                    if target.ability == "Poison Point":
+                        self.status = "poisoned"
+                        print(f"{self.name} is poisoned! because of {target.name}'s Poison Point!")
+
                     # Applies the effect of the attack
 
                     if attack.effect and efficiency != 0:
@@ -248,8 +274,11 @@ class Pokemon:
                                 # Negatives
 
                                 if attack.effect == "paralyze":
-                                    target.status = "paralyzed"
-                                    print(f"\x1b[33m{target.name} is paralyzed!\x1b[0m")
+                                    if target.ability != "Limber":
+                                        target.status = "paralyzed"
+                                        print(f"\x1b[33m{target.name} is paralyzed!\x1b[0m")
+                                    else:
+                                        print(f"{target.name} can't be paralyzed!")
                                 
                                 elif attack.effect == "burn":
                                     target.status = "burned"
@@ -260,8 +289,11 @@ class Pokemon:
                                     print(f"\x1b[35m{target.name} is poisoned!\x1b[0m")
                                 
                                 elif attack.effect == "sleep":
-                                    target.status = "asleep"
-                                    print(f"\x1b[34m{target.name} is asleep!\x1b[0m")
+                                    if target.ability != "Insomnia" and target.ability != "Early_Bird":
+                                        target.status = "asleep"
+                                        print(f"\x1b[34m{target.name} is asleep!\x1b[0m")
+                                    else:
+                                        print(f"{target.name} can't fall asleep!")
                                 
                                 elif attack.effect == "confuse":
                                     target.status = "confused"
@@ -272,8 +304,11 @@ class Pokemon:
                                     print(f"\x1b[31m{target.name} is cursed!\x1b[0m")
 
                                 elif attack.effect == "freeze":
-                                    target.status = "frozen"
-                                    print(f"\x1b[36m{target.name} is frozen!\x1b[0m")
+                                    if target.ability != "Magma Armor":
+                                        target.status = "frozen"
+                                        print(f"\x1b[36m{target.name} is frozen!\x1b[0m")
+                                    else:
+                                        print(f"{target.name} can't be frozen!")
 
                                 elif attack.effect == "recoil":
                                     self.hp -= degats // 3
@@ -376,6 +411,12 @@ class Pokemon:
             if quest != None:
                 if quest.type == "defeat" and is_player == True:
                     quest.update_progress(1)
+            if self.ability == "Beast Boost":
+                self.attack += 10
+                self.defense += 10
+                self.speed += 10
+                self.hp += 10
+                print(f"{self.name} is boosted by its ability!")
 
         else:
             print(f"{target.name} has \x1b[31m{target.hp} HP left\x1b[0m.")
@@ -411,11 +452,11 @@ class Pokemon:
 class Quest:
     def __init__(self, type=None, objective=None, quota=0, progress=0, target=None, reward=None, amount=0):
         self.objective = objective  # Objective of the quest
-        self.quota = quota  # Required quota to complete the quest
-        self.progress = progress  # Current progress of the quest
+        self.quota = int ( quota )  # Required quota to complete the quest
+        self.progress = int ( progress )  # Current progress of the quest
         self.target = target  # Target of the quest
         self.reward = reward  # Reward for completing the quest
-        self.reward_amount = amount  # Amount of reward
+        self.reward_amount = int ( amount )  # Amount of reward
         self.define_type()  # Define the type of quest
 
     def define_type(self):
