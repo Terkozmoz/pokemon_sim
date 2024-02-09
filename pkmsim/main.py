@@ -6,6 +6,7 @@
 
 import random
 import os
+import sys
 import battle as b
 import pokemons as p
 
@@ -174,8 +175,16 @@ def display_area(area):
                 print(cell, end='')
         print()
 
+def cls():
+    # Clear_screen for Thonny
+    print("\n" * 100)
+
 def clear_screen():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    if "Thonny" in sys.executable:
+        cls()
+        b.vsc = False
+    else:
+        os.system('cls' if os.name == 'nt' else 'clear')
 
 # Function to check if the player's position is within the map boundaries
 def within_boundaries(player_pos):
@@ -237,7 +246,7 @@ def player_action(area, player_pos, action):
                 area[player_pos[0]][player_pos[1]] = '[ O ]'  # Hit a wall, maintain previous position
         else:
             # Player moved off the map and all buttons are pressed, regenerate the map
-            if not check_button(area, player_pos):
+            if not check_button(area):
                 if new_player_pos[0] < 0:
                     new_player_pos = (9, player_pos[1])
                 elif new_player_pos[0] > 9:
@@ -251,7 +260,7 @@ def player_action(area, player_pos, action):
                 area, player_pos = generate_area(player_pos)  # Regenerate the map
             else:
                 area[player_pos[0]][player_pos[1]] = '[ O ]'
-                print("You can't go out of bounds while there are still buttons to press!")
+                print("You can't leave this room while there are still buttons to press!")
 
     # Check for special actions
     elif action == 'e':
@@ -356,7 +365,7 @@ def check_quest(area, player_pos):
     return area[player_pos[0]][player_pos[1]] == '[ O? ]' or area[player_pos[0]][player_pos[1]] == '[ O?̲ ]'
 
 # Function to check if there are remaining buttons
-def check_button(area, player_pos):
+def check_button(area):
     for row in area:
         for cell in row:
             if cell == '[ _ ]' or cell == '[ X̲ ]' or cell == '[ #̲ ]' or cell == '[ ?̲ ]' or cell == '[\̲-̲/̲]' or cell == '[ ⚒_ ]':
@@ -380,7 +389,7 @@ def is_sharded():
             selected.name = '\033[92m' + selected.name + '\033[0m'
             selected.attack += 20
             selected.defense += 20
-            selected.hp += 10
+            selected.max_hp += 10
             
             # Deduct one shard of each color
             b.r_shards -= 1
@@ -436,7 +445,7 @@ def help():
     print(" \033[96m[ ? ]\033[0m spots are quests, complete them then go on another one to get rewards")
     print("You can also open your inventory with e")
     print("The map is infinite, don't worry about going out of bounds, and explore as much as you want")
-    print("However, you can't leave the map without pressing all the buttons")
+    print("However, you can't leave the current room without pressing all the buttons")
     print("You can press buttons by walking on them")
     print("Buttons can be anywhere, besides walls, so you may have to fight enemies to get to them")
     print("You can save your progress with save")
@@ -474,15 +483,19 @@ def save():
             file.write(f"{p.quest.type}\n")
             file.write(f"{p.quest.objective}\n")
             file.write(f"{p.quest.quota}\n")
+            file.write(f"{p.quest.progress}\n")
             file.write(f"{p.quest.target}\n")
             file.write(f"{p.quest.reward}\n")
             file.write(f"{p.quest.reward_amount}\n")
-            file.write(f"{p.quest.progress}\n")
         else:
             file.write("False\n")
-        # saves the pokemons's levels, in alphabetical order
+        # saves the pokemons, in alphabetical order
         for mon in sorted_mons:
             file.write(f"{mon.level}\n")
+            file.write(f"{mon.attack}\n")
+            file.write(f"{mon.defense}\n")
+            file.write(f"{mon.max_hp}\n")
+            file.write(f"{mon.kos}\n")
         
     print("Game Saved!")
     file.close()
@@ -505,10 +518,14 @@ def load():
         b.w_shards = int(file.readline())
         # loads the current quest
         if file.readline() == "True\n":
-            p.quest = p.Quest(file.readline().strip(), file.readline(), int(file.readline().strip()), file.readline().strip(), file.readline().strip(), int(file.readline()), int(file.readline()))
-        # loads the pokemons's levels, in alphabetical order
+            p.quest = p.Quest(file.readline().strip(), file.readline(), file.readline().strip(), file.readline().strip(), file.readline().strip(), file.readline(), file.readline())
+        # loads the pokemons, in alphabetical order
         for mon in sorted_mons:
             mon.level = int(file.readline())
+            mon.attack = int(file.readline())
+            mon.defense = int(file.readline())
+            mon.max_hp = int(file.readline())
+            mon.kos = int(file.readline())
     print("Game Loaded!")
     file.close()
 
@@ -523,15 +540,15 @@ def is_new():
 # Function to store items ids and give them to the player
 def items_id(id):
     ids = {
-        10: "pokeball",
-        11: "red shard",
-        12: "blue shard",
-        13: "yellow shard",
-        14: "green shard",
-        15: "white shard",
-        80: "potion",
-        95: "super potion",
-        100: "max potion"
+        1: "red shard",     #1%
+        2: "blue shard",    #1%
+        3: "yellow shard",  #1%
+        4: "green shard",   #1%
+        5: "white shard",   #1%
+        20: "pokeball",     #15%
+        70: "potion",       #50%
+        90: "super potion", #20%
+        100: "max potion"   #10%
     }
     if p.quest != None and p.quest.type == "collect":
         print(f"Looking for {p.quest.target} ...")
@@ -583,7 +600,8 @@ def generate_quest():
     p.quest = p.Quest(None, objective, quantity, 0, target, reward, reward_amount)
 
 def claim_reward():
-    reward = p.quest.reward
+    reward = p.quest.reward[:-1]
+    print(reward)
     reward_amount = p.quest.reward_amount
     if reward == "pokeball":
         b.bonus_pball += reward_amount
@@ -593,16 +611,21 @@ def claim_reward():
         b.bonus_superpotion += reward_amount
     elif reward == "max potion":
         b.bonus_potionmax += reward_amount
+    else:
+        print("Oops. Error Msg.")
     p.quest = None
     print("Quest completed!")
     print(f"You got {reward_amount} {reward}s!")
 
 ### GAME START ###
 
+# Inits the status of the Warning Message
+shown = False
+
 # Generate initial game area and get player position
 game_area, player_position = generate_area()
 
-# Display the initial game area and show help
+# Display the initial game area
 display_area(game_area)
 
 is_new()
@@ -614,11 +637,15 @@ if new == True:
 
 # Game loop for player movement
 while True:
+    if b.vsc == False and shown != True:
+        print("\033[91m/!\ Warning. You might want to switch to VSC for better use.\033[0m")
+        shown = True
+    
     act = input("Enter direction (wasd / zqsd)(diagonals also work), 'e' to open your inventory, 'help' for help or 'quit' to exit: ").lower()
     if act == 'quit':
         break
 
-    # Move the player and update the game area
+    # Takes into account the player's act and update the game area
     clear_screen()
     game_area, player_position = player_action(game_area, player_position, act)
     if p.quest != None:
