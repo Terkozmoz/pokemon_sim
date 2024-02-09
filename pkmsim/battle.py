@@ -5,18 +5,15 @@ import pygame
 import pokemons as pkms
 import firework as fw
 import time as t
+import abilities as a
 
 # Initialize Pygame and load the music
 pygame.init()
 pygame.mixer.music.load("assets\\theme\\battle_theme.mp3")
 
-# Initialize the bonus pottions
-
 bonus_potion = 0
 bonus_superpotion = 0
 bonus_potionmax = 0
-
-# Initialize other items
 
 bonus_pball = 0
 r_shards = 0
@@ -26,6 +23,7 @@ g_shards = 0
 w_shards = 0
 
 
+vsc = True
 # Define the Player class
 
 class Player:
@@ -43,7 +41,7 @@ class Player:
     ### Methods ###
     Choose_attack() allows the player to choose an attack
     Use_potion() allows the player to use a potion
-    They are borh used in the battle loop
+    They are borh used in the battle.by's battle loop
     """
 
     def Choose_attack(self):
@@ -111,6 +109,9 @@ def battle_loop(all_pokemon, player=None):
     player_turn = all_pokemon.index(player.pokemon)
     print("\n")
 
+    # Gives each pokemon an ability
+    a.give_abilities(all_pokemon)
+
     """
     The battle loop is the main game loop
     It is used to run the battle
@@ -153,6 +154,8 @@ def battle_loop(all_pokemon, player=None):
                     else:
                         
                         print("\033[94mYour Pokémon protects itself!\033[0m")
+
+                print(f"Your ability is: {player.pokemon.ability} (Name - Effect -- Trigger)")
                 
                 # Player's turn menu
                 print(f"You have {player.pokemon.hp}/{player.pokemon.max_hp} HP")
@@ -224,7 +227,19 @@ def battle_loop(all_pokemon, player=None):
             if current_pokemon.Is_alive() and current_pokemon != player.pokemon:
                 print("\n")
 
-                # Find a random living Pokémon target
+                # Check for ability
+                if current_pokemon.ability == "Intimidate":
+                    player.pokemon.attack -= 10
+                    current_pokemon.ability = None # Ability only works once
+                if current_pokemon.ability == "Galvanize":
+                    for pkm in all_pokemon:
+                        if pkm.type == "Normal":
+                            pkm.type = "Electric"
+                    current_pokemon.ability = None # Ability only works once
+                
+                if current_pokemon.hp < current_pokemon.max_hp / 3:
+                    if current_pokemon.ability == "Overgrow" or current_pokemon.ability == "Swarm" or current_pokemon.ability == "Torrent" or current_pokemon.ability == "Blaze":
+                        current_pokemon.attack += 10
                 if current_pokemon not in healed_pokemon and current_pokemon.hp < current_pokemon.max_hp - 10 and random.randint(1, 5) == 1:
                     # The Pokémon has a 1 in 5 chance of using a potion
                     if random.randint(1, 10) == 1:
@@ -259,11 +274,11 @@ def battle_loop(all_pokemon, player=None):
         print(f"The winning Pokémon is: {winner[0].name}")
         if winner[0] == player.pokemon:
             print("\033[93mYou won the battle!\033[0m")
-            print("Fireworks? (might not work in some cases)")
-            if input("y/n: ") == "y":
-                t.sleep(1)
-                fw.fireworks()
-                reset_game()
+            if vsc == True:
+                print("Fireworks? (might not work in some cases)")
+                if input("y/n: ") == "y":
+                    t.sleep(1)
+                    fw.fireworks()
 
         else:
             print("\033[91mYou lost the battle!\033[0m")
