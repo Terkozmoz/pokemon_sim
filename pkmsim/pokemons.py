@@ -6,6 +6,8 @@ import pygame
 
 leveled_ups = []
 quest = None
+biome = 'plains'
+gym = False
 
 class Pokemon:
     def __init__(self, name, base_hp, Att, speed,Def, Type, Type2=None):
@@ -34,6 +36,7 @@ class Pokemon:
         self.attack_pp = [0, 0, 0, 0]
         self.kos = 0
         self.level = 50
+        self.defeated = 0
         self.ability = None
         self.starting_stats = [self.attack, self.defense, self.speed]
         for i in range(len(self.attacks)):
@@ -66,7 +69,7 @@ class Pokemon:
             return random.sample(attacks_disponibles, 4)
 
     def calculate_hp(self):
-        if self.name != 'Munja':
+        if self.name != 'Shedinja': # Shedinja has 1 HP, special case
             return int(0.01 * (2 * self.base) * 50 + 50 + 10)
         return 1
     
@@ -213,11 +216,11 @@ class Pokemon:
                         print(f"{self.name} can't attack!")
                         return
                     
-                if self.ability == "Flare Boost" and self.status == "burned":
+                if self.ability.name == "Flare Boost" and self.status == "burned":
                     self.attack += 10
                     print(f"{self.name}'s attack has increased!")
 
-                if self.status != None and self.ability == "Guts":
+                if self.status != None and self.ability.name == "Guts":
                     self.attack += 10
                     print(f"{self.name}'s attack has increased!")
                 
@@ -225,11 +228,11 @@ class Pokemon:
                 self.attack_pp[self.attacks.index(attack)] -= 1
                 if random.randint(0,100) <= attack.accuracy:
                     efficiency = self.Typing(attack, target)
-                    if self.ability == "Corrosion":
+                    if self.ability.name == "Corrosion":
                         if target.type == "Steel" and attack.attack_type == "poison":
                             efficiency = 1
-                    if target.ability == "Levitate":
-                        if self.ability != "Mold_Breaker":
+                    if target.ability.name == "Levitate":
+                        if self.ability.name != "Mold_Breaker":
                             if attack.attack_type == "ground":
                                 efficiency = 0
                                 print(f"{target.name} avoids the attack with Levitate!")
@@ -250,15 +253,19 @@ class Pokemon:
                     else:
                         efficiency_message = ""
 
+                    if target.ability.name == "Wonder Guard" and efficiency < 2:
+                        efficiency_message = f"\x1b[31m{target.name} is immune to the attack!\x1b[0m"
+                        degats = 0
+
                     print(f"{efficiency_message} {self.name} deals \x1b[31m{degats} HP\x1b[0m to {target.name}.")
 
                     target.hp -= degats
 
-                    if target.ability == "Flame Body":
+                    if target.ability.name == "Flame Body":
                         self.status = "burned"
                         print(f"{self.name} is burned! because of {target.name}'s Flame Body!")
 
-                    if target.ability == "Poison Point":
+                    if target.ability.name == "Poison Point":
                         self.status = "poisoned"
                         print(f"{self.name} is poisoned! because of {target.name}'s Poison Point!")
 
@@ -273,126 +280,132 @@ class Pokemon:
 
                                 # Negatives
 
-                                if attack.effect == "paralyze":
-                                    if target.ability != "Limber":
-                                        target.status = "paralyzed"
-                                        print(f"\x1b[33m{target.name} is paralyzed!\x1b[0m")
-                                    else:
-                                        print(f"{target.name} can't be paralyzed!")
-                                
-                                elif attack.effect == "burn":
-                                    target.status = "burned"
-                                    print(f"\x1b[31m{target.name} is burned!\x1b[0m")
-                                
-                                elif attack.effect == "poison":
-                                    target.status = "poisoned"
-                                    print(f"\x1b[35m{target.name} is poisoned!\x1b[0m")
-                                
-                                elif attack.effect == "sleep":
-                                    if target.ability != "Insomnia" and target.ability != "Early_Bird":
-                                        target.status = "asleep"
-                                        print(f"\x1b[34m{target.name} is asleep!\x1b[0m")
-                                    else:
-                                        print(f"{target.name} can't fall asleep!")
-                                
-                                elif attack.effect == "confuse":
-                                    target.status = "confused"
-                                    print(f"\x1b[33m{target.name} is confused!\x1b[0m")
+                                match attack.effect:
 
-                                elif attack.effect == "curse":
-                                    target.status = "cursed"
-                                    print(f"\x1b[31m{target.name} is cursed!\x1b[0m")
+                                    case "paralyze":
+                                        if target.ability.name != "Limber":
+                                            target.status = "paralyzed"
+                                            print(f"\x1b[33m{target.name} is paralyzed!\x1b[0m")
+                                        else:
+                                            print(f"{target.name} can't be paralyzed!")
+                                    
+                                    case "burn":
+                                        target.status = "burned"
+                                        print(f"\x1b[31m{target.name} is burned!\x1b[0m")
+                                    
+                                    case "poison":
+                                        target.status = "poisoned"
+                                        print(f"\x1b[35m{target.name} is poisoned!\x1b[0m")
+                                    
+                                    case "sleep":
+                                        if target.ability.name != "Insomnia" and target.ability.name != "Early_Bird":
+                                            target.status = "asleep"
+                                            print(f"\x1b[34m{target.name} is asleep!\x1b[0m")
+                                        else:
+                                            print(f"{target.name} can't fall asleep!")
+                                    
+                                    case "confuse":
+                                        target.status = "confused"
+                                        print(f"\x1b[33m{target.name} is confused!\x1b[0m")
 
-                                elif attack.effect == "freeze":
-                                    if target.ability != "Magma Armor":
-                                        target.status = "frozen"
-                                        print(f"\x1b[36m{target.name} is frozen!\x1b[0m")
-                                    else:
-                                        print(f"{target.name} can't be frozen!")
+                                    case "curse":
+                                        target.status = "cursed"
+                                        print(f"\x1b[31m{target.name} is cursed!\x1b[0m")
 
-                                elif attack.effect == "recoil":
-                                    self.hp -= degats // 3
-                                    print(f"{self.name} loses \x1b[31m{degats // 3} HP because of the recoil\x1b[0m.")
+                                    case "freeze":
+                                        if target.ability.name != "Magma Armor":
+                                            target.status = "frozen"
+                                            print(f"\x1b[36m{target.name} is frozen!\x1b[0m")
+                                        else:
+                                            print(f"{target.name} can't be frozen!")
+
+                                    case "recoil":
+                                        self.hp -= degats // 3
+                                        print(f"{self.name} loses \x1b[31m{degats // 3} HP because of the recoil\x1b[0m.")
+
+                            match attack.effect:
                             
-                            if attack.effect == "one-hit":
-                                target.hp = 0
-                                print(f"{target.name} is knocked out in one hit!")
+                                case "one-hit":
+                                    target.hp = 0
+                                    print(f"{target.name} is knocked out in one hit!")
 
-                            # Positif
+                                # Positif
 
-                            elif attack.effect == "heal":
-                                self.hp = self.max_hp
-                                print(f"{self.name} is healed!")
+                                case "heal":
+                                    self.hp = self.max_hp
+                                    print(f"{self.name} is healed!")
 
-                            elif attack.effect == "protect":
-                                self.status = "protect"
-                                print(f"{self.name} protects itself!")
+                                case "protect":
+                                    self.status = "protect"
+                                    print(f"{self.name} protects itself!")
 
-                            # Stats +
+                                # Stats +
 
-                            elif attack.effect == "attack+":
-                                self.attack += 10
-                                print(f"{self.name}'s attack has increased!")
-                            
-                            elif attack.effect == "speed+":
-                                self.speed += 3
-                                print(f"{self.name}'s speed has increased!")
-                                all_pokemon.sort(key=lambda x: x.speed, reverse=True)
+                                case "attack+":
+                                    self.attack += 10
+                                    print(f"{self.name}'s attack has increased!")
+                                
+                                case "speed+":
+                                    self.speed += 3
+                                    print(f"{self.name}'s speed has increased!")
+                                    all_pokemon.sort(key=lambda x: x.speed, reverse=True)
 
-                            elif attack.effect == "defense+":
-                                self.defense += 10
-                                print(f"{self.name}'s defense has increased!")
+                                case "defense+":
+                                    self.defense += 10
+                                    print(f"{self.name}'s defense has increased!")
 
-                            # Stats -
+                                # Stats -
 
-                            elif attack.effect == "attack-":
-                                target.attack -= 10
-                                print(f"{target.name}'s attack has decreased!")
+                                case "attack-":
+                                    target.attack -= 10
+                                    print(f"{target.name}'s attack has decreased!")
 
-                            elif attack.effect == "speed-":
-                                target.speed -= 3
-                                print(f"{target.name}'s speed has decreased!")
-                                all_pokemon.sort(key=lambda x: x.speed, reverse=True)
+                                case "speed-":
+                                    target.speed -= 3
+                                    print(f"{target.name}'s speed has decreased!")
+                                    all_pokemon.sort(key=lambda x: x.speed, reverse=True)
 
-                            elif attack.effect == "defense-":
-                                target.defense -= 10
-                                print(f"{target.name}'s defense has decreased!")
+                                case "defense-":
+                                    target.defense -= 10
+                                    print(f"{target.name}'s defense has decreased!")
         
                 else:
                     print("The attack missed!")
 
-        if self.status == "burned":
-            self.hp -= self.max_hp // 8
-            print(f"{self.name} is burned! It loses \x1b[31m{self.max_hp // 8} HP\x1b[0m.")
-            if random.randint(0, 100) <= 25:
-                self.status = None
-                print(f"{self.name} is no longer burned!")
+        match self.status:
 
-        if self.status == "poisoned":
-            self.hp -= self.max_hp // 8
-            print(f"{self.name} is poisoned! It loses \x1b[31m{self.max_hp // 8} HP\x1b[0m.")
-            if random.randint(0, 100) <= 25:
-                self.poison = False
-                self.status = None
-                print(f"{self.name} is no longer poisoned!")
+            case "burned":
+                self.hp -= self.max_hp // 8
+                print(f"{self.name} is burned! It loses \x1b[31m{self.max_hp // 8} HP\x1b[0m.")
+                if random.randint(0, 100) <= 25:
+                    self.status = None
+                    print(f"{self.name} is no longer burned!")
 
-        if self.status == "asleep":
-            if random.randint(0, 100) <= 25:
-                self.status = None
-                print(f"{self.name} woke up!")
-            else:
-                print(f"{self.name} is asleep and can't attack!")
+            case "poisoned":
+                self.hp -= self.max_hp // 8
+                print(f"{self.name} is poisoned! It loses \x1b[31m{self.max_hp // 8} HP\x1b[0m.")
+                if random.randint(0, 100) <= 25:
+                    self.poison = False
+                    self.status = None
+                    print(f"{self.name} is no longer poisoned!")
 
-        if self.status == "frozen":
-            if random.randint(0, 100) <= 25:
-                self.status = None
-                print(f"{self.name} is no longer frozen!")
-            else:
-                print(f"{self.name} is frozen and can't attack!")
+            case "asleep":
+                if random.randint(0, 100) <= 25:
+                    self.status = None
+                    print(f"{self.name} woke up!")
+                else:
+                    print(f"{self.name} is asleep and can't attack!")
 
-        if self.status == "cursed":
-            self.hp -= self.max_hp // 16
-            print(f"{self.name} is cursed! It loses \x1b[31m{self.max_hp // 16} HP\x1b[0m.")
+            case "frozen":
+                if random.randint(0, 100) <= 25:
+                    self.status = None
+                    print(f"{self.name} is no longer frozen!")
+                else:
+                    print(f"{self.name} is frozen and can't attack!")
+
+            case "cursed":
+                self.hp -= self.max_hp // 16
+                print(f"{self.name} is cursed! It loses \x1b[31m{self.max_hp // 16} HP\x1b[0m.")
 
         if self.hp != self.staring_hp:
         
@@ -404,6 +417,7 @@ class Pokemon:
         if target.hp <= 0:
             print(f"\x1b[31m{target.name} is knocked out!\x1b[0m")
             self.kos += 1
+            self.defeated += 1
             if self.kos // 10 == 1:
                 self.level += 1
                 print(f"{self.name} is now level {self.level}!")
@@ -411,7 +425,7 @@ class Pokemon:
             if quest != None:
                 if quest.type == "defeat" and is_player == True:
                     quest.update_progress(1)
-            if self.ability == "Beast Boost":
+            if self.ability.name == "Beast Boost":
                 self.attack += 10
                 self.defense += 10
                 self.speed += 10
@@ -481,6 +495,11 @@ class Quest:
 def play_music(i=0):
     choix = input("Do you want to play music? (y/n) ")
     if choix == "y":
+        pygame.mixer.music.load("assets\\theme\\Battle_theme.mp3")
+        if biome == 'desert':
+            pygame.mixer.music.load("assets\\theme\\Regis_Trio.mp3")
+        if gym:
+            pygame.mixer.music.load("assets\\theme\\battle_theme_alt.mp3")
         pygame.mixer.music.play(-1)
     elif choix == "maybe":
         print("You're not very decisive, are you?")
@@ -491,8 +510,8 @@ def play_music(i=0):
         pygame.mixer.music.load(choix)
     elif choix == "n":
         print("You're no fun...")
-    elif choix == "yes":
-        print("You found a secret music! (yeah, just because you said yes instead of y)")
+    elif choix == "gym":
+        print("Want the gym music instead? Alright!")
         pygame.mixer.music.load("assets\\theme\\battle_theme_alt.mp3")
         play_music(i+1)
     elif i == 10:
