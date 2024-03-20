@@ -30,6 +30,7 @@ Overgrow = Ability("Overgrow","Power Up","Under 1/3 HP")
 Poison_Point = Ability("Poison Point","Poison on Contact","Always")
 Swarm = Ability("Swarm","Power Up","Under 1/3 HP")
 Torrent = Ability("Torrent","Power Up","Under 1/3 HP")
+Wonder_Guard = Ability("Wonder Guard","Only hit by Super Effective","Always")
 
 # Abilities for each type
 
@@ -66,8 +67,8 @@ flying_abilities = [Levitate,Early_Bird]
 # Psychic
 psychic_abilities = [Insomnia,Levitate,Beast_Boost]
 
-# Bug
-bug_abilities = [Swarm,Corrosion]
+# Insect
+insect_abilities = [Swarm,Corrosion]
 
 # Rock
 rock_abilities = [Magma_Armor,Levitate]
@@ -95,41 +96,45 @@ typeless_abilities = [Mold_Breaker]
 def give_abilities(pokemons):
     """Give abilities to pokemons based on their typing."""
     for pokemon in pokemons:
-        if pokemon.type == "normal":
-            pokemon.ability = r.choice(normal_abilities)
-        elif pokemon.type == "fire":
-            pokemon.ability = r.choice(fire_abilities)
-        elif pokemon.type == "water":
-            pokemon.ability = r.choice(water_abilities)
-        elif pokemon.type == "electric":
-            pokemon.ability = r.choice(electric_abilities)
-        elif pokemon.type == "grass":
-            pokemon.ability = r.choice(grass_abilities)
-        elif pokemon.type == "ice":
-            pokemon.ability = r.choice(ice_abilities)
-        elif pokemon.type == "fighting":
-            pokemon.ability = r.choice(fighting_abilities)
-        elif pokemon.type == "poison":
-            pokemon.ability = r.choice(poison_abilities)
-        elif pokemon.type == "ground":
-            pokemon.ability = r.choice(ground_abilities)
-        elif pokemon.type == "flying":
-            pokemon.ability = r.choice(flying_abilities)
-        elif pokemon.type == "psychic":
-            pokemon.ability = r.choice(psychic_abilities)
-        elif pokemon.type == "bug":
-            pokemon.ability = r.choice(bug_abilities)
-        elif pokemon.type == "rock":
-            pokemon.ability = r.choice(rock_abilities)
-        elif pokemon.type == "ghost":
-            pokemon.ability = r.choice(ghost_abilities)
-        elif pokemon.type == "dragon":
-            pokemon.ability = r.choice(dragon_abilities)
-        elif pokemon.type == "dark":
-            pokemon.ability = r.choice(dark_abilities)
-        elif pokemon.type == "steel":
-            pokemon.ability = r.choice(steel_abilities)
-        elif pokemon.type == "fairy":
-            pokemon.ability = r.choice(fairy_abilities)
+        if pokemon.name == "Shedinja":
+            pokemon.ability = Wonder_Guard
         else:
-            pokemon.ability = r.choice(typeless_abilities)
+            match pokemon.type:
+                case "normal":
+                    pokemon.ability = r.choice(normal_abilities)
+                case "fire":
+                    pokemon.ability = r.choice(fire_abilities)
+                case "water":
+                    pokemon.ability = r.choice(water_abilities)
+                case "electric":
+                    pokemon.ability = r.choice(electric_abilities)
+                case "grass":
+                    pokemon.ability = r.choice(grass_abilities)
+                case "ice":
+                    pokemon.ability = r.choice(ice_abilities)
+                case "fighting":
+                    pokemon.ability = r.choice(fighting_abilities)
+                case "poison":
+                    pokemon.ability = r.choice(poison_abilities)
+                case "ground":
+                    pokemon.ability = r.choice(ground_abilities)
+                case "flying":
+                    pokemon.ability = r.choice(flying_abilities)
+                case "psychic":
+                    pokemon.ability = r.choice(psychic_abilities)
+                case "insect":
+                    pokemon.ability = r.choice(insect_abilities)
+                case "rock":
+                    pokemon.ability = r.choice(rock_abilities)
+                case "ghost":
+                    pokemon.ability = r.choice(ghost_abilities)
+                case "dragon":
+                    pokemon.ability = r.choice(dragon_abilities)
+                case "dark":
+                    pokemon.ability = r.choice(dark_abilities)
+                case "steel":
+                    pokemon.ability = r.choice(steel_abilities)
+                case "fairy":
+                    pokemon.ability = r.choice(fairy_abilities)
+                case _:
+                    raise ValueError(f'Pokemon type error. pokemon: {pokemon.name} type: {pokemon.type}')
