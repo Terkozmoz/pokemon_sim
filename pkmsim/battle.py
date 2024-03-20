@@ -308,9 +308,12 @@ def battle_loop(all_pokemon, player=None, Arena=None):
             print("\033[93mYou won the battle!\033[0m")
             if Arena:
                 if Arena == "Gym":
-                    print("You won a badge!")
-                    badges.append(all_badges.pop())
-                    print(f"You got the {badges[-1]}!")          
+                    if len(all_badges) > 0:
+                        print("You won a badge!")
+                        badges.append(all_badges.pop())
+                        print(f"You got the {badges[-1]}!")
+                    else:
+                        print("You have all the badges!")      
                 
             if vsc == True:
                 print("Fireworks? (might not work in some cases)")
@@ -379,7 +382,7 @@ def reset_game():
     all_pokemon.clear()  # Clear the existing list instead of reassigning
     all_pokemon.extend(pkms.base_all_pokemon)  # Extend with the updated list of pokemons
 
-def start(pokes = None):
+def start(pokes = None, player = None, gym = None):
     if pygame.mixer.music.get_busy() == True:
         pygame.mixer.music.stop()
     if not pokes:
@@ -393,7 +396,7 @@ def start(pokes = None):
     player = Player(choose_pokemon())
     all_pokemon.sort(key=lambda x: x.speed, reverse=True)
     pkms.play_music()
-    battle_loop(all_pokemon, player)
+    battle_loop(all_pokemon, player, gym)
     
 if __name__ == '__main__':
     while True:
