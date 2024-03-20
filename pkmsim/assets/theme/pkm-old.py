@@ -1,6 +1,6 @@
 # pkm-old.py
 # The very first version, kinda. Kept here as a souvenir.
-# Yeah, it's a mess, but it's my mess.
+# It stared in october or november 2023, when i learned about classes in python.
 # Plus it's a good example of how much I've improved since then, how much I've learned, and how much I've grown.
 # That's crazy how much it changed in just a few months.... And i hope it will keep changing for the better.
 # When i think about it, it's been a long time since i've started this project. I've learned so much since then... Welp, i guess you're here to see the code, not to read my life story. ^^'
@@ -391,6 +391,7 @@ attaques_par_type = {
     "acier": steel_attaques,
     "fee": fairy_attaques,
 }
+
 def battle_loop(all_pokemon, joueur):
     global impasses
     current_turn = 0
@@ -437,7 +438,7 @@ def battle_loop(all_pokemon, joueur):
 0. Potion
 1. Super Potion
 2. Potion Max
-""")
+""")                                                                                                # no \n, even tho i knew how to use them ( why? )
                     choix_potion = int(input("Entrez le numéro de la potion: "))
                     joueur.utiliser_potion(joueur.pokemon,choix_potion)
                     current_turn += 1
@@ -483,7 +484,7 @@ def battle_loop(all_pokemon, joueur):
         print("Il n'y a pas de Pokémon gagnant.")
     print(pokemon_order)
 
-def simulate_battles(all_pokemon, num_battles):
+def simulate_battles(all_pokemon, num_battles):                                             # That thing was practical, I might add it back someday
     """
     Simule une série de combats entre un groupe de Pokémon.
 
@@ -533,14 +534,14 @@ def choisir_pokemon():
                 print("Numéro de Pokémon invalide. Réessayez.")
                 choix = None
         except ValueError:
-            print("Veuillez entrer un numéro valide.")
+            print("Veuillez entrer un numéro valide.")                                                                      # Honestly, that wasn't a bad try
 
     pokemon_joueur = all_pokemon[choix]
     print(f"Vous avez choisi {pokemon_joueur.nom} !")
 
     return pokemon_joueur
 
-if __name__ == '__main__':
+if __name__ == '__main__':                                                                                                  # Not even a main(), but used as one
     # Création des pokemons et ajout dans la liste
     Pikachu = Pokemon('Pikachu', 70, 70, 30, 90, 40, 'electrique')
     Carapuce = Pokemon('Carapuce', 50, 50, 25, 43, 45, 'eau')
@@ -560,11 +561,11 @@ if __name__ == '__main__':
     Medhyena = Pokemon('Medhyena', 30, 30, 28, 35, 30, 'tenebres')
     Terhal = Pokemon('Terhal', 20, 20, 23, 30, 35, 'acier')
     Azurill = Pokemon('Azurill', 30, 30, 30, 25, 20, 'fee')
-    Groudon = Pokemon('Groudon', 70, 70, 40, 90, 90, 'sol')
+    Groudon = Pokemon('Groudon', 70, 70, 40, 90, 90, 'sol')                                                                 # There were only 19 pokemons in the original code
 
     pokemon_order = []
     all_pokemon = [Pikachu, Carapuce, Salameche, Bulbizarre, Chuchmur, Obalie, Meditikka, Papinox,
-                   Chamallot, Tylton, Tarsal, Munja, Relicanth, Tenefix, Draby, Medhyena, Terhal, Azurill, Groudon ]
+                   Chamallot, Tylton, Tarsal, Munja, Relicanth, Tenefix, Draby, Medhyena, Terhal, Azurill, Groudon ]        # And the all_pokemon list was made manually ( would be impossible now )
     all_pokemon.sort(key=lambda x: x.vitesse, reverse=True)
     a = len(all_pokemon)+1
     player = Joueur(choisir_pokemon())
@@ -583,4 +584,5 @@ if __name__ == '__main__':
     #   Pour des raisons de  #
     #        Couleurs        #
     # et de Choix d'attaques #
-    ##########################
+    ##########################              # If you're wondering why this is here, it's because the code is not meant to be run on the website we used in class.
+                                            # This message was destinated to my teacher, so he could try the code on his own computer, and see the result in the terminal.
