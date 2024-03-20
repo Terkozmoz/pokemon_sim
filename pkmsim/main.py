@@ -374,10 +374,15 @@ def move_enemies(area):
             if area[i][j] == '[ # ]':
                 possible_moves = [(i+1, j), (i-1, j), (i, j+1), (i, j-1), (i+1, j+1), (i-1, j-1), (i+1, j-1), (i-1, j+1)]
                 move = random.choice(possible_moves)
-                while not (0 <= move[0] < len(area) and 0 <= move[1] < len(area[0]) and ( area[move[0]][move[1]] == '[   ]' or area[move[0]][move[1]] == '[ O ]' ) ):
+                while not (0 <= move[0] < len(area) and 0 <= move[1] < len(area[0]) and ( area[move[0]][move[1]] == '[   ]' or area[move[0]][move[1]] == '[ O ]' or area[move[0]][move[1]] == '[ _ ]') ):
                     move = random.choice(possible_moves)
                 area[i][j] = '[   ]'  # Clear previous position
-                area[move[0]][move[1]] = '[ # ]'  # Move enemy
+                if area[move[0]][move[1]] == '[ O ]':
+                    area[move[0]][move[1]] = '[ O# ]'
+                elif area[move[0]][move[1]] == '[ _ ]':
+                    area[move[0]][move[1]] = '[ #̲ ]'
+                else:
+                    area[move[0]][move[1]] = '[ # ]'  # Move enemy
                 possible_moves.remove(move)  # Remove the chosen move from possible_moves
     return area
 
@@ -407,7 +412,7 @@ def player_action(area, player_pos, action):
 
         # If the new position is within boundaries, update the player position
         if within_boundaries(new_player_pos):
-            if area[new_player_pos[0]][new_player_pos[1]] != '[---]' and area[new_player_pos[0]][new_player_pos[1]] != '[ ~ ]' or area[new_player_pos[0]][new_player_pos[1]] != '[---]' and "Marsh Badge" in b.badges:
+            if ( area[new_player_pos[0]][new_player_pos[1]] != '[---]' or "Earth Badge" in b.badges ) and ( area[new_player_pos[0]][new_player_pos[1]] != '[ ~ ]' or "Marsh Badge" in b.badges ):
                 match area[new_player_pos[0]][new_player_pos[1]]:
                     case '[ X ]':
                         area[new_player_pos[0]][new_player_pos[1]] = '[ OX ]'
@@ -453,7 +458,7 @@ def player_action(area, player_pos, action):
 
         else:
             # Player moved off the map and all buttons are pressed, regenerate the map
-            if not check_button(area):
+            if not check_button(area) or player_pos[0] == player_pos[1] == 1 or "Earth Badge" in b.badges:
                 if new_player_pos[0] < 0:
                     new_player_pos = (9, player_pos[1])
                 elif new_player_pos[0] > 9:
@@ -487,6 +492,10 @@ def player_action(area, player_pos, action):
         case 'load':
             load()
             area[player_pos[0]][player_pos[1]] = '[ O ]'
+
+        case 'skip':
+            for i in range(8):
+                b.badges.append(b.all_badges.pop())
 
         case 'music' | 'm':
             global music
@@ -528,7 +537,10 @@ def player_action(area, player_pos, action):
             area[player_pos[0]][player_pos[1]] = '[ O ]'
 
         case _:
-            area[player_pos[0]][player_pos[1]] = '[ O ]'
+            if area[player_pos[0]][player_pos[1]] == '[ 🛥 ]' or area[player_pos[0]][player_pos[1]] == '[ ~ ]':
+                area[player_pos[0]][player_pos[1]] = '[ 🛥 ]'
+            else:
+                area[player_pos[0]][player_pos[1]] = '[ O ]'
 
     return area, player_pos
 
@@ -891,11 +903,13 @@ def load():
             mon.kos = int(file.readline())
         
         b.pokecoins = int(file.readline())
-        if file.readline() == "True\n":
-            b.badges = []
-            for _ in range(8):
-                b.badges.append(file.readline().strip())
-                b.all_badges.pop() # removes the badge from the list of available badges
+        if file.readline().strip() == "True":  # Read the first line and strip newline characters
+                b.badges = []
+                for _ in range(8):
+                    badge_line = str(file.readline().strip())  # Read the next line and strip newline characters
+                    if badge_line in b.all_badges:
+                        b.badges.append(badge_line)
+                        b.all_badges.remove(badge_line)  # Remove the badge from the list of available badges
     print("Game Loaded!")
     file.close()
 
@@ -1000,6 +1014,7 @@ def claim_reward():
 
 # Inits the status of the Warning Message
 shown = False
+fly_popup = False
 
 # Generate initial game area and get player position
 game_area, player_position = generate_area()
@@ -1024,6 +1039,12 @@ while True:
     
     if acts < 10:
         print("Type help to get a list of commands, and learn the basics of the game!")
+
+    if "Earth Badge" in b.badges and fly_popup == False:
+        print("You can now use fly to skip the buttons and walls, you are free to ignore them now! (finally!)")
+        print("For now, you can only use it to skip the buttons, but more features will be added soon!")
+        print("Also, you kinda finished the game... For now, stay tuned!")
+        fly_popup = True
 
     act = input("Enter action: ").lower()
     if act == 'quit':
