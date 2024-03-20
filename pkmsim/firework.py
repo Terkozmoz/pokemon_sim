@@ -11,23 +11,21 @@ def fireworks():
     i = 0
     clear_screen()
 
+    try:
+        term_columns, term_lines = os.get_terminal_size()
+    except OSError:
+        term_columns, term_lines = 80, 24  # Définir des dimensions par défaut
+
     while i < 100:
         burst = ["*", ".", "+", "x", "o", "O", "@"]
         colors = ["\033[91m", "\033[93m", "\033[95m", "\033[96m"]
         for _ in range(200):
-            x = random.randint(1, os.get_terminal_size().columns)
-            y = random.randint(1, os.get_terminal_size().lines)
+            x = random.randint(1, term_columns)
+            y = random.randint(1, term_lines)
             color = random.choice(colors)
             print("\033[{};{}H{}{}".format(y, x, color, random.choice(burst)), end='', flush=True)
         time.sleep(0.01)
         clear_screen()
         i += 1
 
-    print("keep playing? (y/n)")
-    if input("y/n: ") == "y":
-        clear_screen()
-        pass
-    else:
-        print("\033[93mThank you for playing!\033[0m")
-        time.sleep(1)
-        exit()
+    clear_screen()
