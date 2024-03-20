@@ -7,9 +7,10 @@ import firework as fw
 import time as t
 import abilities as a
 
-# Initialize Pygame and load the music
+# Initialize Pygame
 pygame.init()
-pygame.mixer.music.load("assets\\theme\\battle_theme.mp3")
+
+# Inventory
 
 bonus_potion = 0
 bonus_superpotion = 0
@@ -21,7 +22,11 @@ b_shards = 0
 y_shards = 0
 g_shards = 0
 w_shards = 0
+pokecoins = 0
 
+badges = []
+
+all_badges = ["Earth Badge", "Volcano Badge", "Marsh Badge", "Soul Badge", "Rainbow Badge", "Thunder Badge", "Cascade Badge", "Boulder Badge"] # Reverse order for pop()
 
 vsc = True
 # Define the Player class
@@ -52,7 +57,12 @@ class Player:
             if attack.effect:
                 print(f"Effect: {attack.effect} ; Probability: {attack.effect_probability}%")
 
-        choice = int(input("Enter the index of the attack: ")) - 1
+        try:
+            choice = int(input("Enter the attack number: ")) - 1
+
+        except ValueError:
+            print("Please enter a valid number.")
+            return self.Choose_attack()  # Recursive call for invalid input
 
         if 0 <= choice < len(self.pokemon.attacks):
             attack = self.pokemon.attacks[choice]
@@ -102,7 +112,11 @@ class Player:
 
 # Define the battle loop (the main game loop)
 
-def battle_loop(all_pokemon, player=None):
+def battle_loop(all_pokemon, player=None, Arena=None):
+    global pokecoins
+    global badges
+    for pkm in all_pokemon:
+        pkm.defeated = 0
     current_turn = 1
     healed_pokemon = []
     all_pokemon.sort(key=lambda x: x.speed, reverse=True)
@@ -162,55 +176,73 @@ def battle_loop(all_pokemon, player=None):
                 player_choice = input("Choose an action for your Pokémon:\n1. Attack\n2. Use an item\n3. Skip Turn\n4. Flee: ")
                 print("\n")
 
-                if player_choice == "1":
-                    # Player chooses to attack
-                    attack_player = player.Choose_attack()
-                    print(f"\n Choose a target for the attack {attack_player.name}:")
+                match player_choice:
 
-                    # Display target options
-                    for i, pokemon in enumerate(all_pokemon):
-                        if pokemon != player.pokemon and pokemon.Is_alive():
-                            print(f"{i + 1}. {pokemon.name}")
+                    case "1":
+                        # Player chooses to attack
+                        attack_player = player.Choose_attack()
+                        print(f"\n Choose a target for the attack {attack_player.name}:")
 
-                    # Ask the player to choose a target
-                    target_choice = int(input("Enter the target number: ")) - 1
-                    print("\n")
-                    if 0 <= target_choice < len(all_pokemon) and all_pokemon[target_choice].Is_alive() and all_pokemon[target_choice] != player.pokemon:
-                        # If the target is valid, attack it
-                        opponent = all_pokemon[target_choice]
-                        player.pokemon.Attack(opponent, attack_player, True)
+                        # Display target options
+                        for i, pokemon in enumerate(all_pokemon):
+                            if pokemon != player.pokemon and pokemon.Is_alive():
+                                print(f"{i + 1}. {pokemon.name}")
+
+                        # Ask the player to choose a target ( loops while invalid input )
+                                
+                        while True:
+                            try:
+                                target_choice = int(input("Enter the number of the target: ")) - 1
+                                break
+                            except ValueError:
+                                # If the input is not a number
+                                print("Please enter a valid number.")
+                        
+                        print("\n")
+                        if 0 <= target_choice < len(all_pokemon) and all_pokemon[target_choice].Is_alive() and all_pokemon[target_choice] != player.pokemon:
+                            # If the target is valid, attack it
+                            opponent = all_pokemon[target_choice]
+                            player.pokemon.Attack(opponent, attack_player, True)
+                            current_turn += 1
+                        else:
+                            # If the target is invalid, the attack fails
+                            print("Invalid target choice. The attack failed.")
+                            current_turn += 1
+
+                    case "2":
+                        # Player chooses to use a item
+                        print(f"Do you want to use a potion or a pokeball?\n0. Potion ({player.potion})\n1. Super Potion ({player.superpotion})\n2. Max Potion ({player.potionmax})\n3. Pokeball ({player.pball})\n")
+
+                        while True:
+                            try:
+                                choice = int(input("Enter the number of the item you want to use: "))
+                                break
+                            except ValueError:
+                                # If the input is not a number
+                                print("Please enter a valid number.")
+
+                        if choice <= 2:
+                            player.Use_potion(player.pokemon, choice)
+                        elif choice == 3:
+                            Player.Use_pball(self=player)
+                        else:
+                            print("Invalid choice. Your turn is skipped.")
                         current_turn += 1
-                    else:
-                        # If the target is invalid, the attack fails
-                        print("Invalid target choice. The attack failed.")
+
+                    case "3":
+                        # Player chooses to skip their turn
+                        print("You have skipped your turn.")
                         current_turn += 1
 
-                elif player_choice == "2":
-                    # Player chooses to use a item
-                    print(f"Do you want to use a potion or a pokeball?\n0. Potion ({player.potion})\n1. Super Potion ({player.superpotion})\n2. Max Potion ({player.potionmax})\n3. Pokeball ({player.pball})\n")
-                    choice = int(input("Enter the item number: "))
-                    if choice <= 2:
-                        player.Use_potion(player.pokemon, choice)
-                    elif choice == 3:
-                        Player.Use_pball(self=player)
-                    else:
+                    case "4":
+                        # Player chooses to flee the battle
+                        print("You have fled the battle.")
+                        break
+
+                    case _:
+                        # If the player's choice is invalid, skip their turn
                         print("Invalid choice. Your turn is skipped.")
-                    current_turn += 1
-
-                elif player_choice == "3":
-                    # Player chooses to skip their turn
-                    print("You have skipped your turn.")
-                    current_turn += 1
-
-                elif player_choice == "4":
-                    # Player chooses to flee the battle
-                    print("You have fled the battle.")
-                    break
-
-                else:
-                    # If the player's choice is invalid, skip their turn
-                    print("Invalid choice. Your turn is skipped.")
-                    current_turn += 1
+                        current_turn += 1
             else:
                 # If the player's Pokémon is fainted, skip their turn
                 current_turn += 1
@@ -220,25 +252,26 @@ def battle_loop(all_pokemon, player=None):
             if current_turn < len(all_pokemon):
                 current_pokemon = all_pokemon[current_turn]
             else:
-                # In case the current turn is greater than the number of Pokémon
-                current_pokemon = all_pokemon[current_turn % len(all_pokemon)]
+                if len(all_pokemon) > 0: # In case all pokemons are fainted (because of statuses)
+                    # In case the current turn is greater than the number of Pokémon
+                    current_pokemon = all_pokemon[current_turn % len(all_pokemon)]
 
             # Makes sure the current Pokémon is alive and isn't the player's Pokémon
             if current_pokemon.Is_alive() and current_pokemon != player.pokemon:
                 print("\n")
 
                 # Check for ability
-                if current_pokemon.ability == "Intimidate":
+                if current_pokemon.ability.name == "Intimidate":
                     player.pokemon.attack -= 10
-                    current_pokemon.ability = None # Ability only works once
-                if current_pokemon.ability == "Galvanize":
+                    current_pokemon.ability.name = None # ability only works once
+                if current_pokemon.ability.name == "Galvanize":
                     for pkm in all_pokemon:
                         if pkm.type == "Normal":
                             pkm.type = "Electric"
-                    current_pokemon.ability = None # Ability only works once
+                    current_pokemon.ability.name = None # Ability only works once
                 
                 if current_pokemon.hp < current_pokemon.max_hp / 3:
-                    if current_pokemon.ability == "Overgrow" or current_pokemon.ability == "Swarm" or current_pokemon.ability == "Torrent" or current_pokemon.ability == "Blaze":
+                    if current_pokemon.ability.name == "Overgrow" or current_pokemon.ability.name == "Swarm" or current_pokemon.ability.name == "Torrent" or current_pokemon.ability.name == "Blaze":
                         current_pokemon.attack += 10
                 if current_pokemon not in healed_pokemon and current_pokemon.hp < current_pokemon.max_hp - 10 and random.randint(1, 5) == 1:
                     # The Pokémon has a 1 in 5 chance of using a potion
@@ -263,7 +296,6 @@ def battle_loop(all_pokemon, player=None):
 
             if all_pokemon_fainted() or current_turn > len(all_pokemon)*100:
                 # If all Pokémon are fainted, the battle is over or if the battle lasts too long, it ends (in case of normal vs ghost type situation)
-                pygame.mixer.music.stop()
                 print("\n")
                 print("The battle is over.")
                 break
@@ -274,6 +306,12 @@ def battle_loop(all_pokemon, player=None):
         print(f"The winning Pokémon is: {winner[0].name}")
         if winner[0] == player.pokemon:
             print("\033[93mYou won the battle!\033[0m")
+            if Arena:
+                if Arena == "Gym":
+                    print("You won a badge!")
+                    badges.append(all_badges.pop())
+                    print(f"You got the {badges[-1]}!")          
+                
             if vsc == True:
                 print("Fireworks? (might not work in some cases)")
                 if input("y/n: ") == "y":
@@ -282,6 +320,9 @@ def battle_loop(all_pokemon, player=None):
 
         else:
             print("\033[91mYou lost the battle!\033[0m")
+
+        # Gives pokecoins to the player, based on the amount of pokemons defeated
+        pokecoins = 50 * player.pokemon.defeated
 
     else:
         print("There is no winning Pokémon.")
@@ -317,15 +358,20 @@ def number_of_opponents(all_pokemon):
     #allows the player to choose the number of opponents
     choice = None
     
-    print(f"Set the number of opponent Pokémons:")
-    choice = int(input(f"Choose a number between 4 and {len(all_pokemon)}: "))
-    if len(all_pokemon) >= choice >= 4:
-        for i in range(0, len(all_pokemon) - choice):
-            opponent = random.choice(all_pokemon)
-            all_pokemon.remove(opponent)
-    else:
-        print("Invalid choice.")
-        number_of_opponents()
+    print(f"Set the number of opponent Pokémons between 4 and {len(all_pokemon)}:")
+    while choice is None:
+        try:
+            choice = int(input("Enter the number of opponents: "))
+            if choice < 4 or choice > len(all_pokemon):
+                print("Invalid number. Try again.")
+                choice = None
+            else: # Leave only the chosen number of opponents
+                n = len(all_pokemon) - choice
+                for i in range(n):
+                    all_pokemon.pop(random.randint(0, len(all_pokemon) - 1)) # Remove a random pokemon
+        except ValueError:
+            # If the input is not a number
+            print("Please enter a valid number.")
 
 def reset_game():
     global all_pokemon
@@ -334,6 +380,8 @@ def reset_game():
     all_pokemon.extend(pkms.base_all_pokemon)  # Extend with the updated list of pokemons
 
 def start(pokes = None):
+    if pygame.mixer.music.get_busy() == True:
+        pygame.mixer.music.stop()
     if not pokes:
         global all_pokemon
         all_pokemon = pkms.all_pokemon
@@ -348,4 +396,7 @@ def start(pokes = None):
     battle_loop(all_pokemon, player)
     
 if __name__ == '__main__':
-    start()
+    while True:
+        start()
+        if input("Do you want to play again? (y/n): ") == "n":
+            break
