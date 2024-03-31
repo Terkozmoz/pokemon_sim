@@ -17,6 +17,7 @@ bonus_superpotion = 0
 bonus_potionmax = 0
 
 bonus_pball = 0
+bonus_masterball = 0
 r_shards = 0
 b_shards = 0
 y_shards = 0
@@ -39,6 +40,7 @@ class Player:
         self.superpotion = 1 + bonus_superpotion
         self.potionmax = random.randint(0, 1) + bonus_potionmax
         self.pball = 1 + bonus_pball # allows the player to catch (and instantly defeat) a pokemon
+        self.mball = 0 + bonus_masterball # allows the player to catch a pokemon
 
     """
     Initialize the player's Pokémon and the number of potions
@@ -91,8 +93,8 @@ class Player:
         else:
             print("Invalid potion type.")
 
-    def Use_pball(self):
-        if self.pball >= 1:
+    def Use_pball(self,type=None):
+        if self.pball >= 1 or type == "Master" and self.mball >= 1:
             print("choose a pokemon to catch:")
             for i, pokemon in enumerate(all_pokemon):
                 if pokemon.Is_alive() and pokemon != self.pokemon:
@@ -100,9 +102,10 @@ class Player:
             choice = int(input("Enter the pokemon number: ")) - 1
             if 0 <= choice < len(all_pokemon):
                 print(f"You throw a Pokeball at {all_pokemon[choice].name}!")
-                self.pball -= 1
-                print(f"You have {self.pball} Pokeballs remaining")
-                if random.randint(1, 10) == 1:
+                self.pball -= 1 if type != "Master" else 0
+                self.mball -= 1 if type == "Master" else 0
+                print(f"You have {self.pball} Pokeballs remaining") if type != "Master" else print(f"You have {self.mball} Masterballs remaining")
+                if random.randint(1, 10) == 1 or type == "Master":
                     print("The pokemon was caught! It won't be able to fight anymore.")
                     all_pokemon[choice].hp = 0
                 else:
@@ -313,7 +316,7 @@ def battle_loop(all_pokemon, player=None, Arena=None):
                         badges.append(all_badges.pop())
                         print(f"You got the {badges[-1]}!")
                     else:
-                        print("You have all the badges!")      
+                        print("You alerady have all the badges!")      
                 
             if vsc == True:
                 print("Fireworks? (might not work in some cases)")
