@@ -19,6 +19,7 @@ fishing_rod = False
 music = None
 plains_music = ["assets\\theme\\Route201.mp3", "assets\\theme\\Route120.mp3"]
 acts = 0
+Tem_colleg = False
 
 ### GAME AREA ###
 # Function to generate the game area
@@ -547,22 +548,22 @@ def player_action(area, player_pos, action):
 def craft_items():
     # Define crafting recipes: 'result': (required items, crafted item)
     crafting_recipes = {
-        'super_potion': (['potion', 'potion', 'potion', 'potion', 'potion'], 'super_potion'),
-        'max_potion': (['pokeball', 'pokeball', 'pokeball'], 'max_potion'),
-        'max_potion2' : (['potion', 'potion', 'potion', 'potion', 'potion','potion', 'potion', 'potion', 'potion', 'potion'], 'max_potion')
+        1: (['potion', 'potion', 'potion', 'potion', 'potion'], 'super_potion'),
+        2: (['pokeball', 'pokeball', 'pokeball'], 'max_potion'),
+        3: (['potion', 'potion', 'potion', 'potion', 'potion','potion', 'potion', 'potion', 'potion', 'potion'], 'max_potion')
     }
 
     # Display available recipes
     print("Available Recipes:")
-    for recipe, (required_items, crafted_item) in crafting_recipes.items():
-        print(f"{recipe.capitalize()} - Required: {', '.join(required_items).capitalize()} -> Crafted: {crafted_item.capitalize()}")
+    for recipe_id, (required_items, crafted_item) in crafting_recipes.items():
+        print(f"Recipe ID: {recipe_id} - Required: {', '.join(required_items).capitalize()} -> Crafted: {crafted_item.capitalize()}")
 
     # Get user input for chosen recipe
-    chosen_recipe = input("Enter the name of the item you want to craft: ").lower()
+    chosen_recipe_id = int(input("Enter the ID of the item you want to craft: "))
 
-    # Check if the chosen recipe exists and if the player has required items
-    if chosen_recipe in crafting_recipes:
-        required_items, crafted_item = crafting_recipes[chosen_recipe]
+    # Check if the chosen recipe ID exists
+    if chosen_recipe_id in crafting_recipes:
+        required_items, crafted_item = crafting_recipes[chosen_recipe_id]
         can_craft = True
 
         # Check if the player has required items for crafting
@@ -600,7 +601,7 @@ def craft_items():
             print(f"You crafted a {crafted_item.capitalize()}!")
 
     else:
-        print("Invalid recipe name.")
+        print("Invalid recipe ID.")
 
 def is_sharded():
     if b.r_shards != 0 and b.b_shards != 0 and b.g_shards != 0 and b.y_shards != 0 and b.w_shards != 0:
@@ -757,39 +758,81 @@ def start_battle(arena = None):
         
 def shop():
     in_shop = True
-    items = {
-        'pokeball': 100,
-        'potion': 200,
-        'superpotion': 500,
-        'potionmax': 1000
-    }
+    shop_id = random.randint(0, 33)
+    if shop_id == 27:
+        global Tem_colleg
 
-    print("Welcome to the shop!")
-    while in_shop:
-        print("You have", b.pokecoins, "pokecoins")
-        print("You can buy:")
-        for item, price in items.items():
-            print(f"{item.capitalize()} - {price} pokecoins")
-        choice = input("Enter the name of the item you want to buy: ").lower()
-        if choice in items:
-            if b.pokecoins >= items[choice]:
-                b.pokecoins -= items[choice]
-                print(f"You bought a {choice}!")
-                if choice == 'pokeball':
-                    b.bonus_pball += 1
-                elif choice == 'potion':
-                    b.bonus_potion += 1
-                elif choice == 'superpotion':
-                    b.bonus_superpotion += 1
-                elif choice == 'potionmax':
-                    b.bonus_potionmax += 1
+        items = {
+            1: ('pokeball (On SaLe!!)', 50),
+            2: ('pokeball', 100),
+            3: ('pokeball (ExPenSiv)', 500),
+            4: ('PaY 4 TeM ColLeG', 10000),
+            5: ('Master Ball', 1000000)
+        }
+
+        print("WelCOm To tEm ShoP!!")
+        while in_shop:
+            print("YoU hAvE", b.pokecoins, "pOkeCoiNs!")
+            print("You caNN buI:")
+            for item_id, (item, price) in items.items():
+                if item != 'Master Ball' or Tem_colleg == True:
+                    print(f"{item.capitalize()} - {price} pOkeCoiNs")
+            choice = int(input("EnTEr tHe ID of tHe iTm Yu wNt To bUy!: "))
+            if choice in items:
+                chosen_item, item_price = items[choice]
+                if b.pokecoins >= item_price:
+                    b.pokecoins -= item_price
+                    print(f"You bought a {chosen_item}!")
+                    if chosen_item == 'pokeball' or chosen_item == 'pokeball (On SaLe!!)' or chosen_item == 'pokeball (ExPenSiv)':
+                        b.bonus_pball += 1
+                    elif chosen_item == 'PaY 4 TeM ColLeG':
+                        Tem_colleg = True
+                    elif chosen_item == 'Master Ball' and Tem_colleg == True:
+                        b.bonus_masterball += 1
+                else:
+                    print("You don't have enough pokecoins!")
             else:
-                print("You don't have enough pokecoins!")
-        else:
-            print("Invalid item name")
-        choice = input("Do you want to buy something else? (yes/no): ").lower()
-        if choice == "no" or choice == "n" or choice == "nope" or choice == "nah" or choice == "no thanks" or choice == "no mony leaft :(": # I doubt anyone will write most of these, but I'm adding them anyways cuz why not
-            in_shop = False
+                print("Invalid item ID")
+            choice = input("Do Yu wnT! Bui sMtIng eLz YaAYA? (yes/no): ").lower()
+            if choice == "no" or choice == "n" or choice == "nope" or choice == "nah" or choice == "no thanks" or choice == "no mony leaft :(": # I doubt anyone will write most of these, but I'm adding them anyways cuz why not
+                in_shop = False
+
+    else:
+
+        items = {
+            1: ('pokeball', 100),
+            2: ('potion', 200),
+            3: ('superpotion', 500),
+            4: ('potionmax', 1000)
+        }
+
+        print("Welcome to the shop!")
+        while in_shop:
+            print("You have", b.pokecoins, "pokecoins")
+            print("You can buy:")
+            for item_id, (item, price) in items.items():
+                print(f"{item.capitalize()} - {price} pokecoins")
+            choice = int(input("Enter the ID of the item you want to buy: "))
+            if choice in items:
+                chosen_item, item_price = items[choice]
+                if b.pokecoins >= item_price:
+                    b.pokecoins -= item_price
+                    print(f"You bought a {chosen_item}!")
+                    if chosen_item == 'pokeball':
+                        b.bonus_pball += 1
+                    elif chosen_item == 'potion':
+                        b.bonus_potion += 1
+                    elif chosen_item == 'superpotion':
+                        b.bonus_superpotion += 1
+                    elif chosen_item == 'potionmax':
+                        b.bonus_potionmax += 1
+                else:
+                    print("You don't have enough pokecoins!")
+            else:
+                print("Invalid item ID")
+            choice = input("Do you want to buy something else? (yes/no): ").lower()
+            if choice == "no" or choice == "n" or choice == "nope" or choice == "nah" or choice == "no thanks" or choice == "no mony leaft :(": # I doubt anyone will write most of these, but I'm adding them anyways cuz why not
+                in_shop = False
 
 # Shows some help for the player
 
@@ -856,6 +899,7 @@ def save():
             file.write(f"{p.quest.reward_amount}\n")
         else:
             file.write("False\n")
+        file.write(f"{Tem_colleg}\n")
         # saves the pokemons, in alphabetical order
         for mon in sorted_mons:
             file.write(f"{mon.level}\n")
@@ -875,6 +919,7 @@ def save():
 
 def load():
     global fishing_rod
+    global Tem_colleg
     path = os.path.join(appdata_path, 'Tko', 'Pkmsim', 'save.txt')
     sorted_mons = sorted(p.all_pokemon, key=lambda x: x.name)
     print(path)
@@ -894,6 +939,9 @@ def load():
         # loads the current quest
         if file.readline() == "True\n":
             p.quest = p.Quest(file.readline().strip(), file.readline(), file.readline().strip(), file.readline().strip(), file.readline().strip(), file.readline(), file.readline())
+
+        # Loads the current Tem College status
+        Tem_colleg = file.readline().strip() == "True"
         # loads the pokemons, in alphabetical order
         for mon in sorted_mons:
             mon.level = int(file.readline())
@@ -909,6 +957,7 @@ def load():
                     badge_line = str(file.readline().strip())  # Read the next line and strip newline characters
                     if badge_line in b.all_badges:
                         b.badges.append(badge_line)
+                        print(f"Badge {badge_line} loaded!")
                         b.all_badges.remove(badge_line)  # Remove the badge from the list of available badges
     print("Game Loaded!")
     file.close()
@@ -990,7 +1039,6 @@ def generate_quest():
 
 def claim_reward():
     reward = p.quest.reward[:-1]
-    print(reward)
     reward_amount = p.quest.reward_amount
     match reward:
         case "pokeball":
