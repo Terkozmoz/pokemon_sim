@@ -641,9 +641,9 @@ def is_sharded():
                 print("Please enter a valid integer number.")
         print("\n")
         
-        if 0 <= target_choice < len(p.all_pokemon):
+        if 0 <= choice < len(p.all_pokemon):
             # If the target is valid, power it up using shards
-            selected = p.all_pokemon[target_choice]
+            selected = p.all_pokemon[choice]
             
             # Check if there are enough shards of each color
             selected.name = '\033[92m' + selected.name + '\033[0m'
@@ -1202,4 +1202,3 @@ print("Thank you for playing!")
 print("Made by @Terkozmoz (GitHub)")
 print("Music by @Bliitzit (YouTube)")
 print("Have a nice day!")
-
