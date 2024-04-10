@@ -13,13 +13,14 @@ import pokemons as p
 import pyramid as py
 
 all_pkms = p.all_pokemon.copy()
-biome = "plains"
+biome = "island"
 previous_biome = None
 fishing_rod = False
 music = None
 plains_music = ["assets\\theme\\Route201.mp3", "assets\\theme\\Route120.mp3"]
 acts = 0
 Tem_colleg = False
+On_Water = False
 
 ### GAME AREA ###
 # Function to generate the game area
@@ -37,21 +38,31 @@ def generate_area(player_pos=None):
     # Define the current biome, based on the previous one (for a better coherence in the map generation)
     
     if previous_biome == 'sea':
-        biomes = ['plains','sea','desert']
+        biomes = ['plains','sea','desert','island']
         r = random.randint(0, 100)
-        if r < 50:
+        if r < 40:
             biome = biomes[1]
-        elif r < 80:
+        elif r < 80 and not On_Water or r < 60 and On_Water:
             biome = biomes[0]
+        elif On_Water and r > 60:
+            biome = biomes[3]
         else:
             biome = biomes[2]
 
     elif previous_biome == 'desert':
         biomes = ['plains','sea','desert']
         r = random.randint(0, 100)
-        if r < 50:
+        if r < 40:
             biome = biomes[2]
         elif r < 80:
+            biome = biomes[0]
+        else:
+            biome = biomes[1]
+
+    elif previous_biome == 'island':
+        biomes = ['sea','island']
+        r = random.randint(1, 2)
+        if r == 1:
             biome = biomes[0]
         else:
             biome = biomes[1]
@@ -64,7 +75,7 @@ def generate_area(player_pos=None):
         else:
             biome = biomes[1] # 0.05% chance total to get the corruption biome (1% chance to get the clouds biome, 5% of that 1% to get the corruption biome after that)
 
-    else:
+    else: #plains
         biomes = ['plains','sea','desert','clouds']
         r = random.randint(0, 100)
         if r < 50:
@@ -84,8 +95,8 @@ def generate_area(player_pos=None):
             pg.mixer.music.stop() # Stop the music
             player_action(game_area, player_position, 'music') # updates the music
 
-    # Generate walls if the biome isn't the sea (because of the sea's water tiles, which would make the map unplayable)
-    if biome != 'sea':
+    # Generate walls if the biome isn't the sea or island
+    if biome not in ['sea','island']:
         num_walls = random.randint(10, 30)
         wall_positions = []
         for _ in range(num_walls):
@@ -99,9 +110,12 @@ def generate_area(player_pos=None):
         wall_positions = []
 
     # Generate water tiles predominantly on one side with some puddles on the sand area
-    if biome == 'sea' or biome == 'corruption':
+    if biome in ['sea', 'corruption','island']:
         water_side = random.choice(['left', 'right', 'top', 'bottom'])
-        water_rows = random.randint(4, 5)  # Number of rows of water on each side
+        if biome == 'island':
+            water_rows = random.randint(2, 3) 
+        else:
+            water_rows = random.randint(4, 5)  # Number of rows of water on each side
         water_positions = []
 
         # Calculate player's side based on the player's position
@@ -111,33 +125,40 @@ def generate_area(player_pos=None):
         player_sides.append(player_side)
         player_side = 'top' if player_y <= 4 else 'bottom'
         player_sides.append(player_side)
+        if biome == 'island':
+            player_sides == []
 
         # Ensure water doesn't spawn on the same side as the player
-        while water_side in player_sides:
-            water_side = random.choice(['left', 'right', 'top', 'bottom'])
+        if biome != 'island':
+            while water_side in player_sides:
+                water_side = random.choice(['left', 'right', 'top', 'bottom'])
 
-        if water_side == 'left':
+        if On_Water:
+            water_side = random.choice(player_sides)
+
+        if water_side == 'left' or biome == 'island':
             water_positions.extend([(x, y) for x in range(water_rows) for y in range(10)])
             water_positions.extend([(water_rows, y) for y in range(random.randint(1, 6))])
-        elif water_side == 'right':
+        if water_side == 'right' or biome == 'island':
             water_positions.extend([(x, y) for x in range(10 - water_rows, 10) for y in range(10)])
             water_positions.extend([(10 - water_rows - 1, y) for y in range(9, 9 - random.randint(1, 6), -1)])
-        elif water_side == 'top':
+        if water_side == 'top' or biome == 'island':
             water_positions.extend([(x, y) for x in range(10) for y in range(water_rows)])
             water_positions.extend([(x, water_rows) for x in range(random.randint(1, 6))])
-        else:  # water_side == 'bottom'
+        if water_side == 'bottom' or biome == 'island':
             water_positions.extend([(x, y) for x in range(10) for y in range(10 - water_rows, 10)])
             water_positions.extend([(x, 10 - water_rows - 1) for x in range(9, 9 - random.randint(1, 6), -1)])
 
         # Generate some puddles on the sand area
         num_puddles = random.randint(5, 10)
         puddle_positions = []
-        for _ in range(num_puddles):
-            pos = (random.randint(2, 7), random.randint(2, 7))
-            while pos in occupied_positions or pos in water_positions:
+        if biome != 'island':
+            for _ in range(num_puddles):
                 pos = (random.randint(2, 7), random.randint(2, 7))
-            occupied_positions.append(pos)
-            puddle_positions.append(pos)
+                while pos in occupied_positions or pos in water_positions:
+                    pos = (random.randint(2, 7), random.randint(2, 7))
+                occupied_positions.append(pos)
+                puddle_positions.append(pos)
     else:
         water_positions = []  # Make an empty list if the biome is not the sea
         puddle_positions = []
@@ -334,16 +355,16 @@ def display_area(area):
                         print('\033[96m' + cell + '\033[0m', end='')                                     # Cyan for quests
                     case '[ $ ]' | '[ O$ ]':
                         print('\033[92m' + cell + '\033[0m', end='')                                     # Green for shop
-                    case '[ _ ]' if biome == 'desert' or biome == 'sea':
+                    case '[ _ ]' if biome in ['desert', 'sea', 'island'] :
                         print('\033[93m' + cell + '\033[0m', end='')                                     # Yellow for buttons (other biomes)
-                    case '[ _ ]' if biome == 'plains' or biome == 'corruption':
+                    case '[ _ ]' if biome in ['plains', 'corruption', 'island']:
                             print('\033[97m' + cell + '\033[0m', end='')                                 # White for buttons (plains)
                     case '[ ~ ]' | '[ 🛥 ]':
                         print('\033[94m' + cell + '\033[0m', end='')                                     # Blue for water & boat
                     case '[ G ]':
                         print('\033[92m' + cell + '\033[0m', end='')                                     # Green for gym
                     case _:
-                        if biome == 'desert' or biome =='sea':
+                        if biome in ['desert', 'sea', 'island']:
                             print('\033[93m' + cell + '\033[0m', end='')                                 # Changes the cells to be sand
                         elif biome == 'corruption':
                             print('\033[95m' + cell + '\033[0m', end='')                                 # Changes the cells to be corrupted
@@ -392,6 +413,7 @@ def move_enemies(area):
 
 # Function to handle player action and map regeneration if player goes off the map
 def player_action(area, player_pos, action):
+    global On_Water
     movement = {
         'w': (-1, 0), 'z': (-1, 0), 's': (1, 0), 'a': (0, -1),
         'q': (0, -1), 'd': (0, 1), 'wa': (-1, -1), 'zq': (-1, -1),
@@ -405,6 +427,7 @@ def player_action(area, player_pos, action):
     player = area[player_pos[0]][player_pos[1]]  # Get the player's current position
     area[player_pos[0]][player_pos[1]] = '[   ]'  # Reset previous position
     if player == '[ 🛥 ]':
+        On_Water = True
         area[player_pos[0]][player_pos[1]] = '[ ~ ]'
 
     if action in movement:
@@ -540,8 +563,10 @@ def player_action(area, player_pos, action):
         case _:
             if area[player_pos[0]][player_pos[1]] == '[ 🛥 ]' or area[player_pos[0]][player_pos[1]] == '[ ~ ]':
                 area[player_pos[0]][player_pos[1]] = '[ 🛥 ]'
+                On_Water = True
             else:
                 area[player_pos[0]][player_pos[1]] = '[ O ]'
+                On_Water = False
 
     return area, player_pos
 
