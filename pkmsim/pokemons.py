@@ -513,7 +513,7 @@ def play_music(i=0):
     elif choix == "gym":
         print("Want the gym music instead? Alright!")
         pygame.mixer.music.load("assets\\theme\\battle_theme_alt.mp3")
-        play_music(i+1)
+        pygame.mixer.music.play(-1)
     elif i == 10:
         print("are you really gonna keep trying?")
         play_music(i+1)
