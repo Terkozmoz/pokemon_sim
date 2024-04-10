@@ -13,7 +13,7 @@ import pokemons as p
 import pyramid as py
 
 all_pkms = p.all_pokemon.copy()
-biome = "island"
+biome = "plains"
 previous_biome = None
 fishing_rod = False
 music = None
@@ -633,7 +633,12 @@ def is_sharded():
         print("Choose a Pokemon to power up using shards.")
         for i, pokemon in enumerate(p.all_pokemon):
             print(f"{i + 1}. {pokemon.name}")
-        target_choice = int(input("Enter the target number: ")) - 1
+        while True:
+            try:
+                choice = int(input("Enter the number of the Pokemon you want to shard: "))
+                break  # Sort de la boucle si la conversion en entier réussit
+            except ValueError:
+                print("Please enter a valid integer number.")
         print("\n")
         
         if 0 <= target_choice < len(p.all_pokemon):
@@ -802,7 +807,12 @@ def shop():
             for item_id, (item, price) in items.items():
                 if item != 'Master Ball' or Tem_colleg == True:
                     print(f"{item.capitalize()} - {price} pOkeCoiNs")
-            choice = int(input("EnTEr tHe ID of tHe iTm Yu wNt To bUy!: "))
+            while True:
+                try:
+                    choice = int(input("EnTEr tHe NumBR of tHe iTm Yu wNt To bUy!:"))
+                    break  # Sort de la boucle si la conversion en entier réussit
+                except ValueError:
+                    print("Please enter a valid integer number.")
             if choice in items:
                 chosen_item, item_price = items[choice]
                 if b.pokecoins >= item_price:
@@ -819,7 +829,7 @@ def shop():
             else:
                 print("Invalid item ID")
             choice = input("Do Yu wnT! Bui sMtIng eLz YaAYA? (yes/no): ").lower()
-            if choice == "no" or choice == "n" or choice == "nope" or choice == "nah" or choice == "no thanks" or choice == "no mony leaft :(": # I doubt anyone will write most of these, but I'm adding them anyways cuz why not
+            if choice == "no" or choice == "n" or choice == "nope" or choice == "nah" or choice == "no thanks" or choice == "no mony leaft :(":
                 in_shop = False
 
     else:
@@ -837,7 +847,12 @@ def shop():
             print("You can buy:")
             for item_id, (item, price) in items.items():
                 print(f"{item.capitalize()} - {price} pokecoins")
-            choice = int(input("Enter the ID of the item you want to buy: "))
+            while True:
+                try:
+                    choice = int(input("Enter the number of the item you want to buy: "))
+                    break  # Sort de la boucle si la conversion en entier réussit
+                except ValueError:
+                    print("Please enter a valid integer number.")
             if choice in items:
                 chosen_item, item_price = items[choice]
                 if b.pokecoins >= item_price:
@@ -1187,3 +1202,4 @@ print("Thank you for playing!")
 print("Made by @Terkozmoz (GitHub)")
 print("Music by @Bliitzit (YouTube)")
 print("Have a nice day!")
+
