@@ -1,6 +1,6 @@
 # Main.py
 # Made by @Terkozmoz (GitHub)
-# Last Update: 2024-03-11
+# Last Update: 2024-04-17 yyyy-mm-dd
 # Music by @Bliitzit (YouTube)
 # Date: 2020-06-27
 
@@ -12,6 +12,7 @@ import battle as b
 import pokemons as p
 import pyramid as py
 
+# Initialize the differnt variables
 all_pkms = p.all_pokemon.copy()
 biome = "plains"
 previous_biome = None
@@ -25,9 +26,14 @@ On_Water = False
 ### GAME AREA ###
 # Function to generate the game area
 def generate_area(player_pos=None):
+    """Generates the game area with the player and other objects."""
+
     global biome
     global previous_biome
+    # Creates a 10x10 area with empty cells
     area = [['[   ]' for _ in range(10)] for _ in range(10)]
+
+    # Generate the player's position randomly if not provided
     if not player_pos:
         player_pos = (random.randint(0, 9), random.randint(0, 9))
     
@@ -38,6 +44,7 @@ def generate_area(player_pos=None):
     # Define the current biome, based on the previous one (for a better coherence in the map generation)
     
     if previous_biome == 'sea':
+        # Post-sea biomes
         biomes = ['plains','sea','desert','island']
         r = random.randint(0, 100)
         if r < 40:
@@ -50,6 +57,7 @@ def generate_area(player_pos=None):
             biome = biomes[2]
 
     elif previous_biome == 'desert':
+        # Post-desert biomes
         biomes = ['plains','sea','desert']
         r = random.randint(0, 100)
         if r < 40:
@@ -60,6 +68,7 @@ def generate_area(player_pos=None):
             biome = biomes[1]
 
     elif previous_biome == 'island':
+        # Post-island biomes
         biomes = ['sea','island']
         r = random.randint(1, 2)
         if r == 1:
@@ -68,15 +77,17 @@ def generate_area(player_pos=None):
             biome = biomes[1]
 
     elif previous_biome == 'clouds':
+        # Post-clouds biomes
         biomes = ['plains','corruption']
         r = random.randint(0, 100)
         if r < 95:
             biome = biomes[0]
         else:
-            biome = biomes[1] # 0.05% chance total to get the corruption biome (1% chance to get the clouds biome, 5% of that 1% to get the corruption biome after that)
+            biome = biomes[1] # 0.05% chance total to get the corruption biome (1% chance to get the clouds biome, then 5% to get the corruption biome after that)
 
     else: #plains
         biomes = ['plains','sea','desert','clouds']
+        # Post-plains biomes
         r = random.randint(0, 100)
         if r < 50:
             biome = biomes[0]
@@ -106,14 +117,14 @@ def generate_area(player_pos=None):
             occupied_positions.append(pos)
             wall_positions.append(pos)
     else:
-        # Makes an empty list if the biome is the sea, so it doesn't interfere with the other checks
+        # Makes an empty list if there shouldn't be any walls
         wall_positions = []
 
     # Generate water tiles predominantly on one side with some puddles on the sand area
     if biome in ['sea', 'corruption','island']:
         water_side = random.choice(['left', 'right', 'top', 'bottom'])
         if biome == 'island':
-            water_rows = random.randint(2, 3) 
+            water_rows = random.randint(2, 3) # Number of rows of water on each side for the island biome
         else:
             water_rows = random.randint(4, 5)  # Number of rows of water on each side
         water_positions = []
@@ -126,7 +137,7 @@ def generate_area(player_pos=None):
         player_side = 'top' if player_y <= 4 else 'bottom'
         player_sides.append(player_side)
         if biome == 'island':
-            player_sides == []
+            player_sides == [] # Reset the player's sides if the biome is the island (so water spawns on all sides)
 
         # Ensure water doesn't spawn on the same side as the player
         if biome != 'island':
@@ -160,11 +171,8 @@ def generate_area(player_pos=None):
                 occupied_positions.append(pos)
                 puddle_positions.append(pos)
     else:
-        water_positions = []  # Make an empty list if the biome is not the sea
+        water_positions = []  # Make an empty list for water and puddles if the biome is not the sea
         puddle_positions = []
-
-    # Rest of the code remains unchanged...
-
 
     # Generate items, making sure they don't overlap with other objects or the player
     num_items = random.randint(0, 4)
@@ -217,7 +225,7 @@ def generate_area(player_pos=None):
         occupied_positions.append(pos)
 
     # Generate a shop, ensuring it doesn't overlap with other objects or the player
-    shop_odds = 10 if biome == 'desert' or biome == 'sea' else 5 # Lower odds for shops in deserts and seas
+    shop_odds = 10 if biome in ['desert', 'sea'] else 5 # 10% chance to spawn a shop in in desert and sea, 20% in other biomes
     shop_pos = []
     if random.randint(0, shop_odds) == 1:
         pos = (random.randint(0, 9), random.randint(0, 9))
@@ -227,9 +235,9 @@ def generate_area(player_pos=None):
         occupied_positions.append(pos)
 
     # If the biome is a desert, chance to generate a pyramid
-    if biome == 'desert' or biome == 'corruption':
+    if biome in ['desert', 'corruption']:
         pyramid_pos = []
-        if random.randint(0, 10) == 10:
+        if random.randint(0, 10) == 10: # 10% chance to spawn a pyramid
             pos = (random.randint(0, 9), random.randint(0, 9))
             while pos in occupied_positions:
                 pos = (random.randint(0, 9), random.randint(0, 9))
@@ -240,7 +248,7 @@ def generate_area(player_pos=None):
 
     # Generates Gyms
     gym_pos = []
-    if random.randint(0, 10) == 10:
+    if random.randint(0, 10) == 10: # 10% chance to spawn a gym
         pos = (random.randint(0, 9), random.randint(0, 9))
         while pos in occupied_positions:
             pos = (random.randint(0, 9), random.randint(0, 9))
@@ -295,20 +303,20 @@ def generate_area(player_pos=None):
         area[pos[0]][pos[1]] = '[ ? ]' # Place quests in the game area
 
     for pos in shop_pos:
-        area[pos[0]][pos[1]] = '[ $ ]'
+        area[pos[0]][pos[1]] = '[ $ ]' # Place shops in the game area
 
     for pos in pyramid_pos:
-        area[pos[0]][pos[1]] = '[ Δ ]' # Place pyramids in the game area, if any
+        area[pos[0]][pos[1]] = '[ Δ ]' # Place pyramids in the game area
 
 
     for pos in water_positions:
-        area[pos[0]][pos[1]] = '[ ~ ]' # Place water tiles in the game area, if any
+        area[pos[0]][pos[1]] = '[ ~ ]' # Place water tiles in the game area
 
     for pos in puddle_positions:
-        area[pos[0]][pos[1]] = '[ ~ ]'
+        area[pos[0]][pos[1]] = '[ ~ ]' # Place puddles in the game area
     
     for pos in gym_pos:
-        area[pos[0]][pos[1]] = '[ G ]'
+        area[pos[0]][pos[1]] = '[ G ]' # Place gyms in the game area
 
     ### BUTTONS (Yeah, they need their own category) ###
 
@@ -336,7 +344,7 @@ def generate_area(player_pos=None):
 # Function to display the game area
 def display_area(area):
     for row in area:
-        for cell in row:
+        for cell in row:    # For each cell in the area
             if biome != 'clouds':
                 match cell:
                     case '[ X ]' | '[ OX ]' | '[ X̲ ]' | '[ OX̲ ]':
@@ -396,16 +404,13 @@ def move_enemies(area):
             if area[i][j] == '[ # ]':
                 possible_moves = [(i+1, j), (i-1, j), (i, j+1), (i, j-1), (i+1, j+1), (i-1, j-1), (i+1, j-1), (i-1, j+1)]
                 move = random.choice(possible_moves)
-                while not (0 <= move[0] < len(area) and 0 <= move[1] < len(area[0]) and ( area[move[0]][move[1]] == '[   ]' or area[move[0]][move[1]] == '[ O ]' or area[move[0]][move[1]] == '[ _ ]') ):
+                while not (0 <= move[0] < len(area) and 0 <= move[1] < len(area[0]) and ( area[move[0]][move[1]] == '[   ]' or area[move[0]][move[1]] == '[ _ ]') ): # Check if the move is within boundaries and is an empty cell or a button
                     move = random.choice(possible_moves)
                 area[i][j] = '[   ]'  # Clear previous position
-                if area[move[0]][move[1]] == '[ O ]':
-                    area[move[0]][move[1]] = '[ O# ]'
-                elif area[move[0]][move[1]] == '[ _ ]':
-                    area[move[0]][move[1]] = '[ #̲ ]'
+                if area[move[0]][move[1]] == '[ _ ]':
+                    area[move[0]][move[1]] = '[ #̲ ]' # Move enemy to a button and make the enemy protect it
                 else:
                     area[move[0]][move[1]] = '[ # ]'  # Move enemy
-                possible_moves.remove(move)  # Remove the chosen move from possible_moves
     return area
 
 
@@ -422,22 +427,22 @@ def player_action(area, player_pos, action):
         'as': (1, -1), 'qs': (1, -1), 'sd': (1, 1), 'ds': (1, 1),
         'ww': (-2, 0), 'zz': (-2, 0), 'aa': (0, -2), 'qq': (0, -2),
         'dd': (0, 2), 'ss': (2, 0)
-    }
+    } # Define the possible movements for the player
     
-    player = area[player_pos[0]][player_pos[1]]  # Get the player's current position
-    area[player_pos[0]][player_pos[1]] = '[   ]'  # Reset previous position
+    player = area[player_pos[0]][player_pos[1]]      # Get the player's current position
+    area[player_pos[0]][player_pos[1]] = '[   ]'     # Reset previous position
     if player == '[ 🛥 ]':
         On_Water = True
-        area[player_pos[0]][player_pos[1]] = '[ ~ ]'
+        area[player_pos[0]][player_pos[1]] = '[ ~ ]' # Reset previous position if the player is on water, and keeps the on water status
 
-    if action in movement:
+    if action in movement:                           # If the action is a movement
         move = movement[action]
         new_player_pos = (player_pos[0] + move[0], player_pos[1] + move[1])
 
         # If the new position is within boundaries, update the player position
         if within_boundaries(new_player_pos):
             if ( area[new_player_pos[0]][new_player_pos[1]] != '[---]' or "Earth Badge" in b.badges ) and ( area[new_player_pos[0]][new_player_pos[1]] != '[ ~ ]' or "Marsh Badge" in b.badges ):
-                match area[new_player_pos[0]][new_player_pos[1]]:
+                match area[new_player_pos[0]][new_player_pos[1]]: # Check the new position
                     case '[ X ]':
                         area[new_player_pos[0]][new_player_pos[1]] = '[ OX ]'
                     case '[ # ]':
@@ -471,18 +476,20 @@ def player_action(area, player_pos, action):
                         area[new_player_pos[0]][new_player_pos[1]] = '[\O̲/̲]'
                     case '[ ⚒_]':
                         area[new_player_pos[0]][new_player_pos[1]] = '[ O⚒_ ]'
-                    case _:
-                        area[new_player_pos[0]][new_player_pos[1]] = '[ O ]'
 
-                player_pos = new_player_pos  # Update player's position
+                    
+                    case _:
+                        area[new_player_pos[0]][new_player_pos[1]] = '[ O ]' # Empty cell ( or anywehere else the player isn't supposed to be )
+
+                player_pos = new_player_pos                                  # Update player's position
                 return area, player_pos
             
             else:
-                area[player_pos[0]][player_pos[1]] = '[ O ]'  # Hit a wall or water, maintain previous position
+                area[player_pos[0]][player_pos[1]] = '[ O ]'                 # Hit a wall or water, maintain previous position ( oof )
 
         else:
             # Player moved off the map and all buttons are pressed, regenerate the map
-            if not check_button(area) or player_pos[0] == player_pos[1] == 1 or "Earth Badge" in b.badges:
+            if not check_button(area) or player_pos[0] == player_pos[1] == 1 or "Earth Badge" in b.badges:  # all buttons
                 if new_player_pos[0] < 0:
                     new_player_pos = (9, player_pos[1])
                 elif new_player_pos[0] > 9:
@@ -494,11 +501,11 @@ def player_action(area, player_pos, action):
 
                 player_pos = new_player_pos  # Update player's position
                 area, player_pos = generate_area(player_pos)  # Regenerate the map
-            else:
+            else:                                                                                           # not all buttons
                 area[player_pos[0]][player_pos[1]] = '[ O ]'
                 print("You can't leave this room while there are still buttons to press!")
 
-    # Check for special actions
+    # Check for special actions ( not movements )
     match action:
 
         case 'e':
@@ -518,26 +525,28 @@ def player_action(area, player_pos, action):
             area[player_pos[0]][player_pos[1]] = '[ O ]'
 
         case 'skip':
-            for i in range(8):
+            for _ in range(8):
                 b.badges.append(b.all_badges.pop())
 
         case 'music' | 'm':
             global music
-            if pg.mixer.music.get_busy():
+            if pg.mixer.music.get_busy(): # Stop the music if it's playing
                 pg.mixer.music.stop()
                 print("Music stopped!")
                 area[player_pos[0]][player_pos[1]] = '[ O ]'
-            else:
+            else:                         # Play the music if it's not playing
 
-                if biome == 'plains':
-                    music = random.choice(plains_music)
-                elif biome == 'sea':
-                    music = "assets\\theme\\Surf.mp3"
-                elif biome == 'desert':
-                    print("Desert music isn't implemented yet, so it will play the plains music, sorry!")
-                    music = random.choice(plains_music)
-                elif biome == 'clouds':
-                    music == "assets\\theme\\Route26_27.mp3"    
+                # Choose the music based on the biome
+                match biome:
+                    case 'plains':
+                        music = random.choice(plains_music)
+                    case 'sea' | 'island':
+                        music = "assets\\theme\\Surf.mp3"
+                    case 'desert':
+                        print("Desert music isn't implemented yet, so it will play the plains music, sorry!")
+                        music = random.choice(plains_music)
+                    case 'clouds' | 'corruption':
+                        music == "assets\\theme\\Route26_27.mp3"    
 
                 pg.mixer.init()
                 pg.mixer.music.load(music)
@@ -547,7 +556,7 @@ def player_action(area, player_pos, action):
                 area[player_pos[0]][player_pos[1]] = '[ O ]'
 
         case 'f':
-            if check_near_water(area, player_pos):
+            if check_near_water(area, player_pos): # Check if the player is near water
                 print("You are near water!, you can fish here!")
                 if fishing_rod:
                     fishing()
@@ -560,7 +569,7 @@ def player_action(area, player_pos, action):
                 print("What are you trying to fish? Rocks? Dirt? Sand? You need to be near water to fish!")
             area[player_pos[0]][player_pos[1]] = '[ O ]'
 
-        case _:
+        case _: # Any other action ( like "efiu" by example )
             if area[player_pos[0]][player_pos[1]] == '[ 🛥 ]' or area[player_pos[0]][player_pos[1]] == '[ ~ ]':
                 area[player_pos[0]][player_pos[1]] = '[ 🛥 ]'
                 On_Water = True
@@ -571,20 +580,21 @@ def player_action(area, player_pos, action):
     return area, player_pos
 
 def craft_items():
-    # Define crafting recipes: 'result': (required items, crafted item)
+    # Define crafting recipes: 'result': ( [ required items ], crafted item )
     crafting_recipes = {
         1: (['potion', 'potion', 'potion', 'potion', 'potion'], 'super_potion'),
         2: (['pokeball', 'pokeball', 'pokeball'], 'max_potion'),
-        3: (['potion', 'potion', 'potion', 'potion', 'potion','potion', 'potion', 'potion', 'potion', 'potion'], 'max_potion')
+        3: (['potion', 'potion', 'potion', 'potion', 'potion','potion', 'potion', 'potion', 'potion', 'potion'], 'max_potion'),
+        4: (['r_shard', 'b_shard', 'g_shard', 'y_shard', 'w_shard'], 'shard')
     }
 
     # Display available recipes
     print("Available Recipes:")
     for recipe_id, (required_items, crafted_item) in crafting_recipes.items():
-        print(f"Recipe ID: {recipe_id} - Required: {', '.join(required_items).capitalize()} -> Crafted: {crafted_item.capitalize()}")
+        print(f"Recipe number: {recipe_id} - Required: {', '.join(required_items).capitalize()} -> Crafted: {crafted_item.capitalize()}")
 
     # Get user input for chosen recipe
-    chosen_recipe_id = int(input("Enter the ID of the item you want to craft: "))
+    chosen_recipe_id = int(input("Enter the number of the item you want to craft: "))
 
     # Check if the chosen recipe ID exists
     if chosen_recipe_id in crafting_recipes:
@@ -593,50 +603,87 @@ def craft_items():
 
         # Check if the player has required items for crafting
         for item in required_items:
-            if item == 'pokeball':
-                if b.bonus_pball < 3:  # Adjust the quantity as per the recipe
-                    print(f"You don't have enough {item}s.")
-                    can_craft = False
-                    break
-            elif item == 'potion':
-                if b.bonus_potion < 5:  # Adjust the quantity as per the recipe
-                    print(f"You don't have enough {item}s.")
-                    can_craft = False
-                    break
-            # Add more conditions for other items here
+            match item:
+                case 'pokeball':
+                    if b.bonus_pball < 3:
+                        print(f"You don't have enough {item}s.")
+                        can_craft = False
+                        break
+                case 'potion':
+                    if b.bonus_potion < 5:
+                        print(f"You don't have enough {item}s.")
+                        can_craft = False
+                        break
+                case 'r_shard':
+                    if b.r_shards < 1:
+                        print(f"You don't have enough {item}s.")
+                        can_craft = False
+                        break
+                case 'b_shard':
+                    if b.b_shards < 1:
+                        print(f"You don't have enough {item}s.")
+                        can_craft = False
+                        break
+                case 'g_shard':
+                    if b.g_shards < 1:
+                        print(f"You don't have enough {item}s.")
+                        can_craft = False
+                        break
+                case 'y_shard':
+                    if b.y_shards < 1:
+                        print(f"You don't have enough {item}s.")
+                        can_craft = False
+                        break
+                case 'w_shard':
+                    if b.w_shards < 1:
+                        print(f"You don't have enough {item}s.")
+                        can_craft = False
+                        break
 
         # If the player has required items, perform crafting
         if can_craft:
             print(f"Crafting {crafted_item.capitalize()}...")
             # Remove required items from the inventory (deduct the necessary counts)
             for item in required_items:
-                if item == 'pokeball':
-                    b.bonus_pball -= 3  # Adjust the deduction as per the recipe
-                elif item == 'potion':
-                    b.bonus_potion -= 5  # Adjust the deduction as per the recipe
-                # Deduct counts for other items here
+                match item:
+                    case 'pokeball':
+                        b.bonus_pball -= 3
+                    case 'potion':
+                        b.bonus_potion -= 5
+                    case 'r_shard':
+                        b.r_shards -= 1
+                    case 'b_shard':
+                        b.b_shards -= 1
+                    case 'g_shard':
+                        b.g_shards -= 1
+                    case 'y_shard':
+                        b.y_shards -= 1
+                    case 'w_shard':
+                        b.w_shards -= 1
 
-            # Add crafted item to the inventory (increase the count)
-            if crafted_item == 'super_potion':
-                b.bonus_superpotion += 1  # Adjust the increase as per the recipe
-            elif crafted_item == 'max_potion':
-                b.bonus_potionmax += 1  # Adjust the increase as per the recipe
-            # Add more conditions for other crafted items here
+            # Add crafted item to the inventory
+            match crafted_item:
+                case 'super_potion':
+                    b.bonus_superpotion += 1
+                case 'max_potion':
+                    b.bonus_potionmax += 1
+                case 'shard':
+                    b.shards += 1
 
             print(f"You crafted a {crafted_item.capitalize()}!")
 
     else:
-        print("Invalid recipe ID.")
+        print("Invalid recipe number.")
 
 def is_sharded():
-    if b.r_shards != 0 and b.b_shards != 0 and b.g_shards != 0 and b.y_shards != 0 and b.w_shards != 0:
+    if b.shards > 0:
         print("Choose a Pokemon to power up using shards.")
         for i, pokemon in enumerate(p.all_pokemon):
             print(f"{i + 1}. {pokemon.name}")
         while True:
             try:
                 choice = int(input("Enter the number of the Pokemon you want to shard: "))
-                break  # Sort de la boucle si la conversion en entier réussit
+                break
             except ValueError:
                 print("Please enter a valid integer number.")
         print("\n")
@@ -645,18 +692,14 @@ def is_sharded():
             # If the target is valid, power it up using shards
             selected = p.all_pokemon[choice]
             
-            # Check if there are enough shards of each color
+            # Check if there are enough shards
             selected.name = '\033[92m' + selected.name + '\033[0m'
             selected.attack += 20
             selected.defense += 20
             selected.max_hp += 10
             
-            # Deduct one shard of each color
-            b.r_shards -= 1
-            b.b_shards -= 1
-            b.g_shards -= 1
-            b.y_shards -= 1
-            b.w_shards -= 1
+            # Deducts one shard
+            b.shards -= 1
                 
             print("Pokemon upgraded successfully!")
 
@@ -667,15 +710,18 @@ def fishing():
     print("How did you even got a fishing rod?!")
     fishing = input("Do you want to fish? (yes/no): ").lower()
     if fishing == "yes":
-        catch = random.randint(0, 100)
-        if catch < 20:
+        catch = random.randint(0, 100) # Random chance to catch an item, a pokemon or a fishing rod ( for some reason )
+
+        if catch < 20:  # 20% chance to catch an item
             print("You fished an item!")
             id = random.randint(1, 100)
             items(id)
-        elif catch < 99 or catch == 100:
+
+        elif catch < 59 or catch == 100: # 39% chance to catch a pokemon
             print("You fished an enemy!")
             start_battle()
-        elif catch == 99:
+
+        elif catch == 99: # 1% chance to catch a fishing rod ( and get 1000 pokecoins if you keep it )
             print("You caught a... fishing rod?")
             print("That's not very usefull, you aleardy have one...")
             choice = input("Throw it back? (yes/no): ").lower()
@@ -684,6 +730,9 @@ def fishing():
             else:
                 print("You kept the fishing rod and sold it for 1000 pokecoins!")
                 b.pokecoins += 1000
+
+        else:   # 40% chance to catch nothing
+            print("You didn't catch anything...")
 
 ### CHECKS ###
 
@@ -707,12 +756,15 @@ def check_craft(area, player_pos):
 def check_quest(area, player_pos):
     return area[player_pos[0]][player_pos[1]] == '[ O? ]' or area[player_pos[0]][player_pos[1]] == '[ O?̲ ]'
 
+# Function to check if the player is on a pyramid square
 def check_pyramid(area, player_pos):
     return area[player_pos[0]][player_pos[1]] == '[ OΔ ]'
 
+# Function to check if the player is on a gym square
 def check_gym(area, player_pos):
     return area[player_pos[0]][player_pos[1]] == '[ OG ]' 
 
+# Function to check if the player is on a shop square
 def check_shop(area, player_pos):
     return area[player_pos[0]][player_pos[1]] == '[ O$ ]'
 
@@ -739,8 +791,8 @@ def check_button(area):
 def inventory():
     print("You have:")
     if b.bonus_pball == 0 and b.bonus_potion == 0 and b.bonus_superpotion == 0 and b.bonus_potionmax == 0:
-        print("Nothing... You know what, take this potion!")
-        b.bonus_potion += 1
+        print("Not much... You know what, take this potion!")
+        b.bonus_potion += 1 # Gives the player a potion if they don't have any pokeballs or potions ( shards and badges are not accounted for )
     if b.bonus_pball >= 1:
         print(f"{b.bonus_pball} pokeball")
     if b.bonus_potion >= 1:
@@ -804,13 +856,13 @@ def shop():
         while in_shop:
             print("YoU hAvE", b.pokecoins, "pOkeCoiNs!")
             print("You caNN buI:")
-            for item_id, (item, price) in items.items():
+            for (item, price) in items.items():
                 if item != 'Master Ball' or Tem_colleg == True:
                     print(f"{item.capitalize()} - {price} pOkeCoiNs")
             while True:
                 try:
                     choice = int(input("EnTEr tHe NumBR of tHe iTm Yu wNt To bUy!:"))
-                    break  # Sort de la boucle si la conversion en entier réussit
+                    break
                 except ValueError:
                     print("Please enter a valid integer number.")
             if choice in items:
@@ -845,12 +897,12 @@ def shop():
         while in_shop:
             print("You have", b.pokecoins, "pokecoins")
             print("You can buy:")
-            for item_id, (item, price) in items.items():
+            for (item, price) in items.items():
                 print(f"{item.capitalize()} - {price} pokecoins")
             while True:
                 try:
                     choice = int(input("Enter the number of the item you want to buy: "))
-                    break  # Sort de la boucle si la conversion en entier réussit
+                    break
                 except ValueError:
                     print("Please enter a valid integer number.")
             if choice in items:
@@ -886,7 +938,7 @@ def help():
     print("If you walk on a \033[91m[ # ]\033[0m spot, you will encounter an enemy")
     print(" \033[90m[---]\033[0m spots are walls, you can't walk on them")
     print(" \033[94m[ ~ ]\033[0m spots are water, you can't walk on them either... unless you have a certain badge")
-    print(" \033[93m[\-/]\033[0m spots are shard spots, use them to improve your mons")
+    print(" \033[93m[\-/]\033[0m spots are shard spots, use them to improve your mons, if you have shards")
     print(" \033[95m[ ⚒ ]\033[0m spots allows you to craft items using items")
     print(" \033[96m[ ? ]\033[0m spots are quests, complete them then go on another one to get rewards")
     print(" \033[92m[ $ ]\033[0m spots are shops, you can buy items there")
@@ -1133,7 +1185,7 @@ while True:
         print("For now, you can only use it to skip the buttons, but more features will be added soon!")
         print("Also, you kinda finished the game... For now, stay tuned!")
         fly_popup = True
-
+    
     act = input("Enter action: ").lower()
     if act == 'quit':
         break
