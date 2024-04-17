@@ -23,6 +23,7 @@ b_shards = 0
 y_shards = 0
 g_shards = 0
 w_shards = 0
+shards = 0
 pokecoins = 0
 
 badges = []
