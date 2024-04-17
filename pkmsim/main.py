@@ -978,6 +978,8 @@ def save():
         file.write(f"{b.y_shards}\n")
         file.write(f"{b.g_shards}\n")
         file.write(f"{b.w_shards}\n")
+        file.write(f"{b.shards}\n")
+        file.write(f"{b.bonus_masterball}\n")
         file.write("True\n" if fishing_rod else "False\n")
         # saves the current quest
         if p.quest != None:
@@ -1027,6 +1029,8 @@ def load():
         b.y_shards = int(file.readline())
         b.g_shards = int(file.readline())
         b.w_shards = int(file.readline())
+        b.shards = int(file.readline())
+        b.bonus_masterball = int(file.readline())
         fishing_rod = file.readline().strip() == "True"
         # loads the current quest
         if file.readline() == "True\n":
